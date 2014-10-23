@@ -3,15 +3,16 @@
 pysle
 ---------
 
-.. sectnum::
-.. contents::
-
 Pronounced like 'p' + 'isle'.
 
 An interface for the ILSEX (international speech lexicon) dictionary, 
 along with some tools for working with comparing and aligning 
 pronunciations (e.g. a list of phones someone said versus a standard or 
 canonical dictionary pronunciation). 
+
+
+.. sectnum::
+.. contents::
 
 
 Common Use Cases
