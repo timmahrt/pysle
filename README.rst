@@ -3,6 +3,9 @@
 pysle
 ---------
 
+.. sectnum::
+.. contents::
+
 Pronounced like 'p' + 'isle'.
 
 An interface for the ILSEX (international speech lexicon) dictionary, 
@@ -27,7 +30,8 @@ What can you do with this library?
     pysle.pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['kh', 'ae',]) 
 
 - automatically syllabify a praat textgrid containing words and phones 
-  (e.g. force-aligned text) -- requires my praatIO library::
+  (e.g. force-aligned text) -- requires my 
+  `praatIO <https://github.com/timmahrt/praatIO>`_ library::
   
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
 
@@ -44,6 +48,10 @@ Requirements
   <http://www.isle.illinois.edu/sst/data/dict/islev2.txt)>`_ (islev2.txt)
 
 - ``Python 2.7.*`` or above
+
+- The `praatIO <https://github.com/timmahrt/praatIO>`_ library is required IF 
+  you want to use the textgrid functionality.  It is not required 
+  for normal use.
 
 
 Installation
