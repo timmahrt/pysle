@@ -11,6 +11,27 @@ pronunciations (e.g. a list of phones someone said versus a standard or
 canonical dictionary pronunciation). 
 
 
+Common Use Cases
+================
+
+What can you do with this library?
+
+- look up the list of phones and syllables for canonical pronunciations 
+  of a word::
+  
+    pysle.isletool.LexicalTool.lookup('cat')
+
+- map an actual pronunciation to a dictionary pronunciation (can be used 
+  to automatically find speech errors)::
+  
+    pysle.pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['kh', 'ae',]) 
+
+- automatically syllabify a praat textgrid containing words and phones 
+  (e.g. force-aligned text) -- requires my praatIO library::
+  
+    pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
+
+
 Requirements
 ================
 
@@ -20,9 +41,10 @@ Requirements
   `ISLEX project page <http://www.isle.illinois.edu/sst/data/dict/>`_
 
   `Direct link to the ISLEX file used in this project
-  <http://www.isle.illinois.edu/sst/data/dict/islev2.txt)>`_
+  <http://www.isle.illinois.edu/sst/data/dict/islev2.txt)>`_ (islev2.txt)
 
 - ``Python 2.7.*`` or above
+
 
 Installation
 ================
@@ -61,7 +83,6 @@ and another::
     print syllableList
     >> [["''"], ['n', '@'], ['th', 'r']]
     
-stressedSyllable, syllableList, syllabification, stressedIndex = returnList
 
-Please see \test for example usage
+Please see \\test for example usage
 
