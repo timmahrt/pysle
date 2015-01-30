@@ -17,70 +17,75 @@ class WordNotInISLE(Exception):
         return "Word '%s' not in ISLE dictionary.  Please add it to continue." % self.word
 
 
-
 class LexicalTool():
     
     
     def __init__(self, islePath):
         self.islePath = islePath
-        self.data = None
-        self.pronDict = None
+        self.data = self._buildDict()
+    
+    
+    def _buildDict(self):
+        '''
+        Builds the isle textfile into a dictionary for fast searching
+        '''
+        dict = {}
+        wordList = open(self.islePath, "r").read().split("\n")
+        for row in wordList:
+            word, pronunciation = row.split(" ", 1)
+            word = word.split("(")[0]
+            
+            dict.setdefault(word, [])
+            dict[word].append(pronunciation)
+        
+        return dict
     
     
     def lookup(self, word):
+        '''
+        Lookup a word and receive a list of syllables and stressInfo
+        '''
         
         # All words must be lowercase with no extraneous whitespace
         word = word.lower()
         word = word.strip()
         
-        # Find indicies in the dictionary
+        pronList = self.data.get(word, None)
         
-        if self.data == None:
-            self.data = open(self.islePath, "r").read()
+        if pronList == None:
+            raise WordNotInISLE(word)
+        else:
+            pronList = [_parsePronunciation(pronunciationStr) 
+                        for pronunciationStr in pronList]
         
-        wordList = []
-        searchIndex = 0
-        while True:
-            # (The +1 skips over the "\n" which marks the start of every word)
-            startIndex = self.data.find("\n"+word + "(", searchIndex) + 1
-            
-            # find() returns -1 if it does not find anything, but
-            #    note that we added 1 to the return value
-            try:
-                assert(startIndex != 0)
-            except AssertionError:
-                if searchIndex == 0:
-                    raise WordNotInISLE(word)
-                else:
-                    break
-            
-            endIndex = self.data.find("\n", startIndex)
-            
-            searchIndex = endIndex
-            wordList.append((startIndex, endIndex))
-            
-        returnList = []
-        for startIndex, endIndex in wordList:
-            isleWord = self.data[startIndex:endIndex]
-            syllableTxt = isleWord.split("#")[1].strip()
-            syllableList = [x for x in syllableTxt.split(' . ')]
-            
-            # Find stress
-            stressList = []
-            for i, syllable in enumerate(syllableList):
-                # Primary stress
-                if "'" in syllable:
-                    stressList.insert(0, i)
-                # Secondary stress
-                elif '"' in syllable:
-                    stressList.append(i)
-            
-            syllableList = [x.split(" ") for x in syllableList]
-            returnList.append((syllableList, stressList))
-        
-        return returnList
+        return pronList
 
 
+def _parsePronunciation(pronunciationStr):
+    '''
+    Parses the pronunciation string
+    
+    Returns the list of syllables and a list of primary and 
+    secondary stress locations 
+    '''
+    syllableTxt = pronunciationStr.split("#")[1].strip()
+    syllableList = [x for x in syllableTxt.split(' . ')]
+    
+    # Find stress
+    stressList = []
+    for i, syllable in enumerate(syllableList):
+        # Primary stress
+        if "'" in syllable:
+            stressList.insert(0, i)
+        # Secondary stress
+        elif '"' in syllable:
+            stressList.append(i)
+    
+    syllableList = [x.split(" ") for x in syllableList]
+    
+    return syllableList, stressList
+            
+            
 def getNumPhones(isleDict, label, maxFlag):
     '''
     
@@ -102,7 +107,8 @@ def getNumPhones(isleDict, label, maxFlag):
         # likely than another, we take the average of all of them
         phoneCountList = []
         for syllableList, stressIndex in phoneListOfLists:
-            phoneCountList.append(len([phon for phoneList in syllableList for phon in phoneList]))
+            phoneCountList.append(len([phon for phoneList in syllableList for 
+                                       phon in phoneList]))
         
         # The average number of phones for all possible pronunciations
         #    of this word
