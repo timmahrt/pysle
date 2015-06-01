@@ -46,7 +46,7 @@ Requirements
   `ISLEX project page <http://www.isle.illinois.edu/sst/data/dict/>`_
 
   `Direct link to the ISLEX file used in this project
-  <http://www.isle.illinois.edu/sst/data/dict/islev2.txt)>`_ (islev2.txt)
+  <http://www.isle.illinois.edu/sst/data/dict/islex/islev2.txt>`_ (islev2.txt)
 
 - ``Python 2.7.*`` or above
 
