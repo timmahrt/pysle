@@ -30,7 +30,8 @@ class LexicalTool():
         Builds the isle textfile into a dictionary for fast searching
         '''
         lexDict = {}
-        wordList = open(self.islePath, "r").read().split("\n")
+        wordList = [line.rstrip('\n') for line in open(self.islePath, "rU")]
+            
         for row in wordList:
             word, pronunciation = row.split(" ", 1)
             word = word.split("(")[0]
