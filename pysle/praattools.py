@@ -93,8 +93,8 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             tonicEntryList.append( (syllableStart, syllableEnd, tonicLabel) )
     
     # Create a textgrid with the two syllable-level tiers
-    syllableTier = praatio.TextgridTier("syllable", syllableEntryList, praatio.INTERVAL_TIER)
-    tonicTier = praatio.TextgridTier('tonic', tonicEntryList, praatio.INTERVAL_TIER)
+    syllableTier = praatio.IntervalTier("syllable", syllableEntryList)
+    tonicTier = praatio.IntervalTier('tonic', tonicEntryList)
     
     syllableTG = praatio.Textgrid()
     syllableTG.addTier(syllableTier)
