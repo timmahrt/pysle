@@ -20,7 +20,10 @@ path = join('.', 'files')
 path = "/Users/tmahrt/Dropbox/workspace/pysle/test/files"
 
 tg = praatio.openTextGrid(join(path, "pumpkins.TextGrid"))
-isleDict = isletool.LexicalTool('/Users/tmahrt/Dropbox/workspace/pysle/test/islev2.txt') # Needs the full path to the file
+
+# Needs the full path to the file
+islevPath = '/Users/tmahrt/Dropbox/workspace/pysle/test/islev2.txt'
+isleDict = isletool.LexicalTool(islevPath)
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",

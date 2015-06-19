@@ -9,10 +9,10 @@ import itertools
 from pysle import isletool
 
 
-
 class NullPronunciationError(Exception):
     
     def __init__(self, word):
+        super(NullPronunciationError, self).__init__()
         self.word = word
     
     def __str__(self):
@@ -49,7 +49,7 @@ def _lcs(xs, ys):
         ll_b = _lcs_lens(xb, ys)
         ll_e = _lcs_lens(xe[::-1], ys[::-1])
         _, k = max((ll_b[j] + ll_e[ny - j], j)
-                    for j in range(ny + 1))
+                   for j in range(ny + 1))
         yb, ye = ys[:k], ys[k:]
         return _lcs(xb, yb) + _lcs(xe, ye)
 
@@ -58,13 +58,12 @@ def _prepPronunciation(phoneList):
     retList = []
     for phone in phoneList:
         if 'r' in phone:
-            phone = ['r',]
+            phone = ['r', ]
         try:
-            phone = phone[0] # Only represent the str by its first letter
+            phone = phone[0]  # Only represent the string by its first letter
+            phone = phone.lower()
         except IndexError:
             raise NullPhoneError()
-        
-        phone = phone.lower()
         
         if phone in isletool.vowelList:
             phone = 'V'
@@ -85,14 +84,14 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
     retSyllableList = []
     for syllable in syllableList:
         j = len(syllable)
-        tmpPhoneList = adjustedPhoneList[i:i+j]
+        tmpPhoneList = adjustedPhoneList[i:i + j]
         numBlanks = -1
         phoneList = tmpPhoneList[:]
         while numBlanks != 0:
             
             numBlanks = tmpPhoneList.count("''")
             if numBlanks > 0:
-                tmpPhoneList = adjustedPhoneList[i+j:i+j+numBlanks]
+                tmpPhoneList = adjustedPhoneList[i + j:i + j + numBlanks]
                 phoneList.extend(tmpPhoneList)
                 j += numBlanks
         
@@ -116,27 +115,32 @@ def _findBestPronunciation(isleDict, wordText, aPron):
     
     isleWordList = isleDict.lookup(wordText)
     
-    aP = _prepPronunciation(aPron) # Mapping to simplified phone inventory
+    aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
     
-    origPronDict = dict((newPron,oldPron) for newPron, oldPron in zip(aP, aPron))
+    origPronDict = dict((newPron, oldPron)
+                        for newPron, oldPron in zip(aP, aPron))
     
     numDiffList = []
     withStress = []
     i = 0
     alignedSyllabificationList = []
     alignedActualPronunciationList = []
-    for syllableList, stressList in isleWordList:
+    for wordTuple in isleWordList:
+        syllableList = wordTuple[0]  # syllableList, stressList
         
         iP = [phone for phoneList in syllableList for phone in phoneList]
         iP = _prepPronunciation(iP)
 
         alignedIP, alignedAP = alignPronunciations(iP, aP)
-        alignedAP = [origPronDict.get(phon, "''") for phon in alignedAP] # Remapping to actual phones
+        
+        # Remapping to actual phones
+        alignedAP = [origPronDict.get(phon, "''") for phon in alignedAP]
         alignedActualPronunciationList.append(alignedAP)
         
         # Adjusting the syllabification for differences between the dictionary
         # pronunciation and the actual pronunciation
-        alignedSyllabification = _adjustSyllabification(alignedIP, syllableList)
+        alignedSyllabification = _adjustSyllabification(alignedIP,
+                                                        syllableList)
         alignedSyllabificationList.append(alignedSyllabification)
         
         # Count the number of misalignments between the two
@@ -147,7 +151,7 @@ def _findBestPronunciation(isleDict, wordText, aPron):
         hasStress = False
         for syllable in syllableList:
             for phone in syllable:
-                hasStress = "'" in phone or hasStress 
+                hasStress = "'" in phone or hasStress
         
         if hasStress:
             withStress.append(i)
@@ -164,16 +168,16 @@ def _findBestPronunciation(isleDict, wordText, aPron):
     for i, numDiff in enumerate(numDiffList):
         if numDiff != minDiff:
             continue
-        if bestIndex == None:
+        if bestIndex is None:
             bestIndex = i
             bestIsStressed = i in withStress
         else:
             if not bestIsStressed and i in withStress:
                 bestIndex = i
                 bestIsStressed = True
-        
     
-    return isleWordList, alignedActualPronunciationList, alignedSyllabificationList, bestIndex
+    return (isleWordList, alignedActualPronunciationList,
+            alignedSyllabificationList, bestIndex)
 
 
 def _syllabifyPhones(phoneList, syllableList, isleStressList):
@@ -193,9 +197,9 @@ def _syllabifyPhones(phoneList, syllableList, isleStressList):
     
     start = 0
     syllabifiedList = []
-    for i, end in enumerate(numPhoneList):
+    for end in numPhoneList:
         
-        syllable = phoneList[start:start+end]
+        syllable = phoneList[start:start + end]
         syllabifiedList.append(syllable)
         
         start += end
@@ -211,21 +215,6 @@ def alignPronunciations(pronI, pronA):
     # First prep the two pronunctions
     pronI = [char for char in pronI]
     pronA = [char for char in pronA]
-    
-    # -- allow for some flexibility in pronunciation
-    correctionsTuple = (('d', 't'), ('t', 'd'), ('s', 'z'), ('z', 's'),
-                        ('m', 'n'), ('n', 'm'),)
-    
-    doMatch = lambda i, a: ((i == a) or 
-                            ((i, a) in correctionsTuple))
-    
-    def matchExists(targetPhone, pron):
-        match = False
-        for phone in pron:
-            match = match or doMatch(targetPhone, phone)
-        return match
-    
-    # Remove vowels
     
     # Remove any elements not in the other list (but maintain order)
     pronITmp = pronI
@@ -244,7 +233,7 @@ def alignPronunciations(pronI, pronA):
         startA = pronA.index(phone, startA)
         startI = pronI.index(phone, startI)
         
-        sequenceIndexListA.append(startA) 
+        sequenceIndexListA.append(startA)
         sequenceIndexListI.append(startI)
     
     # An index on the tail of both will be used to create output strings
@@ -257,14 +246,16 @@ def alignPronunciations(pronI, pronA):
     for x in xrange(len(sequenceIndexListA)):
         indexA = sequenceIndexListA[x]
         indexI = sequenceIndexListI[x]
-        if indexA < indexI :
+        if indexA < indexI:
             for x in xrange(indexI - indexA):
                 pronA.insert(indexA, "''")
-            sequenceIndexListA = [val + indexI - indexA for val in sequenceIndexListA]
+            sequenceIndexListA = [val + indexI - indexA
+                                  for val in sequenceIndexListA]
         elif indexA > indexI:
             for x in xrange(indexA - indexI):
                 pronI.insert(indexI, "''")
-            sequenceIndexListI = [val + indexA - indexI for val in sequenceIndexListI]
+            sequenceIndexListI = [val + indexA - indexI
+                                  for val in sequenceIndexListI]
     
     return pronI, pronA
    
@@ -273,11 +264,12 @@ def findBestSyllabification(isleDict, wordText, actualPronunciationList):
     '''
     Find the best syllabification for a word
     
-    First find the closest pronunciation to a given pronunciation. Then take 
-    the syllabification for that pronunciation and map it onto the 
+    First find the closest pronunciation to a given pronunciation. Then take
+    the syllabification for that pronunciation and map it onto the
     input pronunciation.
     '''
-    retList = _findBestPronunciation(isleDict, wordText, actualPronunciationList)
+    retList = _findBestPronunciation(isleDict, wordText,
+                                     actualPronunciationList)
     isleWordList, alignedAPronList, alignedSyllableList, bestIndex = retList
     
     alignedPhoneList = alignedAPronList[bestIndex]
@@ -285,8 +277,8 @@ def findBestSyllabification(isleDict, wordText, actualPronunciationList):
     syllabification = isleWordList[bestIndex][0]
     stressedIndex = isleWordList[bestIndex][1]
     
-    stressedSyllable, syllableList = _syllabifyPhones(alignedPhoneList, 
-                                                      alignedSyllables, 
+    stressedSyllable, syllableList = _syllabifyPhones(alignedPhoneList,
+                                                      alignedSyllables,
                                                       stressedIndex)
     
     return stressedSyllable, syllableList, syllabification, stressedIndex
@@ -298,9 +290,7 @@ def findClosestPronunciation(isleDict, wordText, aPron):
     '''
     
     retList = _findBestPronunciation(isleDict, wordText, aPron)
-    isleWordList, actualPronunciationList, bestIndex = retList
+    isleWordList = retList[0]
+    bestIndex = retList[3]
     
     return isleWordList[bestIndex]
-
-
-

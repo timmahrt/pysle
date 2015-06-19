@@ -4,6 +4,7 @@ Created on Oct 22, 2014
 @author: tmahrt
 '''
 
+
 class OptionalFeatureError(ImportError):
     
     def __str__(self):
@@ -18,7 +19,7 @@ from pysle import isletool
 from pysle import pronunciationtools
 
 
-def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName, 
+def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                       skipLabelList=None):
     '''
     Given a textgrid, syllabifies the phones in the textgrid
@@ -34,7 +35,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
     wordTier = tg.tierDict[wordTierName]
     phoneTier = tg.tierDict[phoneTierName]
     
-    if skipLabelList == None:
+    if skipLabelList is None:
         skipLabelList = []
     
     syllableEntryList = []
@@ -46,11 +47,13 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         
         subPhoneTier = phoneTier.crop(start, stop, True, False)[0]
         
-        phoneList = [phone for startP, endP, phone in subPhoneTier.entryList if phone != '']
+        # entry = (start, stop, phone)
+        phoneList = [entry[2] for entry in subPhoneTier.entryList
+                     if entry[2] != '']
         
         try:
-            returnList = pronunciationtools.findBestSyllabification(isleDict, 
-                                                                    word, 
+            returnList = pronunciationtools.findBestSyllabification(isleDict,
+                                                                    word,
                                                                     phoneList)
         except isletool.WordNotInISLE:
             print "Word ('%s') not is isle -- skipping syllabification" % word
@@ -58,8 +61,9 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         except (pronunciationtools.NullPronunciationError):
             print "Word ('%s') has no provided pronunciation" % word
             continue
-    
-        stressedSyllable, syllableList, syllabification, stressIndexList = returnList
+        
+        syllableList = returnList[1]
+        stressIndexList = returnList[3]
         
         i = 0
 #         print syllableList
@@ -67,7 +71,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             
             # Create the syllable tier entry
             j = len(syllable)
-            stubEntryList = subPhoneTier.entryList[i:i+j]
+            stubEntryList = subPhoneTier.entryList[i:i + j]
             i += j
             
             # The whole syllable was deleted
@@ -76,21 +80,21 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             
             syllableStart = stubEntryList[0][0]
             syllableEnd = stubEntryList[-1][1]
-            label = "-".join([phone for start, end, phone in stubEntryList])
+            label = "-".join([entry[2] for entry in stubEntryList])
         
-            syllableEntryList.append( (syllableStart, syllableEnd, label) )
+            syllableEntryList.append((syllableStart, syllableEnd, label))
             
             # Create the tonic tier entry
             try:
                 stressIndex = stressIndexList[0]
             except IndexError:
-                stressIndex = None # Function word probably
+                stressIndex = None  # Function word probably
                 
             tonicLabel = ''
             if k == stressIndex:
                 tonicLabel = 'T'
                 
-            tonicEntryList.append( (syllableStart, syllableEnd, tonicLabel) )
+            tonicEntryList.append((syllableStart, syllableEnd, tonicLabel))
     
     # Create a textgrid with the two syllable-level tiers
     syllableTier = praatio.IntervalTier("syllable", syllableEntryList)
@@ -101,4 +105,3 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
     syllableTG.addTier(tonicTier)
 
     return syllableTG
-
