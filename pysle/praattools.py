@@ -56,17 +56,17 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                                                                     word,
                                                                     phoneList)
         except isletool.WordNotInISLE:
-            print "Word ('%s') not is isle -- skipping syllabification" % word
+            print("Word ('%s') not is isle -- skipping syllabification" % word)
             continue
         except (pronunciationtools.NullPronunciationError):
-            print "Word ('%s') has no provided pronunciation" % word
+            print("Word ('%s') has no provided pronunciation" % word)
             continue
         
         syllableList = returnList[1]
         stressIndexList = returnList[3]
         
         i = 0
-#         print syllableList
+#         print(syllableList)
         for k, syllable in enumerate(syllableList):
             
             # Create the syllable tier entry

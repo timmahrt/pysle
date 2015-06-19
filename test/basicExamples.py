@@ -20,13 +20,13 @@ firstEntry = lookupResults[0]
 firstSyllableList = firstEntry[0] 
 firstStressList = firstEntry[1]
 
-print searchWord
-print firstSyllableList, firstStressList # 3rd syllable carries stress
+print(searchWord)
+print(firstSyllableList, firstStressList) # 3rd syllable carries stress
 
 
 # Here we determine the syllabification of a word, as it was said.
 # (Of course, this is just a guess)
-print '-'*50
+print('-'*50)
 
 searchWord = 'another'
 anotherPhoneList = ['n', '@', 'th', 'r']
@@ -37,8 +37,8 @@ returnList = pronunciationtools.findBestSyllabification(isleDict,
 
 stressedSyllable, syllableList, syllabification, stressedIndex = returnList
 
-print searchWord
-print anotherPhoneList
-print syllableList # We can see the first syllable was elided
+print(searchWord)
+print(anotherPhoneList)
+print(syllableList) # We can see the first syllable was elided
 
 
