@@ -11,7 +11,7 @@ class OptionalFeatureError(ImportError):
         return "ERROR: You must have praatio installed to use pysle.praatTools"
 
 try:
-    import praatio
+    from praatio import tgio
 except ImportError:
     raise OptionalFeatureError()
 
@@ -97,10 +97,10 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             tonicEntryList.append((syllableStart, syllableEnd, tonicLabel))
     
     # Create a textgrid with the two syllable-level tiers
-    syllableTier = praatio.IntervalTier("syllable", syllableEntryList)
-    tonicTier = praatio.IntervalTier('tonic', tonicEntryList)
+    syllableTier = tgio.IntervalTier("syllable", syllableEntryList)
+    tonicTier = tgio.IntervalTier('tonic', tonicEntryList)
     
-    syllableTG = praatio.Textgrid()
+    syllableTG = tgio.Textgrid()
     syllableTG.addTier(syllableTier)
     syllableTG.addTier(tonicTier)
 

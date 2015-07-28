@@ -12,14 +12,14 @@ This snippet shows you how to use this function.
 
 from os.path import join
 
-import praatio
+from praatio import tgio
 from pysle import isletool
 from pysle import praattools
 
 path = join('.', 'files')
 path = "/Users/tmahrt/Dropbox/workspace/pysle/test/files"
 
-tg = praatio.openTextGrid(join(path, "pumpkins.TextGrid"))
+tg = tgio.openTextGrid(join(path, "pumpkins.TextGrid"))
 
 # Needs the full path to the file
 islevPath = '/Users/tmahrt/Dropbox/workspace/pysle/test/islev2.txt'
