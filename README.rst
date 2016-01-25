@@ -66,6 +66,8 @@ Requirements
 
 - ``Python 2.7.*`` or above
 
+- ``Python 3.3.*`` or above
+
 - The `praatIO <https://github.com/timmahrt/praatIO>`_ library is required IF 
   you want to use the textgrid functionality.  It is not required 
   for normal use.
