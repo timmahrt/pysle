@@ -95,3 +95,19 @@ and another::
 
 Please see \\test for example usage
 
+
+Citing pysle
+===============
+
+Pysle is general purpose coding and doesn't need to be cited
+(you should cite the ISLE project instead)
+but if you would like to, it can be cited like so:
+
+Tim Mahrt. Pysle. https://github.com/timmahrt/pysle, 2016.
+
+
+Acknowledgements
+================
+
+Development of Pysle was possible thanks to NSF grant IIS 07-03624
+to Jennifer Cole and Mark Hasegawa-Johnson.
