@@ -130,5 +130,5 @@ Acknowledgements
 
 Development of Pysle was possible thanks to NSF grant **IIS 07-03624**
 to Jennifer Cole and Mark Hasegawa-Johnson
-and NSF grant NSF grant **BCS 12-51343**
+and NSF grant **BCS 12-51343**
 to Jennifer Cole, José Hualde, and Caroline Smith
