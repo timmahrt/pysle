@@ -119,7 +119,7 @@ Citing pysle
 
 Pysle is general purpose coding and doesn't need to be cited
 (you should cite the
-`ISLEX project <http://www.isle.illinois.edu/sst/data/dict/islex/index.shtml>`
+`ISLEX project <http://www.isle.illinois.edu/sst/data/dict/islex/index.shtml>`_
 instead) but if you would like to, it can be cited like so:
 
 Tim Mahrt. Pysle. https://github.com/timmahrt/pysle, 2016.
