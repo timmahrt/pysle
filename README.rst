@@ -37,6 +37,22 @@ What can you do with this library?
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
 
 
+Major revisions
+================
+
+Ver 1.2 (June 20, 2015)
+
+- Python 3.x support
+
+Ver 1.1 (January 30, 2015)
+
+- word lookup ~65 times faster
+
+Ver 1.0 (October 23, 2014)
+
+- first public release.
+
+
 Requirements
 ================
 
@@ -110,4 +126,5 @@ Acknowledgements
 ================
 
 Development of Pysle was possible thanks to NSF grant IIS 07-03624
-to Jennifer Cole and Mark Hasegawa-Johnson.
+to Jennifer Cole and Mark Hasegawa-Johnson and NSF grant NSF grant BCS 12-51343
+to Jennifer Cole, José Hualde, and Caroline Smith
