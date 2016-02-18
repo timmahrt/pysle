@@ -79,9 +79,8 @@ Requirements
 Installation
 ================
 
-If you on Windows, you can use the installer found here (check that it is up to date though)::
-
-    `Windows installer <http://www.timmahrt.com/python_installers>`_
+If you on Windows, you can use the installer found here (check that it is up to date though)
+`Windows installer <http://www.timmahrt.com/python_installers>`_
 
 Otherwise, to manually install, after downloading, from a command-line shell, navigate to the directory containing setup.py and type::
 
