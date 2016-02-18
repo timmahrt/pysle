@@ -243,16 +243,16 @@ def alignPronunciations(pronI, pronA):
     
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
-    for x in xrange(len(sequenceIndexListA)):
+    for x in range(len(sequenceIndexListA)):
         indexA = sequenceIndexListA[x]
         indexI = sequenceIndexListI[x]
         if indexA < indexI:
-            for x in xrange(indexI - indexA):
+            for x in range(indexI - indexA):
                 pronA.insert(indexA, "''")
             sequenceIndexListA = [val + indexI - indexA
                                   for val in sequenceIndexListA]
         elif indexA > indexI:
-            for x in xrange(indexA - indexI):
+            for x in range(indexA - indexI):
                 pronI.insert(indexI, "''")
             sequenceIndexListI = [val + indexA - indexI
                                   for val in sequenceIndexListI]

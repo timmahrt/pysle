@@ -3,6 +3,9 @@
 pysle
 ---------
 
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg?
+   :target: http://opensource.org/licenses/MIT
+
 Pronounced like 'p' + 'isle'.
 
 An interface for the ILSEX (international speech lexicon) dictionary, 
@@ -76,10 +79,13 @@ Requirements
 Installation
 ================
 
-From a command-line shell, navigate to the directory this is located in 
-and type::
+If you on Windows, you can use the installer found here (check that it is up to date though)::
 
-	python setup.py install
+    `Windows installer <http://www.timmahrt.com/python_installers>`_
+
+Otherwise, to manually install, after downloading, from a command-line shell, navigate to the directory containing setup.py and type::
+
+    python setup.py install
 
 If python is not in your path, you'll need to enter the full path e.g.::
 
@@ -111,7 +117,7 @@ and another::
     >> [["''"], ['n', '@'], ['th', 'r']]
     
 
-Please see \\test for example usage
+Please see \\examples for example usage
 
 
 Citing pysle
