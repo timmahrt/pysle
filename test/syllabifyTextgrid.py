@@ -29,7 +29,8 @@ isleDict = isletool.LexicalTool(islevPath)
 syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",
                                           skipLabelList=["",])
 tg.addTier(syllableTG.tierDict["syllable"])
-tg.addTier(syllableTG.tierDict["tonic"])
+tg.addTier(syllableTG.tierDict["tonicSyllable"])
+tg.addTier(syllableTG.tierDict["tonicPhone"])
 
 
 

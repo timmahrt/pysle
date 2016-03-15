@@ -43,6 +43,10 @@ What can you do with this library?
 Major revisions
 ================
 
+Ver 1.3 (March 15, 2016)
+
+- added indicies for stressed vowels
+
 Ver 1.2 (June 20, 2015)
 
 - Python 3.x support
@@ -82,7 +86,7 @@ Installation
 If you on Windows, you can use the installer found here (check that it is up to date though)
 `Windows installer <http://www.timmahrt.com/python_installers>`_
 
-Otherwise, to manually install, after downloading, from a command-line shell, navigate to the directory containing setup.py and type::
+Otherwise, to manually install, after downloading the source from github, from a command-line shell, navigate to the directory containing setup.py and type::
 
     python setup.py install
 

@@ -39,7 +39,8 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         skipLabelList = []
     
     syllableEntryList = []
-    tonicEntryList = []
+    tonicSEntryList = []
+    tonicPEntryList = []
     for start, stop, word in wordTier.entryList:
         
         if word in skipLabelList:
@@ -63,8 +64,20 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             continue
         
         syllableList = returnList[1]
-        stressIndexList = returnList[3]
-        
+        stressedSyllableIndexList = returnList[3]
+        stressedPhoneIndexList = returnList[4]
+        flattenedPhoneIndexList = returnList[5]
+
+        try:
+            stressI = stressedSyllableIndexList[0]
+            stressJ = stressedPhoneIndexList[0]
+        except IndexError:
+            stressI = None  # Function word probably
+            stressJ = None  #
+            
+        if stressI is not None:
+            syllableList[stressI][stressJ] += "'"
+
         i = 0
 #         print(syllableList)
         for k, syllable in enumerate(syllableList):
@@ -84,24 +97,28 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         
             syllableEntryList.append((syllableStart, syllableEnd, label))
             
-            # Create the tonic tier entry
-            try:
-                stressIndex = stressIndexList[0]
-            except IndexError:
-                stressIndex = None  # Function word probably
-                
-            tonicLabel = ''
-            if k == stressIndex:
-                tonicLabel = 'T'
-                
-            tonicEntryList.append((syllableStart, syllableEnd, tonicLabel))
+            # Create the tonic syllable tier entry
+            if k == stressI:
+                tonicSEntryList.append((syllableStart, syllableEnd, 'T'))
+            
+            # Create the tonic phone tier entry
+            if k == stressI:
+                syllablePhoneTier = phoneTier.crop(syllableStart, syllableEnd,
+                                                   True, False)[0]
+            
+                phoneList = [entry for entry in syllablePhoneTier.entryList
+                             if entry[2] != '']
+                phoneStart, phoneEnd = phoneList[stressJ][:2]
+                tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
     
     # Create a textgrid with the two syllable-level tiers
     syllableTier = tgio.IntervalTier("syllable", syllableEntryList)
-    tonicTier = tgio.IntervalTier('tonic', tonicEntryList)
+    tonicSTier = tgio.IntervalTier('tonicSyllable', tonicSEntryList)
+    tonicPTier = tgio.IntervalTier('tonicPhone', tonicPEntryList)
     
     syllableTG = tgio.Textgrid()
     syllableTG.addTier(syllableTier)
-    syllableTG.addTier(tonicTier)
+    syllableTG.addTier(tonicSTier)
+    syllableTG.addTier(tonicPTier)
 
     return syllableTG

@@ -69,21 +69,22 @@ def _parsePronunciation(pronunciationStr):
     secondary stress locations
     '''
     syllableTxt = pronunciationStr.split("#")[1].strip()
-    syllableList = [x for x in syllableTxt.split(' . ')]
+    syllableList = [x.split() for x in syllableTxt.split(' . ')]
     
     # Find stress
-    stressList = []
+    stressedSyllableList = []
+    stressedPhoneList = []
     for i, syllable in enumerate(syllableList):
-        # Primary stress
-        if "'" in syllable:
-            stressList.insert(0, i)
-        # Secondary stress
-        elif '"' in syllable:
-            stressList.append(i)
+        for j, phone in enumerate(syllable):
+            if "'" in phone:
+                stressedSyllableList.insert(0, i)
+                stressedPhoneList.insert(0, j)
+                break
+            elif '"' in phone:
+                stressedSyllableList.insert(i)
+                stressedPhoneList.insert(j)
     
-    syllableList = [x.split(" ") for x in syllableList]
-    
-    return syllableList, stressList
+    return syllableList, stressedSyllableList, stressedPhoneList
             
             
 def getNumPhones(isleDict, label, maxFlag):

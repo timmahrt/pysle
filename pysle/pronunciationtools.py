@@ -275,13 +275,25 @@ def findBestSyllabification(isleDict, wordText, actualPronunciationList):
     alignedPhoneList = alignedAPronList[bestIndex]
     alignedSyllables = alignedSyllableList[bestIndex]
     syllabification = isleWordList[bestIndex][0]
-    stressedIndex = isleWordList[bestIndex][1]
+    stressedSyllableIndexList = isleWordList[bestIndex][1]
+    stressedPhoneIndexList = isleWordList[bestIndex][2]
     
     stressedSyllable, syllableList = _syllabifyPhones(alignedPhoneList,
                                                       alignedSyllables,
-                                                      stressedIndex)
+                                                      stressedSyllableIndexList)
     
-    return stressedSyllable, syllableList, syllabification, stressedIndex
+    # Count the index of the stressed phones, if the stress list has
+    # become flattened (no syllable information)
+    flattenedStressIndexList = []
+    for i, j in zip(stressedSyllableIndexList, stressedPhoneIndexList):
+        k = j
+        for l in range(i):
+            k += len(syllableList[l])
+        flattenedStressIndexList.append(k)
+    
+    return (stressedSyllable, syllableList, syllabification,
+            stressedSyllableIndexList, stressedPhoneIndexList,
+            flattenedStressIndexList)
 
 
 def findClosestPronunciation(isleDict, wordText, aPron):
