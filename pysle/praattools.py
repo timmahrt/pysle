@@ -114,7 +114,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
     # Create a textgrid with the two syllable-level tiers
     syllableTier = tgio.IntervalTier("syllable", syllableEntryList)
     tonicSTier = tgio.IntervalTier('tonicSyllable', tonicSEntryList)
-    tonicPTier = tgio.IntervalTier('tonicPhone', tonicPEntryList)
+    tonicPTier = tgio.IntervalTier('tonicVowel', tonicPEntryList)
     
     syllableTG = tgio.Textgrid()
     syllableTG.addTier(syllableTier)

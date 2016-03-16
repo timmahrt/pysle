@@ -30,7 +30,7 @@ syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",
                                           skipLabelList=["",])
 tg.addTier(syllableTG.tierDict["syllable"])
 tg.addTier(syllableTG.tierDict["tonicSyllable"])
-tg.addTier(syllableTG.tierDict["tonicPhone"])
+tg.addTier(syllableTG.tierDict["tonicVowel"])
 
 
 
