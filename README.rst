@@ -139,7 +139,7 @@ Acknowledgements
 
 Development of Pysle was possible thanks to NSF grant **IIS 07-03624**
 to Jennifer Cole and Mark Hasegawa-Johnson, NSF grant **BCS 12-51343**
-to Jennifer Cole, José Hualde, and Caroline Smith, and
-to the A*MIDEX project (n° **ANR-11-IDEX-0001-02**) to James Sneed German
-funded by the Investissements d’Avenir French Government program, managed
+to Jennifer Cole, JosÃ© Hualde, and Caroline Smith, and
+to the A*MIDEX project (nÂ° **ANR-11-IDEX-0001-02**) to James Sneed German
+funded by the Investissements d'Avenir French Government program, managed
 by the French National Research Agency (ANR).
