@@ -4,6 +4,7 @@ Created on Oct 11, 2012
 @author: timmahrt
 '''
 
+import io
 
 vowelList = ['a', '@', 'e', 'i', 'o', 'u', '^', '&', '>', ]
 
@@ -30,7 +31,8 @@ class LexicalTool():
         Builds the isle textfile into a dictionary for fast searching
         '''
         lexDict = {}
-        wordList = [line.rstrip('\n') for line in open(self.islePath, "rU")]
+        with io.open(self.islePath, "r") as fd:
+            wordList = [line.rstrip('\n') for line in fd]
             
         for row in wordList:
             word, pronunciation = row.split(" ", 1)
