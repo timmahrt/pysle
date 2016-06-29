@@ -31,7 +31,7 @@ class LexicalTool():
         Builds the isle textfile into a dictionary for fast searching
         '''
         lexDict = {}
-        with io.open(self.islePath, "r") as fd:
+        with io.open(self.islePath, "r", encoding='utf-8') as fd:
             wordList = [line.rstrip('\n') for line in fd]
             
         for row in wordList:
