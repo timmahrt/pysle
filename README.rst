@@ -39,7 +39,7 @@ What can you do with this library?
   
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
 
-- search for words based on pronunciation
+- search for words based on pronunciation::
 
     e.g. Words that start with a sound, or have a sound word medially, or 
     in stressed vowel position, etc.
