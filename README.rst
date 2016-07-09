@@ -39,9 +39,19 @@ What can you do with this library?
   
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
 
+- search for words based on pronunciation
 
+    e.g. Words that start with a sound, or have a sound word medially, or 
+    in stressed vowel position, etc.
+    
+    see /tests/dictionary_search.py
+    
 Major revisions
 ================
+
+Ver 1.4 (July 9, 2016)
+
+- added search functionality
 
 Ver 1.3 (March 15, 2016)
 

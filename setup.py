@@ -8,7 +8,7 @@ Created on Oct 15, 2014
 import codecs
 from distutils.core import setup
 setup(name='pysle',
-      version='1.3.0',
+      version='1.4.0',
       author='Tim Mahrt',
       author_email='timmahrt@gmail.com',
       package_dir={'pysle':'pysle'},
