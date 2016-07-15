@@ -31,7 +31,7 @@ What can you do with this library?
 - map an actual pronunciation to a dictionary pronunciation (can be used 
   to automatically find speech errors)::
   
-    pysle.pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['kh', 'ae',]) 
+    pysle.pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['k', 'æ',])
 
 - automatically syllabify a praat textgrid containing words and phones 
   (e.g. force-aligned text) -- requires my 
@@ -52,6 +52,9 @@ Major revisions
 Ver 1.4 (July 9, 2016)
 
 - added search functionality
+
+- ported code to use the new unicode IPA-based isledict
+  (the old one was ascii)
 
 Ver 1.3 (March 15, 2016)
 
@@ -74,12 +77,14 @@ Requirements
 ================
 
 - Before you use this library (before or after installing it) you will need
-  to download the ILSEX dictionary.  It can be downloaded here:
+  to download the ILSEX dictionary.  It can be downloaded here under the
+  section 'English' linked under the text 'English Pronlex'
+  (with a file name of ISLEdict.txt):
 
-  `ISLEX project page <http://www.isle.illinois.edu/sst/data/dict/>`_
+  `ISLEX project page <http://isle.illinois.edu/sst/data/g2ps/>`_
 
   `Direct link to the ISLEX file used in this project
-  <http://www.isle.illinois.edu/sst/data/dict/islex/islev2.txt>`_ (islev2.txt)
+  <http://isle.illinois.edu/sst/data/g2ps/English/ISLEdict.txt>`_ (ISLEdict.txt)
 
 - ``Python 2.7.*`` or above
 
@@ -113,7 +118,7 @@ Here is a typical common usage::
     from pysle import isle
     isleDict = isle.LexicalTool('C:\islev2.dict')
     print isleDict.lookup('catatonic')[0] # Get the first pronunciation
-    >> [['kh', '@,'], ['t_(', '&'], ['th', "A'"], ['n', 'I', 'kh']] [2]
+    >> [['k', 'ˌæ'], ['t˺', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']] [2, 0]
 
 and another::
 
@@ -121,7 +126,7 @@ and another::
     from psyle import pronunciationTools
     
     searchWord = 'another'
-    anotherPhoneList = ['n', '@', 'th', 'r'] # Actually produced
+    anotherPhoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
 
     returnList = pronunciationTools.findBestSyllabification(isleDict, 
                                                             searchWord, 
@@ -138,7 +143,7 @@ Citing pysle
 
 Pysle is general purpose coding and doesn't need to be cited
 (you should cite the
-`ISLEX project <http://www.isle.illinois.edu/sst/data/dict/islex/index.shtml>`_
+`ISLEX project <http://isle.illinois.edu/sst/data/g2ps/>`_
 instead) but if you would like to, it can be cited like so:
 
 Tim Mahrt. Pysle. https://github.com/timmahrt/pysle, 2016.

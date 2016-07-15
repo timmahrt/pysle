@@ -1,3 +1,4 @@
+#encoding: utf-8
 '''
 Created on Oct 15, 2014
 
@@ -151,7 +152,7 @@ def _findBestPronunciation(isleDict, wordText, aPron):
         hasStress = False
         for syllable in syllableList:
             for phone in syllable:
-                hasStress = "'" in phone or hasStress
+                hasStress = u"ˈ" in phone or hasStress
         
         if hasStress:
             withStress.append(i)

@@ -1,3 +1,4 @@
+#encoding: utf-8
 '''
 Created on Oct 22, 2014
 
@@ -12,16 +13,18 @@ from pysle import pronunciationtools
 # In this first example we look up the syllabification of a word and get it's 
 # stress information.
 
-searchWord = 'pumpkins'
-isleDict = isletool.LexicalTool('islev2.txt')
+searchWord = 'catatonic'
+isleDict = isletool.LexicalTool('ISLEdict.txt')
 lookupResults = isleDict.lookup(searchWord)
 
 firstEntry = lookupResults[0]
 firstSyllableList = firstEntry[0] 
+firstSyllableList = ".".join([u" ".join(syllable) for syllable in firstSyllableList])
 firstStressList = firstEntry[1]
 
 print(searchWord)
-print(firstSyllableList, firstStressList) # 3rd syllable carries stress
+print(firstSyllableList)
+print(firstStressList) # 3rd syllable carries stress
 
 
 # Here we determine the syllabification of a word, as it was said.
@@ -43,4 +46,6 @@ print(anotherPhoneList)
 print(stressedSyllableIndexList) # We can see the first syllable was elided
 print(stressedPhoneIndexList)
 print(flattenedStressIndexList)
+print(syllableList)
+print(syllabification)
 

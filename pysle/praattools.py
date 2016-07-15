@@ -1,3 +1,4 @@
+#encoding: utf-8
 '''
 Created on Oct 22, 2014
 
@@ -76,7 +77,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             stressJ = None  #
             
         if stressI is not None:
-            syllableList[stressI][stressJ] += "'"
+            syllableList[stressI][stressJ] += u"ˈ"
 
         i = 0
 #         print(syllableList)

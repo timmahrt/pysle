@@ -1,3 +1,4 @@
+#encoding: utf-8
 '''
 Created on Oct 11, 2012
 
@@ -7,14 +8,18 @@ Created on Oct 11, 2012
 import io
 import re
 
-charList = ['#', '&', '&r', '3r', '9r', '>', '>i', '@', 'A', 'D', 'E',
-            'I', 'N', 'S', 'T', 'U', 'Z', '^', 'a', 'aI', 'aU', 'b',
-            'd', 'dZ', 'd_(', 'e', 'ei', 'f', 'g', 'h', 'i', 'i:',
-            'j', 'k', 'kh', 'l', 'l=', 'm', 'n', 'n=', 'oU', 'p',
-            'ph', 'r', 's', 'sh', 't', 'tS', 't_(', 'th', 'u',
-            'v', 'w', 'y', 'z']
 
-vowelList = ['a', '@', 'e', 'i', 'o', 'u', '^', '&', '>', ]
+charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
+            u'h', u'i', u'j', u'k', u'l', u'm', u'n', u'oʊ', u'p',
+            u'r', u's', u't', u'tʃ', u'u', u'v', u'w', u'z', u'æ',
+            u'ð', u'ŋ', u'ɑ', u'ɑɪ', u'ɔ', u'ɔi', u'ə', u'ɚ', u'ɛ', u'ɝ',
+            u'ɪ', u'ɵ', u'ɹ', u'ʃ', u'ʊ', u'ʒ', u'æ', u'ʌ', ]
+
+diacriticList = [u'˺', u'ˌ', u'̩', u'̃', ]
+
+vowelList = [u'aʊ', u'ei', u'i', u'oʊ', u'u', u'æ',
+             u'ɑ', u'ɑɪ', u'ɔ', u'ɔi', u'ə', u'ɚ', u'ɛ', u'ɝ',
+             u'ɪ', u'ʊ', u'ʌ', ]
 
 
 def isVowel(char):
@@ -88,6 +93,108 @@ class LexicalTool():
                       multiword=multiword)
 
 
+def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
+                     spanSyllable='ok', stressedSyllable='ok'):
+    '''
+    Prepares a user's RE string for a search
+    '''
+    
+    # Protect sounds that are two characters
+    # After this we can assume that each character represents a sound
+    # (We'll revert back when we're done processing the RE)
+    replList = ((u'ei', u'1'), (u'tʃ', u'2'), (u'oʊ', u'3'),
+                (u'dʒ', u'4'), (u'aʊ', u'5'), (u'ɑɪ', u'6'),
+                (u'ɔi', u'7'))
+    
+    for charA, charB in replList:
+        matchStr = matchStr.replace(charA, charB)
+    
+    # Characters to check between all other characters
+    # Don't check between all other characters if the character is already
+    # in the search string or
+    interleaveStr = None
+    stressOpt = (stressedSyllable == 'ok' or stressedSyllable == 'only')
+    spanOpt = (spanSyllable == 'ok' or spanSyllable == 'only')
+    if stressOpt and spanOpt:
+        interleaveStr = u"\.?ˈ?"
+    elif stressOpt:
+        interleaveStr = u"ˈ?"
+    elif spanOpt:
+        interleaveStr = u"\.?"
+    
+    if interleaveStr is not None:
+        matchStr = interleaveStr.join(matchStr)
+    
+    # Setting search boundaries
+    # We search on '[^\.#]' and not '.' so that the search doesn't span
+    # multiple syllables or words
+    if wordInitial == 'only':
+        matchStr = u'#' + matchStr
+    elif wordInitial == 'no':
+        # Match the closest preceeding syllable.  If there is none, look
+        # for word boundary plus at least one other character
+        matchStr = u'(?:\.[^\.#]*?|#[^\.#]+?)' + matchStr
+    else:
+        matchStr = u'[#\.][^\.#]*?' + matchStr
+    
+    if wordFinal == 'only':
+        matchStr = matchStr + u'#'
+    elif wordFinal == 'no':
+        matchStr = matchStr + u"(?:[^\.#]*?\.|[^\.#]+?#)"
+    else:
+        matchStr = matchStr + u'[^\.#]*?[#\.]'
+    
+    # For sounds that are designated two characters, prevent
+    # detecting those sounds if the user wanted a sound
+    # designated by one of the contained characters
+    for charA, charB in [(u'e', u'i'), (u't', u'ʃ'), (u'o', u'ʊ'),
+                         (u'd', u'ʒ'), (u'a', u'ʊ'), (u'ɑ' u'ɪ'),
+                         (u'ɔ', u'i'), ]:
+        
+        # Forward search ('a' and not 'ab')
+        startI = 0
+        while True:
+            try:
+                i = matchStr.index(charA, startI)
+            except ValueError:
+                break
+            if matchStr[i + 1] != charB:
+                forwardStr = u'(?!%s)' % charB
+                matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]
+                startI = i + 1 + len(forwardStr)
+        
+        # Backward search ('b' and not 'ab')
+        startI = 0
+        while True:
+            try:
+                i = matchStr.index(charB, startI)
+            except ValueError:
+                break
+            if matchStr[i - 1] != charA:
+                backStr = u'(?<!%s)' % charA
+                matchStr = matchStr[:i] + backStr + matchStr[i:]
+                startI = i + 1 + len(backStr)
+    
+    # Revert the special sounds back from 1 character to 2 characters
+    for charA, charB in replList:
+        matchStr = matchStr.replace(charB, charA)
+
+    # Replace special characters
+    replDict = {"D": u"[tdsz]",  # dentals
+                "F": u"[ʃʒfvszɵðh]",  # fricatives
+                "S": u"[pbtdkg]",  # stops
+                "N": u"[nmŋ]",  # nasals
+                "R": u"[rɝɚ]",  # rhotics
+                "V": u"(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?",  # vowels
+                "B": u"\.",  # syllable boundary
+                }
+
+    for char, replStr in replDict.items():
+        matchStr = matchStr.replace(char, replStr)
+
+    return matchStr
+
+
 def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
            wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
            multiword='ok'):
@@ -107,51 +214,11 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     Regular expression syntax applies, so if you wanted to search for any
     word ending with a vowel or rhotic, matchStr = '(?:VR)#'
     '''
-    
-    # Characters to check between all other characters
-    # Don't check between all other characters if the character is already
-    # in the search string or
-    interleaveStr = None
-    stressOpt = (stressedSyllable == 'ok' or stressedSyllable == 'only')
-    spanOpt = (spanSyllable == 'ok' or spanSyllable == 'only')
-    if stressOpt and spanOpt:
-        interleaveStr = "\.?'?"
-    elif stressOpt:
-        interleaveStr = "'?"
-    elif spanOpt:
-        interleaveStr = "\.?"
-    
-    if interleaveStr is not None:
-        matchStr = interleaveStr.join(matchStr)
-    
-    # Setting search boundaries
-    # We search on '[^\.#]' and not '.' so that the search doesn't span
-    # multiple syllables or words
-    if wordInitial == 'only':
-        matchStr = '#' + matchStr
-    elif wordInitial == 'no':
-        # Match the closest preceeding syllable.  If there is none, look
-        # for word boundary plus at least one other character
-        matchStr = '(?:\.[^\.#]*?|#[^\.#]+?)' + matchStr
-    else:
-        matchStr = '[#\.][^\.#]*?' + matchStr
-    
-    if wordFinal == 'only':
-        matchStr = matchStr + '#'
-    elif wordFinal == 'no':
-        matchStr = matchStr + "(?:[^\.#]*?\.|[^\.#]+?#)"
-    else:
-        matchStr = matchStr + '[^\.#]*?[#\.]'
-    
-    # Replace special characters
-    replDict = {"V": "(?:aI|aU|ei|oU|[AEIaeiu]):?",
-                "R": "[&39]?r",
-                "B": "\."}
-    
-    for char, replStr in replDict.items():
-        matchStr = matchStr.replace(char, replStr)
-    
     # Run search for words
+    
+    matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
+                                spanSyllable, stressedSyllable)
+    
     compiledRE = re.compile(matchStr)
     retList = []
     for word, pronList in searchList:
@@ -173,10 +240,10 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
             matchList = compiledRE.findall(searchPron)
             if len(matchList) > 0:
                 if stressedSyllable == 'only':
-                    if all(["'" not in match for match in matchList]):
+                    if all([u"ˈ" not in match for match in matchList]):
                         continue
                 if stressedSyllable == 'no':
-                    if all(["'" in match for match in matchList]):
+                    if all([u"ˈ" in match for match in matchList]):
                         continue
                 
                 # For syllable spanning, we check if there is a syllable
@@ -211,11 +278,11 @@ def _parsePronunciation(pronunciationStr):
     stressedPhoneList = []
     for i, syllable in enumerate(syllableList):
         for j, phone in enumerate(syllable):
-            if "'" in phone:
+            if u"ˈ" in phone:
                 stressedSyllableList.insert(0, i)
                 stressedPhoneList.insert(0, j)
                 break
-            elif '"' in phone:
+            elif u'ˌ' in phone:
                 stressedSyllableList.insert(i)
                 stressedPhoneList.insert(j)
     
