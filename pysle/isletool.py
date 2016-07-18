@@ -102,9 +102,23 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     # Protect sounds that are two characters
     # After this we can assume that each character represents a sound
     # (We'll revert back when we're done processing the RE)
-    replList = ((u'ei', u'1'), (u'tʃ', u'2'), (u'oʊ', u'3'),
-                (u'dʒ', u'4'), (u'aʊ', u'5'), (u'ɑɪ', u'6'),
-                (u'ɔi', u'7'))
+    replList = [(u'ei', u'9'), (u'tʃ', u'='), (u'oʊ', u'~'),
+                (u'dʒ', u'@'), (u'aʊ', u'%'), (u'ɑɪ', u'&'),
+                (u'ɔi', u'$')]
+
+    # Add to the replList
+    currentReplNum = 0
+    startI = 0
+    for left, right in (('(', ')'), ('[', ']')):
+        while True:
+            try:
+                i = matchStr.index(left, startI)
+            except ValueError:
+                break
+            j = matchStr.index(right, i) + 1
+            replList.append((matchStr[i:j], str(currentReplNum)))
+            currentReplNum += 1
+            startI = j
     
     for charA, charB in replList:
         matchStr = matchStr.replace(charA, charB)
