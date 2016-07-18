@@ -147,11 +147,11 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     # For sounds that are designated two characters, prevent
     # detecting those sounds if the user wanted a sound
     # designated by one of the contained characters
-    for charA, charB in [(u'e', u'i'), (u't', u'ʃ'), (u'o', u'ʊ'),
-                         (u'd', u'ʒ'), (u'a', u'ʊ'), (u'ɑ' u'ɪ'),
-                         (u'ɔ', u'i'), ]:
-        
-        # Forward search ('a' and not 'ab')
+    
+    # Forward search ('a' and not 'ab')
+    insertList = []
+    for charA, charB in [(u'e', u'i'), (u't', u'ʃ'), (u'd', u'ʒ'),
+                         (u'o', u'ʊ'), (u'a', u'ʊ|ɪ'), (u'ɔ', u'i'), ]:
         startI = 0
         while True:
             try:
@@ -160,10 +160,13 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
                 break
             if matchStr[i + 1] != charB:
                 forwardStr = u'(?!%s)' % charB
-                matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]
+#                 matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]
                 startI = i + 1 + len(forwardStr)
+                insertList.append((i + 1, forwardStr))
         
-        # Backward search ('b' and not 'ab')
+    # Backward search ('b' and not 'ab')
+    for charA, charB in [(u't', u'ʃ'), (u'd', u'ʒ'),
+                         (u'a|o', u'ʊ'), (u'e|ɔ', u'i'), (u'ɑ' u'ɪ'), ]:
         startI = 0
         while True:
             try:
@@ -172,8 +175,13 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
                 break
             if matchStr[i - 1] != charA:
                 backStr = u'(?<!%s)' % charA
-                matchStr = matchStr[:i] + backStr + matchStr[i:]
+#                 matchStr = matchStr[:i] + backStr + matchStr[i:]
                 startI = i + 1 + len(backStr)
+                insertList.append((i, backStr))
+                
+    insertList.sort()
+    for i, insertStr in insertList[::-1]:
+        matchStr = matchStr[:i] + insertStr + matchStr[i:]
     
     # Revert the special sounds back from 1 character to 2 characters
     for charA, charB in replList:
