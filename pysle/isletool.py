@@ -227,14 +227,15 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     can take three different values: 'ok', 'only', or 'no'.
     
     Special search characters:
-    'V' - any vowel
-    'R' - any rhotic
+    'D' - any dental; 'F' - any fricative; 'S' - any stop
+    'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
     '#' - word boundary
     'B' - syllable boundary
     '.' - anything
     
+    For advanced queries:
     Regular expression syntax applies, so if you wanted to search for any
-    word ending with a vowel or rhotic, matchStr = '(?:VR)#'
+    word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.
     '''
     # Run search for words
     
@@ -247,6 +248,12 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
         newPronList = []
         for pron in pronList:
             searchPron = pron.replace(",", "").replace(" ", "")
+            
+            # Ignore diacritics for now:
+            for diacritic in diacriticList:
+                if diacritic not in matchStr:
+                    searchPron = searchPron.replace(diacritic, "")
+            
             if numSyllables is not None:
                 if numSyllables != searchPron.count('.') + 1:
                     continue
