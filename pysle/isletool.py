@@ -202,9 +202,9 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
         matchStr = matchStr.replace(charB, charA)
 
     # Replace special characters
-    replDict = {"D": u"[tdsz]",  # dentals
+    replDict = {"D": u"(?:t(?!ʃ)|d(?!ʒ)|[sz])",  # dentals
                 "F": u"[ʃʒfvszɵðh]",  # fricatives
-                "S": u"[pbtdkg]",  # stops
+                "S": u"(?:t(?!ʃ)|d(?!ʒ)|[pbkg])",  # stops
                 "N": u"[nmŋ]",  # nasals
                 "R": u"[rɝɚ]",  # rhotics
                 "V": u"(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?",  # vowels
