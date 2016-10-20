@@ -3,6 +3,12 @@
 pysle
 ---------
 
+.. image:: https://travis-ci.org/timmahrt/pysle.svg?branch=master
+    :target: https://travis-ci.org/timmahrt/pysle
+
+.. image:: https://coveralls.io/repos/github/timmahrt/pysle/badge.svg?branch=master
+    :target: https://coveralls.io/github/timmahrt/pysle?branch=master
+
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?
    :target: http://opensource.org/licenses/MIT
 
@@ -55,6 +61,9 @@ Ver 1.4 (July 9, 2016)
 
 - ported code to use the new unicode IPA-based isledict
   (the old one was ascii)
+
+- (Oct 20, 2016) Integration tests added; using Travis CI and Coveralls
+  for build automation.  No new functionality added.
 
 Ver 1.3 (March 15, 2016)
 
