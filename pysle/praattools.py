@@ -33,6 +33,9 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
     Returns a textgrid with only two tiers containing syllable information
     (syllabification of the phone tier and a tier marking word-stress).
     '''
+    minT = tg.minTimestamp
+    maxT = tg.maxTimestamp
+    
     wordTier = tg.tierDict[wordTierName]
     phoneTier = tg.tierDict[phoneTierName]
     
@@ -113,9 +116,12 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
     
     # Create a textgrid with the two syllable-level tiers
-    syllableTier = tgio.IntervalTier("syllable", syllableEntryList)
-    tonicSTier = tgio.IntervalTier('tonicSyllable', tonicSEntryList)
-    tonicPTier = tgio.IntervalTier('tonicVowel', tonicPEntryList)
+    syllableTier = tgio.IntervalTier('syllable', syllableEntryList,
+                                     minT, maxT)
+    tonicSTier = tgio.IntervalTier('tonicSyllable', tonicSEntryList,
+                                   minT, maxT)
+    tonicPTier = tgio.IntervalTier('tonicVowel', tonicPEntryList,
+                                   minT, maxT)
     
     syllableTG = tgio.Textgrid()
     syllableTG.addTier(syllableTier)
