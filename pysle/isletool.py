@@ -312,8 +312,8 @@ def _parsePronunciation(pronunciationStr):
                 stressedPhoneList.insert(0, j)
                 break
             elif u'ˌ' in phone:
-                stressedSyllableList.insert(i)
-                stressedPhoneList.insert(j)
+                stressedSyllableList.append(i)
+                stressedPhoneList.append(j)
     
     return syllableList, stressedSyllableList, stressedPhoneList
             
