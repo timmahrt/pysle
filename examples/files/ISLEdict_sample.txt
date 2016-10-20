@@ -1,0 +1,19 @@
+another(dt,nn,prp) # ə . n ˈʌ . ð ɚ #
+another(dt,nn,prp) # ə . n ˈʌ . ð ə ɹ #
+cadets: # k ə . d ˈɛ̃ t s #
+catatonia() # k ˌæ . t˺ ə . t ˈoʊ . n i . ə #
+catatonic(jj) # k ˌæ . t˺ ə . t ˈɑ . n ɪ k #
+catatonic_schizophrenia() # k ˌæ . t˺ ə . t ˈɑ . n ɪ k # s k ˌɪ . t s ə . f ɹ ˈi . n i . ə #
+conduce: # k n̩ . d ˈu s #
+innate(jj) # ɪ . n ˈei t #
+labyrinth: # l ˈæ . b ɚ . ˌɪ n ɵ #,# l ˈæ . b ə . ɹ ɪ n ɵ #
+outfielders: # ˈaʊ t . f ˌi l . d ɚ z #
+parley(nn,nnp_boyname_0.000,vb) # p ˈɑ ɹ . l i #
+porcupines(+porcupine+s,nns) # p ˈɔ ɹ . k j ə . p ˌɑɪ n z #
+pumpkins(+pumpkin+s,nns) # p ˈʌ m . k n̩ z #
+pumpkins(+pumpkin+s,nns) # p ˈʌ m p . k n̩ z #
+pumpkinseed() # p ˈʌ m p . k ɪ n . s ˌi d #
+synth: # s ɪ n ɵ #
+vandall: # v ˌæ n . d ˈɔ l #
+with(in,nnp,rp) # w ɪ ð #
+with(in,nnp,rp) # w ɪ ɵ #

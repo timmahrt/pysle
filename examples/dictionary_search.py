@@ -4,28 +4,32 @@ Created on July 08, 2016
 
 @author: tmahrt
 
-Basic examples of common usage.
+Examples of how to use pysle's regular-expression-based
+search functionality.
 '''
 
+from os.path import join
 import random
 
 from pysle import isletool
 
-tmpPath = r"C:\Users\Tim\Dropbox\workspace\pysle\test\ISLEdict.txt"
-isleDict = isletool.LexicalTool(tmpPath)
+root = join('.', 'files')
+isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
+
 
 def printOutMatches(matchStr, numSyllables=None, wordInitial='ok',
-                    wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
-                    multiword='ok', numMatches=None, matchList=None):
+                    wordFinal='ok', spanSyllable='ok',
+                    stressedSyllable='ok', multiword='ok',
+                    numMatches=None, matchList=None):
 
     if matchList is None:
         matchList = isleDict.search(matchStr, numSyllables, wordInitial,
-                                    wordFinal, spanSyllable, stressedSyllable,
-                                    multiword)
+                                    wordFinal, spanSyllable,
+                                    stressedSyllable, multiword)
     else:
-        matchList = isletool.search(matchList, matchStr, numSyllables, wordInitial,
-                                    wordFinal, spanSyllable, stressedSyllable,
-                                    multiword)
+        matchList = isletool.search(matchList, matchStr, numSyllables,
+                                    wordInitial, wordFinal, spanSyllable,
+                                    stressedSyllable, multiword)
     
     if numMatches is not None and len(matchList) > numMatches:
         random.shuffle(matchList)
@@ -39,7 +43,8 @@ def printOutMatches(matchStr, numSyllables=None, wordInitial='ok',
     
     return matchList
 
-# 2-syllable words with a stressed syllable containing 'dV' but not word initially
+# 2-syllable words with a stressed syllable containing 'dV'
+# but not word initially
 printOutMatches("dV", stressedSyllable="only", spanSyllable="no",
                 wordInitial="no", numSyllables=2, numMatches=10)
  
