@@ -56,3 +56,21 @@ print(flattenedStressIndexList)
 print(syllableList)
 print(syllabification)
 
+
+# In the third example, we probe what words are in the dictionary
+print('-'*50)
+
+wordList = ["another", "banana", "floplot"]
+oodWordList = isletool.findOODWords(isleDict, wordList)
+print("The following words are not in the dictionary")
+print(oodWordList)
+
+
+# In the forth example, we see how many phones are in a pronunciation
+print('-'*50)
+syllableCount, phoneCount = isletool.getNumPhones(isleDict,
+                                                  "catatonic",
+                                                  True)
+print("%s: %d phones, %d syllables" % ("catatonic",
+                                       phoneCount,
+                                       syllableCount))

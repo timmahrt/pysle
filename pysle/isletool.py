@@ -318,41 +318,41 @@ def _parsePronunciation(pronunciationStr):
     return syllableList, stressedSyllableList, stressedPhoneList
             
             
-def getNumPhones(isleDict, label, maxFlag):
+def getNumPhones(isleDict, word, maxFlag):
     '''
+    Get the number of syllables and phones in this word
     
     If maxFlag=True, use the longest pronunciation.  Otherwise, take the
     average length.
     '''
     phoneCount = 0
     syllableCount = 0
-    for word in label.split():
 
-        phoneListOfLists = isleDict.lookup(word)
-        
-        syllableCountList = []
-        for row in phoneListOfLists:
-            syllableList = row[0]
-            syllableCountList.append(len(syllableList))
-        
-        # In ISLE, there can be multiple pronunciations for each word
-        # as we have no reason to believe one pronunciation is more
-        # likely than another, we take the average of all of them
-        phoneCountList = []
-        for row in phoneListOfLists:
-            syllableList = row[0]
-            phoneCountList.append(len([phon for phoneList in syllableList for
-                                       phon in phoneList]))
-        
-        # The average number of phones for all possible pronunciations
-        #    of this word
-        if maxFlag is True:
-            syllableCount += max(syllableCountList)
-            phoneCount += max(phoneCountList)
-        else:
-            syllableCount += (sum(syllableCountList) /
-                              float(len(syllableCountList)))
-            phoneCount += sum(phoneCountList) / float(len(phoneCountList))
+    phoneListOfLists = isleDict.lookup(word)
+    
+    syllableCountList = []
+    for row in phoneListOfLists:
+        syllableList = row[0]
+        syllableCountList.append(len(syllableList))
+    
+    # In ISLE, there can be multiple pronunciations for each word
+    # as we have no reason to believe one pronunciation is more
+    # likely than another, we take the average of all of them
+    phoneCountList = []
+    for row in phoneListOfLists:
+        syllableList = row[0]
+        phoneCountList.append(len([phon for phoneList in syllableList for
+                                   phon in phoneList]))
+    
+    # The average number of phones for all possible pronunciations
+    #    of this word
+    if maxFlag is True:
+        syllableCount += max(syllableCountList)
+        phoneCount += max(phoneCountList)
+    else:
+        syllableCount += (sum(syllableCountList) /
+                          float(len(syllableCountList)))
+        phoneCount += sum(phoneCountList) / float(len(phoneCountList))
     
     return syllableCount, phoneCount
 
