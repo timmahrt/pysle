@@ -302,7 +302,6 @@ def _parsePronunciation(pronunciationStr):
     '''
     retList = []
     for syllableTxt in pronunciationStr.split("#"):
-        syllableTxt = syllableTxt.strip()
         if syllableTxt == "":
             continue
         syllableList = [x.split() for x in syllableTxt.split(' . ')]
