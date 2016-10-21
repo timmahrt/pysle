@@ -79,3 +79,12 @@ syllableCount, phoneCount = isletool.getNumPhones(isleDict,
 print("%s: %d phones, %d syllables" % ("catatonic",
                                        phoneCount,
                                        syllableCount))
+
+
+# In the fifth example, we try to find word pairs in the dictionary
+# Once, found, they could be fed into findBestSyllabification() for
+# example.
+sentenceList = ["another", "australian", "seal", "pumpkins", "parley"]
+retList = isletool.autopair(isleDict, sentenceList)[0]
+for sentence in retList:
+    print(sentence)

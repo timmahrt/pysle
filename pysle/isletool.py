@@ -378,3 +378,32 @@ def findOODWords(isleDict, wordList):
     oodList.sort()
     
     return oodList
+
+
+def autopair(isleDict, wordList):
+    '''
+    Tests whether adjacent words are OOD or not
+    
+    It returns complete wordLists with the matching words replaced.
+    Each match yields one sentence.
+    
+    e.g.
+    red ball chaser
+    would return
+    [[red_ball chaser], [red ball_chaser]], [0, 1]
+    
+    if 'red_ball' and 'ball_chaser' were both in the dictionary
+    '''
+    
+    newWordList = [("%s_%s" % (wordList[i], wordList[i + 1]), i)
+                   for i in range(0, len(wordList) - 1)]
+    
+    sentenceList = []
+    indexList = []
+    for word, i in newWordList:
+        if word in isleDict.data:
+            print word
+            sentenceList.append(wordList[:i] + [word, ] + wordList[i + 1:])
+            indexList.append(i)
+    
+    return sentenceList, indexList
