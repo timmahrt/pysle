@@ -402,7 +402,6 @@ def autopair(isleDict, wordList):
     indexList = []
     for word, i in newWordList:
         if word in isleDict.data:
-            print word
             sentenceList.append(wordList[:i] + [word, ] + wordList[i + 1:])
             indexList.append(i)
     
