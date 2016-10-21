@@ -80,7 +80,7 @@ class LexicalTool():
         else:
             pronList = [_parsePronunciation(pronunciationStr)
                         for pronunciationStr in pronList]
-            pronList = zip(*pronList)
+            pronList = list(zip(*pronList))
         
         return pronList
 
