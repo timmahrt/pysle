@@ -80,6 +80,7 @@ class LexicalTool():
         else:
             pronList = [_parsePronunciation(pronunciationStr)
                         for pronunciationStr in pronList]
+            pronList = zip(*pronList)
         
         return pronList
 
@@ -299,23 +300,29 @@ def _parsePronunciation(pronunciationStr):
     Returns the list of syllables and a list of primary and
     secondary stress locations
     '''
-    syllableTxt = pronunciationStr.split("#")[1].strip()
-    syllableList = [x.split() for x in syllableTxt.split(' . ')]
+    retList = []
+    for syllableTxt in pronunciationStr.split("#"):
+        syllableTxt = syllableTxt.strip()
+        if syllableTxt == "":
+            continue
+        syllableList = [x.split() for x in syllableTxt.split(' . ')]
+        
+        # Find stress
+        stressedSyllableList = []
+        stressedPhoneList = []
+        for i, syllable in enumerate(syllableList):
+            for j, phone in enumerate(syllable):
+                if u"ˈ" in phone:
+                    stressedSyllableList.insert(0, i)
+                    stressedPhoneList.insert(0, j)
+                    break
+                elif u'ˌ' in phone:
+                    stressedSyllableList.append(i)
+                    stressedPhoneList.append(j)
+        
+        retList.append((syllableList, stressedSyllableList, stressedPhoneList))
     
-    # Find stress
-    stressedSyllableList = []
-    stressedPhoneList = []
-    for i, syllable in enumerate(syllableList):
-        for j, phone in enumerate(syllable):
-            if u"ˈ" in phone:
-                stressedSyllableList.insert(0, i)
-                stressedPhoneList.insert(0, j)
-                break
-            elif u'ˌ' in phone:
-                stressedSyllableList.append(i)
-                stressedPhoneList.append(j)
-    
-    return syllableList, stressedSyllableList, stressedPhoneList
+    return retList
             
             
 def getNumPhones(isleDict, word, maxFlag):
@@ -327,20 +334,19 @@ def getNumPhones(isleDict, word, maxFlag):
     '''
     phoneCount = 0
     syllableCount = 0
-
-    phoneListOfLists = isleDict.lookup(word)
     
     syllableCountList = []
-    for row in phoneListOfLists:
-        syllableList = row[0]
-        syllableCountList.append(len(syllableList))
-    
-    # In ISLE, there can be multiple pronunciations for each word
-    # as we have no reason to believe one pronunciation is more
-    # likely than another, we take the average of all of them
     phoneCountList = []
-    for row in phoneListOfLists:
-        syllableList = row[0]
+    
+    wordList = isleDict.lookup(word)
+    entryList = zip(*wordList)
+    
+    for lookupResultList in entryList:
+        syllableList = []
+        for wordSyllableList in lookupResultList:
+            syllableList.extend(wordSyllableList)
+        
+        syllableCountList.append(len(syllableList))
         phoneCountList.append(len([phon for phoneList in syllableList for
                                    phon in phoneList]))
     

@@ -24,8 +24,8 @@ isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
 searchWord = 'catatonic'
 lookupResults = isleDict.lookup(searchWord)
 
-firstEntry = lookupResults[0]
-firstSyllableList = firstEntry[0] 
+firstEntry = lookupResults[0][0]
+firstSyllableList = firstEntry[0]
 firstSyllableList = ".".join([u" ".join(syllable)
                               for syllable in firstSyllableList])
 firstStressList = firstEntry[1]
@@ -40,14 +40,19 @@ print(firstStressList) # 3rd syllable carries stress
 print('-'*50)
 
 searchWord = 'another'
-anotherPhoneList = ['n', '@', 'th', 'r']
+anotherPhoneList = [['n', '@', 'th', 'r'], ]
+isleWordList = isleDict.lookup(searchWord)
+
+searchWord = 'another'
+anotherPhoneList = [['n', '@', 'th', 'r'], ]
+isleWordList = isleDict.lookup(searchWord)
 returnList = pronunciationtools.findBestSyllabification(isleDict, 
                                                         searchWord, 
                                                         anotherPhoneList)
 
 (stressedSyllable, syllableList, syllabification,
 stressedSyllableIndexList, stressedPhoneIndexList,
-flattenedStressIndexList) = returnList
+flattenedStressIndexList) = returnList[0]
 print(searchWord)
 print(anotherPhoneList)
 print(stressedSyllableIndexList) # We can see the first syllable was elided

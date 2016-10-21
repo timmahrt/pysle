@@ -25,17 +25,17 @@ sys.path.append(_root)
 class IntegrationTests(unittest.TestCase):
     """Integration tests"""
 
-    def test_add_tiers(self):
+    def test_basic_examples(self):
         """Running 'basic_examples.py'"""
         print("\nbasic_examples.py" + "\n" + "-" * 10)
         import basic_examples
-
-    def test_calculate_duration(self):
+  
+    def test_dictionary_search(self):
         """Running 'dictionary_search.py'"""
         print("\ndictionary_search.py" + "\n" + "-" * 10)
         import dictionary_search
     
-    def test_delete_vowels(self):
+    def test_syllabify_textgrid(self):
         """Running 'syllabify_textgrid.py'"""
         print("\nsyllabify_textgrid.py" + "\n" + "-" * 10)
         import syllabify_textgrid

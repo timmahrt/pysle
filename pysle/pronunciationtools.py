@@ -10,6 +10,14 @@ import itertools
 from pysle import isletool
 
 
+class WrongTypeError(Exception):
+    
+    def __init__(self, errMsg):
+        self.str = errMsg
+    def __str__(self):
+        return self.str
+    
+    
 class NullPronunciationError(Exception):
     
     def __init__(self, word):
@@ -107,14 +115,10 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
     return retSyllableList
         
 
-def _findBestPronunciation(isleDict, wordText, aPron):
+def _findBestPronunciation(isleWordList, aPron):
     '''
     Words may have multiple candidates in ISLE; returns the 'optimal' one.
     '''
-    if len(aPron) == 0:
-        raise NullPronunciationError(wordText)
-    
-    isleWordList = isleDict.lookup(wordText)
     
     aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
     
@@ -261,7 +265,32 @@ def alignPronunciations(pronI, pronA):
     return pronI, pronA
    
 
-def findBestSyllabification(isleDict, wordText, actualPronunciationList):
+def findBestSyllabification(isleDict, wordText,
+                            actualPronunciationListOfLists):
+    
+    for aPron in actualPronunciationListOfLists:
+        if not isinstance(aPron, list):
+            raise WrongTypeError("The pronunciation list must be a list"
+                                 "of lists, even if it only has one sublist."
+                                 "\ne.g. labyrinth\n"
+                                 "[[l ˈæ . b ɚ . ˌɪ n ɵ], ]")
+        if len(aPron) == 0:
+            raise NullPronunciationError(wordText)
+        
+    numWords = len(actualPronunciationListOfLists)
+    
+    isleWordList = isleDict.lookup(wordText)
+    
+    if len(isleWordList) == numWords:
+        retList = []
+        for isleWordList, aPron in zip(isleWordList,
+                                       actualPronunciationListOfLists):
+            retList.append(_findBestSyllabification(isleWordList, aPron))
+    
+    return retList
+        
+    
+def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     '''
     Find the best syllabification for a word
     
@@ -269,7 +298,7 @@ def findBestSyllabification(isleDict, wordText, actualPronunciationList):
     the syllabification for that pronunciation and map it onto the
     input pronunciation.
     '''
-    retList = _findBestPronunciation(isleDict, wordText,
+    retList = _findBestPronunciation(inputIsleWordList,
                                      actualPronunciationList)
     isleWordList, alignedAPronList, alignedSyllableList, bestIndex = retList
     
@@ -297,12 +326,12 @@ def findBestSyllabification(isleDict, wordText, actualPronunciationList):
             flattenedStressIndexList)
 
 
-def findClosestPronunciation(isleDict, wordText, aPron):
+def findClosestPronunciation(inputIsleWordList, aPron):
     '''
     Find the closest dictionary pronunciation to a provided pronunciation
     '''
     
-    retList = _findBestPronunciation(isleDict, wordText, aPron)
+    retList = _findBestPronunciation(inputIsleWordList, aPron)
     isleWordList = retList[0]
     bestIndex = retList[3]
     
