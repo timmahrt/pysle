@@ -13,7 +13,9 @@ from pysle import isletool
 class WrongTypeError(Exception):
     
     def __init__(self, errMsg):
+        super(WrongTypeError, self).__init__()
         self.str = errMsg
+    
     def __str__(self):
         return self.str
     
@@ -281,9 +283,9 @@ def alignPronunciations(pronI, pronA):
    
 
 def findBestSyllabification(isleDict, wordText,
-                            actualPronunciationListOfLists):
+                            actualPronListOfLists):
     
-    for aPron in actualPronunciationListOfLists:
+    for aPron in actualPronListOfLists:
         if not isinstance(aPron, list):
             raise WrongTypeError("The pronunciation list must be a list"
                                  "of lists, even if it only has one sublist."
@@ -291,15 +293,14 @@ def findBestSyllabification(isleDict, wordText,
                                  "[[l ˈæ . b ɚ . ˌɪ n ɵ], ]")
         if len(aPron) == 0:
             raise NullPronunciationError(wordText)
-        
-    numWords = len(actualPronunciationListOfLists)
+    
+    numWords = len(actualPronListOfLists)
     
     isleWordList = isleDict.lookup(wordText)
     
     if len(isleWordList) == numWords:
         retList = []
-        for isleWordList, aPron in zip(isleWordList,
-                                       actualPronunciationListOfLists):
+        for isleWordList, aPron in zip(isleWordList, actualPronListOfLists):
             retList.append(_findBestSyllabification(isleWordList, aPron))
     
     return retList
