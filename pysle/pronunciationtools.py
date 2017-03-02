@@ -202,7 +202,7 @@ def _findBestPronunciation(isleWordList, aPron):
             alignedSyllabificationList, bestIndex)
 
 
-def _syllabifyPhones(phoneList, syllableList, isleStressList):
+def _syllabifyPhones(phoneList, syllableList):
     '''
     Given a phone list and a syllable list, syllabify the phones
     
@@ -210,10 +210,6 @@ def _syllabifyPhones(phoneList, syllableList, isleStressList):
     with a dictionary phoneList and then uses the dictionary syllabification
     to syllabify the input phoneList.
     '''
-    try:
-        stressIndex = isleStressList[0]
-    except IndexError:
-        stressIndex = None
     
     numPhoneList = [len(syllable) for syllable in syllableList]
     
@@ -226,7 +222,7 @@ def _syllabifyPhones(phoneList, syllableList, isleStressList):
         
         start += end
     
-    return stressIndex, syllabifiedList
+    return syllabifiedList
 
 
 def alignPronunciations(pronI, pronA):
@@ -324,9 +320,16 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     stressedSyllableIndexList = isleWordList[bestIndex][1]
     stressedPhoneIndexList = isleWordList[bestIndex][2]
     
-    stressedSyllable, syllableList = _syllabifyPhones(alignedPhoneList,
-                                                      alignedSyllables,
-                                                      stressedSyllableIndexList)
+    syllableList = _syllabifyPhones(alignedPhoneList, alignedSyllables)
+    
+    # Get the location of stress in the generated file
+    try:
+        stressedSyllableI = stressedSyllableIndexList[0]
+    except IndexError:
+        stressedSyllableI = None
+        stressedVowelI = None
+    else:
+        stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
     
     # Count the index of the stressed phones, if the stress list has
     # become flattened (no syllable information)
@@ -337,9 +340,26 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
             k += len(syllableList[l])
         flattenedStressIndexList.append(k)
     
-    return (stressedSyllable, syllableList, syllabification,
+    return (stressedSyllableI, stressedVowelI, syllableList, syllabification,
             stressedSyllableIndexList, stressedPhoneIndexList,
             flattenedStressIndexList)
+
+
+def _getSyllableNucleus(phoneList):
+    '''
+    Given the phones in a syllable, retrieves the vowel index
+    '''
+    cvList = ['V' if isletool.isVowel(phone) else 'C' for phone in phoneList]
+    
+    vowelCount = cvList.count('V')
+    assert(vowelCount <= 1)
+    
+    if vowelCount == 1:
+        stressI = cvList.index('V')
+    else:
+        stressI = None
+        
+    return stressI
 
 
 def findClosestPronunciation(inputIsleWordList, aPron):
