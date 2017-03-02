@@ -50,7 +50,7 @@ returnList = pronunciationtools.findBestSyllabification(isleDict,
                                                         searchWord, 
                                                         anotherPhoneList)
 
-(stressedSyllable, syllableList, syllabification,
+(stressedSyllable, stressedPhone, syllableList, syllabification,
 stressedSyllableIndexList, stressedPhoneIndexList,
 flattenedStressIndexList) = returnList[0]
 print(searchWord)

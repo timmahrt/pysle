@@ -8,7 +8,7 @@ Created on Oct 15, 2014
 from setuptools import setup
 import codecs
 setup(name='pysle',
-      version='1.4.0',
+      version='1.5.0',
       author='Tim Mahrt',
       author_email='timmahrt@gmail.com',
       url='https://github.com/timmahrt/pysle',

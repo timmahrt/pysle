@@ -55,6 +55,10 @@ What can you do with this library?
 Major revisions
 ================
 
+Ver 1.5 (March 3, 2016)
+
+- substantial bugfixes made, particularly to the syllable-marking code
+
 Ver 1.4 (July 9, 2016)
 
 - added search functionality
