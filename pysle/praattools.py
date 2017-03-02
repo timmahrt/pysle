@@ -70,18 +70,13 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             continue
         
         for syllabificationResultList in sylTmp:
-            syllableList = syllabificationResultList[1]
-            stressedSyllableIndexList = syllabificationResultList[3]
-            stressedPhoneIndexList = syllabificationResultList[4]
-    
-            try:
-                stressI = stressedSyllableIndexList[0]
-                stressJ = stressedPhoneIndexList[0]
-            except IndexError:
-                stressI = None  # Function word probably
-                stressJ = None  #
+            stressI = syllabificationResultList[0]
+            stressJ = syllabificationResultList[1]
+            syllableList = syllabificationResultList[2]
                 
-            if stressI is not None:
+            stressedPhone = None
+            if stressI is not None and stressJ is not None:
+                stressedPhone = syllableList[stressI][stressJ]
                 syllableList[stressI][stressJ] += u"ˈ"
     
             i = 0
@@ -115,7 +110,18 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 
                     phoneList = [entry for entry in syllablePhoneTier.entryList
                                  if entry[2] != '']
-                    phoneStart, phoneEnd = phoneList[stressJ][:2]
+                    justPhones = [phone for _, _, phone in phoneList]
+                    cvList = pronunciationtools._prepPronunciation(justPhones)
+                    
+                    try:
+                        tmpStressJ = cvList.index('V')
+                    except ValueError:
+                        for char in [u'r', u'n', u'l']:
+                            if char in cvList:
+                                tmpStressJ = cvList.index(char)
+                                break
+                            
+                    phoneStart, phoneEnd = phoneList[tmpStressJ][:2]
                     tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
     
     # Create a textgrid with the two syllable-level tiers
