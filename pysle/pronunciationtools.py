@@ -66,16 +66,31 @@ def _lcs(xs, ys):
 def _prepPronunciation(phoneList):
     retList = []
     for phone in phoneList:
+        
+        # Remove diacritics
+        for diacritic in isletool.diacriticList:
+            phone = phone.replace(diacritic, u'')
+        
+        # Unify rhotics
         if 'r' in phone:
-            phone = ['r', ]
+            phone = 'r'
+
+        phone = phone.lower()
+
+        # Unify vowels
+        if isletool.isVowel(phone):
+            phone = 'V'
+        
+        # Only represent the string by its first letter
         try:
-            phone = phone[0]  # Only represent the string by its first letter
-            phone = phone.lower()
+            phone = phone[0]
         except IndexError:
             raise NullPhoneError()
         
-        if phone in isletool.vowelList:
+        # Unify vowels (reducing the vowel to one char)
+        if isletool.isVowel(phone):
             phone = 'V'
+        
         retList.append(phone)
     
     return retList
