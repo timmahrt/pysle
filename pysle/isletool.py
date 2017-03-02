@@ -15,11 +15,15 @@ charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
             u'ð', u'ŋ', u'ɑ', u'ɑɪ', u'ɔ', u'ɔi', u'ə', u'ɚ', u'ɛ', u'ɝ',
             u'ɪ', u'ɵ', u'ɹ', u'ʃ', u'ʊ', u'ʒ', u'æ', u'ʌ', ]
 
-diacriticList = [u'˺', u'ˌ', u'̩', u'̃', ]
+diacriticList = [u'˺', u'ˌ', u'̩', u'̃', u'ˈ', ]
 
-vowelList = [u'aʊ', u'ei', u'i', u'oʊ', u'u', u'æ',
-             u'ɑ', u'ɑɪ', u'ɔ', u'ɔi', u'ə', u'ɚ', u'ɛ', u'ɝ',
-             u'ɪ', u'ʊ', u'ʌ', ]
+monophthongList = [u'u', u'æ', u'ɑ', u'ɔ', u'ə', u'i', u'ɛ', u'ɪ', u'ʊ', u'ʌ']
+
+diphthongList = [u'ɑɪ', u'aʊ', u'ei', u'ɔi', u'oʊ', u'ae']
+
+syllabicConsonantList = [u'l̩', u'n̩', u'ɚ', u'ɝ']
+
+vowelList = monophthongList + diphthongList + syllabicConsonantList
 
 
 def isVowel(char):
