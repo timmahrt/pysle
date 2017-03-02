@@ -289,6 +289,12 @@ def findBestSyllabification(isleDict, wordText,
                                  "[[l ˈæ . b ɚ . ˌɪ n ɵ], ]")
         if len(aPron) == 0:
             raise NullPronunciationError(wordText)
+
+    try:
+        actualPronListOfLists = [[unicode(char, "utf-8") for char in row]
+                                 for row in actualPronListOfLists]
+    except (NameError, TypeError):
+        pass
     
     numWords = len(actualPronListOfLists)
     

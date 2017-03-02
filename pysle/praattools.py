@@ -68,6 +68,9 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         except (pronunciationtools.NullPronunciationError):
             print("Word ('%s') has no provided pronunciation" % word)
             continue
+        except AssertionError:
+            print("Unable to syllabify '%s'" % word)
+            continue
         
         for syllabificationResultList in sylTmp:
             stressI = syllabificationResultList[0]
