@@ -23,6 +23,12 @@ diphthongList = [u'ɑɪ', u'aʊ', u'ei', u'ɔi', u'oʊ', u'ae']
 
 syllabicConsonantList = [u'l̩', u'n̩', u'ɚ', u'ɝ']
 
+# ISLE words are part of speech tagged using the Penn Part of Speech Tagset
+posList = ['cc', 'cd', 'dt', 'fw', 'in', 'jj', 'jjr', 'jjs', 'ls', 'md',
+           'nn', 'nnd', 'nnp', 'nnps', 'nns', 'pdt', 'prp', 'punc', 'rb',
+           'rbr', 'rbs', 'rp', 'sym', 'to', 'uh', 'vb', 'vbd', 'vbg', 'vbn',
+           'vbp', 'vbz', 'vpb', 'wdt', 'wp', 'wrb']
+
 vowelList = monophthongList + diphthongList + syllabicConsonantList
 
 
@@ -48,6 +54,12 @@ class WordNotInISLE(Exception):
 class LexicalTool():
     
     def __init__(self, islePath):
+        '''
+        
+        
+        self.data: the pronunciation data {(word, pronunciationList),}
+        self.dataExtra: pos and other info {(word, infoList),}
+        '''
         self.islePath = islePath
         self.data = self._buildDict()
     
@@ -58,13 +70,18 @@ class LexicalTool():
         lexDict = {}
         with io.open(self.islePath, "r", encoding='utf-8') as fd:
             wordList = [line.rstrip('\n') for line in fd]
-            
+        
         for row in wordList:
             word, pronunciation = row.split(" ", 1)
-            word = word.split("(")[0]
+            word, extraInfo = word.split("(", 1)
+            
+            extraInfo = extraInfo.replace(")", "")
+            extraInfoList = [segment for segment in extraInfo.split(",")
+                             if ("_" not in segment and "+" not in segment and
+                                 ':' not in segment and segment != '')]
             
             lexDict.setdefault(word, [])
-            lexDict[word].append(pronunciation)
+            lexDict[word].append((pronunciation, extraInfoList))
         
         return lexDict
     
@@ -83,19 +100,22 @@ class LexicalTool():
             raise WordNotInISLE(word)
         else:
             pronList = [_parsePronunciation(pronunciationStr)
-                        for pronunciationStr in pronList]
+                        for pronunciationStr, _ in pronList]
             pronList = list(zip(*pronList))
         
         return pronList
 
     def search(self, matchStr, numSyllables=None, wordInitial='ok',
                wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
-               multiword='ok'):
+               multiword='ok', pos=None):
+        '''
+        for help on isletool.LexicalTool.search(), see see isletool.search()
+        '''
         return search(self.data.items(), matchStr, numSyllables=numSyllables,
                       wordInitial=wordInitial, wordFinal=wordFinal,
                       spanSyllable=spanSyllable,
                       stressedSyllable=stressedSyllable,
-                      multiword=multiword)
+                      multiword=multiword, pos=pos)
 
 
 def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
@@ -224,12 +244,15 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
 
 def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
            wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
-           multiword='ok'):
+           multiword='ok', pos=None):
     '''
     Searches for matching words in the dictionary with regular expressions
     
     wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
     can take three different values: 'ok', 'only', or 'no'.
+    
+    pos: a tag in the Penn Part of Speech tagset
+        see isletool.posList for the full list of possible tags
     
     Special search characters:
     'D' - any dental; 'F' - any fricative; 'S' - any stop
@@ -251,8 +274,13 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     retList = []
     for word, pronList in searchList:
         newPronList = []
-        for pron in pronList:
+        for pron, posList in pronList:
             searchPron = pron.replace(",", "").replace(" ", "")
+            
+            # Search for pos
+            if pos is not None:
+                if pos not in posList:
+                    continue
             
             # Ignore diacritics for now:
             for diacritic in diacriticList:
@@ -288,7 +316,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
                 if spanSyllable == 'no':
                     if all(["." in txt[1:-1] for txt in matchList]):
                         continue
-                newPronList.append(pron)
+                newPronList.append((pron, posList))
         
         if len(newPronList) > 0:
             retList.append((word, newPronList))
