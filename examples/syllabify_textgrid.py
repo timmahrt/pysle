@@ -22,7 +22,7 @@ tg = tgio.openTextGrid(join(root, "pumpkins.TextGrid"))
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",
-                                          skipLabelList=["",])
+                                          skipLabelList=["", ])
 tg.addTier(syllableTG.tierDict["syllable"])
 tg.addTier(syllableTG.tierDict["tonicSyllable"])
 tg.addTier(syllableTG.tierDict["tonicVowel"])

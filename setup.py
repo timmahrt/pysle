@@ -15,6 +15,6 @@ setup(name='pysle',
       package_dir={'pysle':'pysle'},
       packages=['pysle'],
       license='LICENSE',
-      description="An interface for the ILSEX (international speech lexicon) dictionary",
+      description="An interface to ISLEX, a pronunciation dictionary with stress markings.",
       long_description=codecs.open('README.rst', 'r', encoding="utf-8").read()
       )

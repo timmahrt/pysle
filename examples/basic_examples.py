@@ -19,7 +19,7 @@ root = join(".", "files")
 isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
 
 
-# In this first example we look up the syllabification of a word and 
+# In this first example we look up the syllabification of a word and
 # get it's stress information.
 searchWord = 'catatonic'
 lookupResults = isleDict.lookup(searchWord)
@@ -32,12 +32,12 @@ firstStressList = firstEntry[1]
 
 print(searchWord)
 print(firstSyllableList)
-print(firstStressList) # 3rd syllable carries stress
+print(firstStressList)  # 3rd syllable carries stress
 
 
 # In the second example we determine the syllabification of a word,
 # as it was said.  (Of course, this is just an estimate)
-print('-'*50)
+print('-' * 50)
 
 searchWord = 'another'
 anotherPhoneList = [['n', '@', 'th', 'r'], ]
@@ -46,16 +46,16 @@ isleWordList = isleDict.lookup(searchWord)
 searchWord = 'another'
 anotherPhoneList = [['n', '@', 'th', 'r'], ]
 isleWordList = isleDict.lookup(searchWord)
-returnList = pronunciationtools.findBestSyllabification(isleDict, 
-                                                        searchWord, 
+returnList = pronunciationtools.findBestSyllabification(isleDict,
+                                                        searchWord,
                                                         anotherPhoneList)
 
 (stressedSyllable, stressedPhone, syllableList, syllabification,
-stressedSyllableIndexList, stressedPhoneIndexList,
-flattenedStressIndexList) = returnList[0]
+    stressedSyllableIndexList, stressedPhoneIndexList,
+    flattenedStressIndexList) = returnList[0]
 print(searchWord)
 print(anotherPhoneList)
-print(stressedSyllableIndexList) # We can see the first syllable was elided
+print(stressedSyllableIndexList)  # We can see the first syllable was elided
 print(stressedPhoneIndexList)
 print(flattenedStressIndexList)
 print(syllableList)
@@ -63,7 +63,7 @@ print(syllabification)
 
 
 # In the third example, we probe what words are in the dictionary
-print('-'*50)
+print('-' * 50)
 
 wordList = ["another", "banana", "floplot"]
 oodWordList = isletool.findOODWords(isleDict, wordList)
@@ -72,7 +72,7 @@ print(oodWordList)
 
 
 # In the forth example, we see how many phones are in a pronunciation
-print('-'*50)
+print('-' * 50)
 syllableCount, phoneCount = isletool.getNumPhones(isleDict,
                                                   "catatonic",
                                                   True)

@@ -14,7 +14,8 @@ pysle
 
 Pronounced like 'p' + 'isle'.
 
-An interface for the ILSEX (international speech lexicon) dictionary, 
+An interface to a pronunciation dictionary with stress markings
+(ISLEX - the international speech lexicon), 
 along with some tools for working with comparing and aligning 
 pronunciations (e.g. a list of phones someone said versus a standard or 
 canonical dictionary pronunciation). 
@@ -55,7 +56,7 @@ What can you do with this library?
 Major revisions
 ================
 
-Ver 1.5 (March 3, 2016)
+Ver 1.5 (March 3, 2017)
 
 - substantial bugfixes made, particularly to the syllable-marking code
 

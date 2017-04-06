@@ -16,6 +16,7 @@ pumpkins_parley(+pumpkin+s,nns) # p ˈʌ m . k n̩ z # p ˈɑ ɹ . l i #
 pumpkins(+pumpkin+s,nns) # p ˈʌ m p . k n̩ z #
 pumpkinseed() # p ˈʌ m p . k ɪ n . s ˌi d #
 synth() # s ɪ n ɵ #
+tais() # t ˌɑɪ z . #
 vandall(nnp_surname_0.000) # v ˌæ n . d ˈɔ l #
 with(in,nnp,rp) # w ɪ ð #
 with(in,nnp,rp) # w ɪ ɵ #
