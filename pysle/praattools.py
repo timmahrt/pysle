@@ -21,7 +21,7 @@ from pysle import pronunciationtools
 
 
 def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
-                      skipLabelList=None):
+                      skipLabelList=None, startT=None, stopT=None):
     '''
     Given a textgrid, syllabifies the phones in the textgrid
     
@@ -45,6 +45,14 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
     syllableEntryList = []
     tonicSEntryList = []
     tonicPEntryList = []
+    
+    if startT is not None or stopT is not None:
+        if startT is None:
+            startT = minT
+        if stopT is None:
+            stopT = maxT
+    
+        wordTier = wordTier.crop(startT, stopT, False, False)
     
     for start, stop, word in wordTier.entryList:
         

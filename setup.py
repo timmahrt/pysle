@@ -6,7 +6,7 @@ Created on Oct 15, 2014
 @author: tmahrt
 '''
 from setuptools import setup
-import codecs
+import io
 setup(name='pysle',
       version='1.5.1',
       author='Tim Mahrt',
@@ -16,5 +16,5 @@ setup(name='pysle',
       packages=['pysle'],
       license='LICENSE',
       description="An interface to ISLEX, a pronunciation dictionary with stress markings.",
-      long_description=codecs.open('README.rst', 'r', encoding="utf-8").read()
+      long_description=io.open('README.rst', 'r', encoding="utf-8").read()
       )

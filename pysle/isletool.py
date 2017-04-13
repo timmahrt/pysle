@@ -88,6 +88,10 @@ class LexicalTool():
     def lookup(self, word):
         '''
         Lookup a word and receive a list of syllables and stressInfo
+        
+        Output example for the word 'another' which has two pronunciations
+        [(([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ɚ']], [1], [1]),
+          ([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ə', u'ɹ']], [1], [1]))]
         '''
         
         # All words must be lowercase with no extraneous whitespace
