@@ -13,11 +13,187 @@ class OptionalFeatureError(ImportError):
 
 try:
     from praatio import tgio
+    from praatio import praatio_scripts
 except ImportError:
     raise OptionalFeatureError()
 
 from pysle import isletool
 from pysle import pronunciationtools
+
+
+def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
+                       phoneHelperTierName=None,
+                       removeOverlappingSegments=False):
+    '''
+    Performs naive alignment for utterances in a textgrid
+    
+    Naive alignment gives each segment equal duration.  Word duration is
+    determined by the duration of an utterance and the number of phones in
+    the word.
+    
+    By 'utterance' I mean a string of words separated by a space bounded
+    in time eg (0.5, 1.5, "he said he likes ketchup").
+    
+    phoneHelperTierName - creates a tier that is parallel to the word tier.
+                          However, the labels are the phones for the word,
+                          rather than the word
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    '''
+    utteranceTier = tg.tierDict[utteranceTierName]
+    
+    wordTier = None
+    if wordTierName in tg.tierNameList:
+        wordTier = tg.tierDict[wordTierName]
+    
+    # Load in the word tier, if it exists:
+    wordEntryList = []
+    phoneEntryList = []
+    if wordTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in utteranceTier.entryList:
+                wordTier = wordTier.eraseRegion(startT, stopT,
+                                                'truncate', False)
+        wordEntryList = wordTier.entryList
+
+    # Do the naive alignment
+    for startT, stopT, label in utteranceTier.entryList:
+        wordList = label.split()
+
+        # Get the list of phones in each word
+        superPhoneList = []
+        numPhones = 0
+        i = 0
+        while i < len(wordList):
+            word = wordList[i]
+            try:
+                firstSyllableList = isleDict.lookup(word)[0][0][0]
+            except isletool.WordNotInISLE:
+                wordList.pop(i)
+                continue
+            phoneList = [phone for syllable in firstSyllableList
+                         for phone in syllable]
+            superPhoneList.append(phoneList)
+            numPhones += len(phoneList)
+            i += 1
+        
+        # Get the naive alignment for words, if alignment doesn't
+        # already exist for words
+        subWordEntryList = []
+        subPhoneEntryList = []
+        if wordTier is not None:
+            subWordEntryList = wordTier.crop(startT, stopT,
+                                             False, False)[0].entryList
+        
+        if len(subWordEntryList) == 0:
+            wordStartT = startT
+            phoneDur = (stopT - startT) / float(numPhones)
+            for i, word in enumerate(wordList):
+                phoneListTxt = " ".join(superPhoneList[i])
+                wordStartT = wordStartT
+                wordEndT = wordStartT + (phoneDur * len(superPhoneList[i]))
+                subWordEntryList.append((wordStartT, wordEndT, word))
+                subPhoneEntryList.append((wordStartT, wordEndT, phoneListTxt))
+                wordStartT = wordEndT
+        
+        wordEntryList.extend(subWordEntryList)
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the word tier
+    if wordTier is not None:
+        tg.replaceTier(wordTierName, wordEntryList)
+    else:
+        newWordTier = tgio.IntervalTier(wordTierName,
+                                        wordEntryList,
+                                        tg.minTimestamp,
+                                        tg.maxTimestamp)
+        tg.addTier(newWordTier)
+        
+    # Add the phone tier
+    # This is mainly used as an annotation tier
+    if phoneHelperTierName is not None and len(phoneEntryList) > 0:
+        if phoneHelperTierName in tg.tierNameList:
+            tg.replaceTier(phoneHelperTierName, phoneEntryList)
+        else:
+            newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
+                                             phoneEntryList,
+                                             tg.minTimestamp,
+                                             tg.maxTimestamp)
+            tg.addTier(newPhoneTier)
+    
+    return tg
+
+
+def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
+                        removeOverlappingSegments=False):
+    '''
+    Performs naive alignment for words in a textgrid
+    
+    Naive alignment gives each segment equal duration.
+    Phone duration is determined by the duration of the word
+    and the number of phones.
+    
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    '''
+    wordTier = tg.tierDict[wordTierName]
+    
+    phoneTier = None
+    if phoneTierName in tg.tierNameList:
+        phoneTier = tg.tierDict[phoneTierName]
+    
+    # Load in the phone tier, if it exists:
+    phoneEntryList = []
+    if phoneTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in wordTier.entryList:
+                phoneTier = phoneTier.eraseRegion(startT, stopT,
+                                                  'truncate', False)
+        phoneEntryList = phoneTier.entryList
+
+    # Do the naive alignment
+    for wordStartT, wordEndT, word in wordTier.entryList:
+        
+        # Get the list of phones in this word
+        try:
+            firstSyllableList = isleDict.lookup(word)[0][0][0]
+        except isletool.WordNotInISLE:
+            continue
+
+        phoneList = [phone for syllable in firstSyllableList
+                     for phone in syllable]
+        for char in [u'ˈ', u'ˌ']:
+            phoneList = [phone.replace(char, '') for phone in phoneList]
+        
+        # Get the naive alignment for phones, if alignment doesn't
+        # already exist for phones
+        subPhoneEntryList = []
+        if phoneTier is not None:
+            subPhoneEntryList = phoneTier.crop(wordStartT, wordEndT,
+                                               False, False)[0].entryList
+        
+        if len(subPhoneEntryList) == 0:
+            phoneDur = (wordEndT - wordStartT) / len(phoneList)
+            
+            phoneStartT = wordStartT
+            for phone in phoneList:
+                phoneEndT = phoneStartT + phoneDur
+                subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
+                phoneStartT = phoneEndT
+
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the phone tier
+    if phoneTier is not None:
+        tg.replaceTier(phoneTierName, phoneEntryList)
+    else:
+        newPhoneTier = tgio.IntervalTier(phoneTierName,
+                                         phoneEntryList,
+                                         tg.minTimestamp,
+                                         tg.maxTimestamp)
+        tg.addTier(newPhoneTier)
+    
+    return tg
 
 
 def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
