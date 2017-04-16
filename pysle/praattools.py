@@ -21,6 +21,31 @@ from pysle import isletool
 from pysle import pronunciationtools
 
 
+def spellCheckTextgrid(tg, targetTierName, newTierName, isleDict,
+                       printEntries=False):
+    '''
+    Spell check words by using the praatio spellcheck function
+    
+    Incorrect items are noted in a new tier and optionally
+        printed to the screen
+    '''
+    
+    def checkFunc(word):
+        try:
+            isleDict.lookup(word)
+        except isletool.WordNotInISLE:
+            returnVal = False
+        else:
+            returnVal = True
+        
+        return returnVal
+    
+    tg = praatio_scripts.spellCheckEntries(tg, targetTierName, newTierName,
+                                           checkFunc, printEntries)
+    
+    return tg
+    
+
 def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
                        phoneHelperTierName=None,
                        removeOverlappingSegments=False):

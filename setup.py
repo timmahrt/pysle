@@ -8,7 +8,7 @@ Created on Oct 15, 2014
 from setuptools import setup
 import io
 setup(name='pysle',
-      version='1.5.2',
+      version='1.5.3',
       author='Tim Mahrt',
       author_email='timmahrt@gmail.com',
       url='https://github.com/timmahrt/pysle',
