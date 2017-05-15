@@ -108,7 +108,7 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
         subPhoneEntryList = []
         if wordTier is not None:
             subWordEntryList = wordTier.crop(startT, stopT,
-                                             False, False)[0].entryList
+                                             False, False).entryList
         
         if len(subWordEntryList) == 0:
             wordStartT = startT
@@ -195,7 +195,7 @@ def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
         subPhoneEntryList = []
         if phoneTier is not None:
             subPhoneEntryList = phoneTier.crop(wordStartT, wordEndT,
-                                               False, False)[0].entryList
+                                               False, False).entryList
         
         if len(subPhoneEntryList) == 0:
             phoneDur = (wordEndT - wordStartT) / len(phoneList)
@@ -260,7 +260,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         if word in skipLabelList:
             continue
         
-        subPhoneTier = phoneTier.crop(start, stop, True, False)[0]
+        subPhoneTier = phoneTier.crop(start, stop, True, False)
         
         # entry = (start, stop, phone)
         phoneList = [entry[2] for entry in subPhoneTier.entryList
@@ -318,7 +318,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 if k == stressI:
                     syllablePhoneTier = phoneTier.crop(syllableStart,
                                                        syllableEnd,
-                                                       True, False)[0]
+                                                       True, False)
                 
                     phoneList = [entry for entry in syllablePhoneTier.entryList
                                  if entry[2] != '']

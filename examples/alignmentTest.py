@@ -38,7 +38,7 @@ wordTierName = "word"
 phoneListTierName = "phoneList"
 phoneTierName = "phone"
 
-tg = tgio.openTextGrid(inputFN)
+tg = tgio.openTextgrid(inputFN)
 
 for tierName in tg.tierNameList[:]:
     if tierName == utteranceTierName:

@@ -18,7 +18,7 @@ from pysle import praattools
 root = join('.', 'files')
 isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
 
-tg = tgio.openTextGrid(join(root, "pumpkins.TextGrid"))
+tg = tgio.openTextgrid(join(root, "pumpkins.TextGrid"))
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",
