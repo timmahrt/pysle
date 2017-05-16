@@ -108,7 +108,7 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
         subPhoneEntryList = []
         if wordTier is not None:
             subWordEntryList = wordTier.crop(startT, stopT,
-                                             False, False).entryList
+                                             False, False, False).entryList
         
         if len(subWordEntryList) == 0:
             wordStartT = startT
@@ -195,7 +195,7 @@ def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
         subPhoneEntryList = []
         if phoneTier is not None:
             subPhoneEntryList = phoneTier.crop(wordStartT, wordEndT,
-                                               False, False).entryList
+                                               False, False, False).entryList
         
         if len(subPhoneEntryList) == 0:
             phoneDur = (wordEndT - wordStartT) / len(phoneList)
@@ -253,14 +253,14 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         if stopT is None:
             stopT = maxT
     
-        wordTier = wordTier.crop(startT, stopT, False, False)
+        wordTier = wordTier.crop(startT, stopT, False, False, False)
     
     for start, stop, word in wordTier.entryList:
         
         if word in skipLabelList:
             continue
         
-        subPhoneTier = phoneTier.crop(start, stop, True, False)
+        subPhoneTier = phoneTier.crop(start, stop, True, False, False)
         
         # entry = (start, stop, phone)
         phoneList = [entry[2] for entry in subPhoneTier.entryList
@@ -318,7 +318,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 if k == stressI:
                     syllablePhoneTier = phoneTier.crop(syllableStart,
                                                        syllableEnd,
-                                                       True, False)
+                                                       True, False, False)
                 
                     phoneList = [entry for entry in syllablePhoneTier.entryList
                                  if entry[2] != '']
