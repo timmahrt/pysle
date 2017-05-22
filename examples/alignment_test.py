@@ -1,3 +1,4 @@
+#encoding: utf-8
 '''
 Created on Apr 11, 2017
 
@@ -28,12 +29,11 @@ from pysle import isletool
 from pysle import praattools
 
 
-root = join(".", "files")
+root = join('.', 'files')
+isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
 
 inputFN = join(root, "pumpkins_with_syllables.TextGrid")
 outputFN = join(root, "pumpkins_with_naive_alignment.TextGrid")
-
-isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
 
 utteranceTierName = "utterance"
 wordTierName = "word"
