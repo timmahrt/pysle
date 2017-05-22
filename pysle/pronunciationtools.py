@@ -108,8 +108,10 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
     '''
     i = 0
     retSyllableList = []
-    for syllable in syllableList:
+    for syllableNum, syllable in enumerate(syllableList):
         j = len(syllable)
+        if syllableNum == len(syllableList) - 1:
+            j = len(adjustedPhoneList) - i
         tmpPhoneList = adjustedPhoneList[i:i + j]
         numBlanks = -1
         phoneList = tmpPhoneList[:]
