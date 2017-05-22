@@ -25,6 +25,11 @@ sys.path.append(_root)
 class IntegrationTests(unittest.TestCase):
     """Integration tests"""
 
+    def test_alignment(self):
+        """Running 'alignment_test.py'"""
+        print("\nalignment_test.py" + "\n" + "-" * 10)
+        import alignment_test
+        
     def test_basic_examples(self):
         """Running 'basic_examples.py'"""
         print("\nbasic_examples.py" + "\n" + "-" * 10)
