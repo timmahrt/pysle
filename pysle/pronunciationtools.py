@@ -117,15 +117,15 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
         phoneList = tmpPhoneList[:]
         while numBlanks != 0:
             
-            numBlanks = tmpPhoneList.count("''")
+            numBlanks = tmpPhoneList.count(u"''")
             if numBlanks > 0:
                 tmpPhoneList = adjustedPhoneList[i + j:i + j + numBlanks]
                 phoneList.extend(tmpPhoneList)
                 j += numBlanks
         
         for k, phone in enumerate(phoneList):
-            if phone == "''":
-                syllable.insert(k, "''")
+            if phone == u"''":
+                syllable.insert(k, u"''")
         
         i += j
         
@@ -158,7 +158,7 @@ def _findBestPronunciation(isleWordList, aPron):
         alignedIP, alignedAP = alignPronunciations(iP, aP)
         
         # Remapping to actual phones
-        alignedAP = [origPronDict.get(phon, "''") for phon in alignedAP]
+        alignedAP = [origPronDict.get(phon, u"''") for phon in alignedAP]
         alignedActualPronunciationList.append(alignedAP)
         
         # Adjusting the syllabification for differences between the dictionary
@@ -168,7 +168,7 @@ def _findBestPronunciation(isleWordList, aPron):
         alignedSyllabificationList.append(alignedSyllabification)
         
         # Count the number of misalignments between the two
-        numDiff = alignedIP.count("''") + alignedAP.count("''")
+        numDiff = alignedIP.count(u"''") + alignedAP.count(u"''")
         numDiffList.append(numDiff)
         
         # Is there stress in this word
