@@ -28,10 +28,12 @@ from pysle import isletool
 from pysle import praattools
 
 
-inputFN = join(".", "files", "pumpkins_with_syllables.TextGrid")
-outputFN = join(".", "files", "pumpkins_with_naive_alignment.TextGrid")
+root = join(".", "files")
 
-isleDict = isletool.LexicalTool(join(".", "files", 'ISLEdict_sample.txt'))
+inputFN = join(root, "pumpkins_with_syllables.TextGrid")
+outputFN = join(root, "pumpkins_with_naive_alignment.TextGrid")
+
+isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
 
 utteranceTierName = "utterance"
 wordTierName = "word"
