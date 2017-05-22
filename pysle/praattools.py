@@ -125,25 +125,26 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
         phoneEntryList.extend(subPhoneEntryList)
     
     # Replace or add the word tier
+    newWordTier = tgio.IntervalTier(wordTierName,
+                                    wordEntryList,
+                                    tg.minTimestamp,
+                                    tg.maxTimestamp)
     if wordTier is not None:
-        tg.replaceTier(wordTierName, wordEntryList)
+        tg.replaceTier(wordTierName, newWordTier)
     else:
-        newWordTier = tgio.IntervalTier(wordTierName,
-                                        wordEntryList,
-                                        tg.minTimestamp,
-                                        tg.maxTimestamp)
+
         tg.addTier(newWordTier)
         
     # Add the phone tier
     # This is mainly used as an annotation tier
     if phoneHelperTierName is not None and len(phoneEntryList) > 0:
+        newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
+                                         phoneEntryList,
+                                         tg.minTimestamp,
+                                         tg.minTimestamp)
         if phoneHelperTierName in tg.tierNameList:
-            tg.replaceTier(phoneHelperTierName, phoneEntryList)
+            tg.replaceTier(phoneHelperTierName, newPhoneTier)
         else:
-            newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
-                                             phoneEntryList,
-                                             tg.minTimestamp,
-                                             tg.maxTimestamp)
             tg.addTier(newPhoneTier)
     
     return tg
