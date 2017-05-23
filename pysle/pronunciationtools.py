@@ -6,8 +6,39 @@ Created on Oct 15, 2014
 '''
 
 import itertools
+import copy
 
 from pysle import isletool
+
+
+class TooManyVowelsInSyllable(Exception):
+    
+    def __init__(self, syllable, syllableCVMapped):
+        super(TooManyVowelsInSyllable, self).__init__()
+        self.syllable = syllable
+        self.syllableCVMapped = syllableCVMapped
+        
+    def __str__(self):
+        errStr = ("Error: syllable '%s' found to have more than "
+                  "one vowel.\n This was the CV mapping: '%s'")
+        syllableStr = u"".join(self.syllable)
+        syllableCVStr = u"".join(self.syllableCVMapped)
+        
+        return errStr % (syllableStr, syllableCVStr)
+
+
+class NumWordsMismatchError(Exception):
+    
+    def __init__(self, word, numMatches):
+        super(NumWordsMismatchError, self).__init__()
+        self.word = word
+        self.numMatches = numMatches
+    
+    def __str__(self):
+        errStr = ("Error: %d matches found in isleDict for '%s'.\n"
+                  "Only 1 match allowed--likely you need to break"
+                  "up your query text into separate words.")
+        return errStr % (self.numMatches, self.word)
 
 
 class WrongTypeError(Exception):
@@ -18,8 +49,8 @@ class WrongTypeError(Exception):
     
     def __str__(self):
         return self.str
-    
-    
+
+
 class NullPronunciationError(Exception):
     
     def __init__(self, word):
@@ -34,7 +65,7 @@ class NullPhoneError(Exception):
 
     def __str(self):
         return "Received an empty phone in the pronunciation list"
-    
+
 
 def _lcs_lens(xs, ys):
     curr = list(itertools.repeat(0, 1 + len(ys)))
@@ -81,7 +112,7 @@ def _prepPronunciation(phoneList):
 
         # Unify vowels
         if isletool.isVowel(phone):
-            phone = 'V'
+            phone = u'V'
         
         # Only represent the string by its first letter
         try:
@@ -91,7 +122,7 @@ def _prepPronunciation(phoneList):
         
         # Unify vowels (reducing the vowel to one char)
         if isletool.isVowel(phone):
-            phone = 'V'
+            phone = u'V'
         
         retList.append(phone)
     
@@ -302,10 +333,13 @@ def findBestSyllabification(isleDict, wordText,
     
     isleWordList = isleDict.lookup(wordText)
     
+    
     if len(isleWordList) == numWords:
         retList = []
         for isleWordList, aPron in zip(isleWordList, actualPronListOfLists):
             retList.append(_findBestSyllabification(isleWordList, aPron))
+    else:
+        raise NumWordsMismatchError(wordText, len(isleWordList))
     
     return retList
         
@@ -360,7 +394,8 @@ def _getSyllableNucleus(phoneList):
     cvList = ['V' if isletool.isVowel(phone) else 'C' for phone in phoneList]
     
     vowelCount = cvList.count('V')
-    assert(vowelCount <= 1)
+    if vowelCount > 1:
+        raise TooManyVowelsInSyllable(phoneList, cvList)
     
     if vowelCount == 1:
         stressI = cvList.index('V')
