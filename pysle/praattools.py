@@ -210,13 +210,14 @@ def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
         phoneEntryList.extend(subPhoneEntryList)
     
     # Replace or add the phone tier
+    newPhoneTier = tgio.IntervalTier(phoneTierName,
+                                     phoneEntryList,
+                                     tg.minTimestamp,
+                                     tg.maxTimestamp)
     if phoneTier is not None:
-        tg.replaceTier(phoneTierName, phoneEntryList)
+        tg.replaceTier(phoneTierName, newPhoneTier)
     else:
-        newPhoneTier = tgio.IntervalTier(phoneTierName,
-                                         phoneEntryList,
-                                         tg.minTimestamp,
-                                         tg.maxTimestamp)
+
         tg.addTier(newPhoneTier)
     
     return tg
