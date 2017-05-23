@@ -141,15 +141,13 @@ def _findBestPronunciation(isleWordList, aPron):
     
     aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
     
-    origPronDict = dict((newPron, oldPron)
-                        for newPron, oldPron in zip(aP, aPron))
-    
     numDiffList = []
     withStress = []
     i = 0
     alignedSyllabificationList = []
     alignedActualPronunciationList = []
     for wordTuple in isleWordList:
+        aPronMap = copy.deepcopy(aPron)
         syllableList = wordTuple[0]  # syllableList, stressList
         
         iP = [phone for phoneList in syllableList for phone in phoneList]
@@ -158,7 +156,9 @@ def _findBestPronunciation(isleWordList, aPron):
         alignedIP, alignedAP = alignPronunciations(iP, aP)
         
         # Remapping to actual phones
-        alignedAP = [origPronDict.get(phon, u"''") for phon in alignedAP]
+#         alignedAP = [origPronDict.get(phon, u"''") for phon in alignedAP]
+        alignedAP = [aPronMap.pop(0) if phon != u"''" else u"''"
+                     for phon in alignedAP]
         alignedActualPronunciationList.append(alignedAP)
         
         # Adjusting the syllabification for differences between the dictionary
