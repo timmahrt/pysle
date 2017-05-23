@@ -17,7 +17,7 @@ charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
 
 diacriticList = [u'˺', u'ˌ', u'̩', u'̃', u'ˈ', ]
 
-monophthongList = [u'u', u'æ', u'ɑ', u'ɔ', u'ə', u'i', u'ɛ', u'ɪ', u'ʊ', u'ʌ']
+monophthongList = [u'u', u'æ', u'ɑ', u'ɔ', u'ə', u'i', u'ɛ', u'ɪ', u'ʊ', u'ʌ', u'a', u'e', u'o', ]
 
 diphthongList = [u'ɑɪ', u'aʊ', u'ei', u'ɔi', u'oʊ', u'ae']
 
