@@ -123,9 +123,9 @@ Installation
 If you on Windows, you can use the installer found here (check that it is up to date though)
 `Windows installer <http://www.timmahrt.com/python_installers>`_
 
-PraatIO is on pypi and can be installed or upgraded from the command-line shell with pip like so::
+Psyle is on pypi and can be installed or upgraded from the command-line shell with pip like so::
 
-    pip install praatio --upgrade
+    python -m pip install psyle --upgrade
 
 Otherwise, to manually install, after downloading the source from github, from a command-line shell, navigate to the directory containing setup.py and type::
 
@@ -133,7 +133,7 @@ Otherwise, to manually install, after downloading the source from github, from a
 
 If python is not in your path, you'll need to enter the full path e.g.::
 
-	C:\Python27\python.exe setup.py install
+	C:\Python36\python.exe setup.py install
 
 	
 Example usage
