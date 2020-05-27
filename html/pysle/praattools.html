@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pysle.praattools API documentation</title>
+<meta name="description" content="Created on Oct 22, 2014 …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pysle.praattools</code></h1>
+</header>
+<section id="section-intro">
+<p>Created on Oct 22, 2014</p>
+<p>@author: tmahrt</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#encoding: utf-8
+&#39;&#39;&#39;
+Created on Oct 22, 2014
+
+@author: tmahrt
+&#39;&#39;&#39;
+
+
+class OptionalFeatureError(ImportError):
+    
+    def __str__(self):
+        return &#34;ERROR: You must have praatio installed to use pysle.praatTools&#34;
+
+try:
+    from praatio import tgio
+    from praatio import praatio_scripts
+except ImportError:
+    raise OptionalFeatureError()
+
+from pysle import isletool
+from pysle import pronunciationtools
+
+
+def spellCheckTextgrid(tg, targetTierName, newTierName, isleDict,
+                       printEntries=False):
+    &#39;&#39;&#39;
+    Spell check words by using the praatio spellcheck function
+    
+    Incorrect items are noted in a new tier and optionally
+        printed to the screen
+    &#39;&#39;&#39;
+    
+    def checkFunc(word):
+        try:
+            isleDict.lookup(word)
+        except isletool.WordNotInISLE:
+            returnVal = False
+        else:
+            returnVal = True
+        
+        return returnVal
+    
+    tg = praatio_scripts.spellCheckEntries(tg, targetTierName, newTierName,
+                                           checkFunc, printEntries)
+    
+    return tg
+    
+
+def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
+                       phoneHelperTierName=None,
+                       removeOverlappingSegments=False):
+    &#39;&#39;&#39;
+    Performs naive alignment for utterances in a textgrid
+    
+    Naive alignment gives each segment equal duration.  Word duration is
+    determined by the duration of an utterance and the number of phones in
+    the word.
+    
+    By &#39;utterance&#39; I mean a string of words separated by a space bounded
+    in time eg (0.5, 1.5, &#34;he said he likes ketchup&#34;).
+    
+    phoneHelperTierName - creates a tier that is parallel to the word tier.
+                          However, the labels are the phones for the word,
+                          rather than the word
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    &#39;&#39;&#39;
+    utteranceTier = tg.tierDict[utteranceTierName]
+    
+    wordTier = None
+    if wordTierName in tg.tierNameList:
+        wordTier = tg.tierDict[wordTierName]
+    
+    # Load in the word tier, if it exists:
+    wordEntryList = []
+    phoneEntryList = []
+    if wordTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in utteranceTier.entryList:
+                wordTier = wordTier.eraseRegion(startT, stopT,
+                                                &#39;truncate&#39;, False)
+        wordEntryList = wordTier.entryList
+
+    # Do the naive alignment
+    for startT, stopT, label in utteranceTier.entryList:
+        wordList = label.split()
+
+        # Get the list of phones in each word
+        superPhoneList = []
+        numPhones = 0
+        i = 0
+        while i &lt; len(wordList):
+            word = wordList[i]
+            try:
+                firstSyllableList = isleDict.lookup(word)[0][0][0]
+            except isletool.WordNotInISLE:
+                wordList.pop(i)
+                continue
+            phoneList = [phone for syllable in firstSyllableList
+                         for phone in syllable]
+            superPhoneList.append(phoneList)
+            numPhones += len(phoneList)
+            i += 1
+        
+        # Get the naive alignment for words, if alignment doesn&#39;t
+        # already exist for words
+        subWordEntryList = []
+        subPhoneEntryList = []
+        if wordTier is not None:
+            subWordEntryList = wordTier.crop(startT, stopT,
+                                             &#34;truncated&#34;, False).entryList
+        
+        if len(subWordEntryList) == 0:
+            wordStartT = startT
+            phoneDur = (stopT - startT) / float(numPhones)
+            for i, word in enumerate(wordList):
+                phoneListTxt = &#34; &#34;.join(superPhoneList[i])
+                wordStartT = wordStartT
+                wordEndT = wordStartT + (phoneDur * len(superPhoneList[i]))
+                subWordEntryList.append((wordStartT, wordEndT, word))
+                subPhoneEntryList.append((wordStartT, wordEndT, phoneListTxt))
+                wordStartT = wordEndT
+        
+        wordEntryList.extend(subWordEntryList)
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the word tier
+    newWordTier = tgio.IntervalTier(wordTierName,
+                                    wordEntryList,
+                                    tg.minTimestamp,
+                                    tg.maxTimestamp)
+    if wordTier is not None:
+        tg.replaceTier(wordTierName, newWordTier)
+    else:
+
+        tg.addTier(newWordTier)
+        
+    # Add the phone tier
+    # This is mainly used as an annotation tier
+    if phoneHelperTierName is not None and len(phoneEntryList) &gt; 0:
+        newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
+                                         phoneEntryList,
+                                         tg.minTimestamp,
+                                         tg.minTimestamp)
+        if phoneHelperTierName in tg.tierNameList:
+            tg.replaceTier(phoneHelperTierName, newPhoneTier)
+        else:
+            tg.addTier(newPhoneTier)
+    
+    return tg
+
+
+def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
+                        removeOverlappingSegments=False):
+    &#39;&#39;&#39;
+    Performs naive alignment for words in a textgrid
+    
+    Naive alignment gives each segment equal duration.
+    Phone duration is determined by the duration of the word
+    and the number of phones.
+    
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    &#39;&#39;&#39;
+    wordTier = tg.tierDict[wordTierName]
+    
+    phoneTier = None
+    if phoneTierName in tg.tierNameList:
+        phoneTier = tg.tierDict[phoneTierName]
+    
+    # Load in the phone tier, if it exists:
+    phoneEntryList = []
+    if phoneTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in wordTier.entryList:
+                phoneTier = phoneTier.eraseRegion(startT, stopT,
+                                                  &#39;truncate&#39;, False)
+        phoneEntryList = phoneTier.entryList
+
+    # Do the naive alignment
+    for wordStartT, wordEndT, word in wordTier.entryList:
+        
+        # Get the list of phones in this word
+        try:
+            firstSyllableList = isleDict.lookup(word)[0][0][0]
+        except isletool.WordNotInISLE:
+            continue
+
+        phoneList = [phone for syllable in firstSyllableList
+                     for phone in syllable]
+        for char in [u&#39;ˈ&#39;, u&#39;ˌ&#39;]:
+            phoneList = [phone.replace(char, &#39;&#39;) for phone in phoneList]
+        
+        # Get the naive alignment for phones, if alignment doesn&#39;t
+        # already exist for phones
+        subPhoneEntryList = []
+        if phoneTier is not None:
+            subPhoneEntryList = phoneTier.crop(wordStartT, wordEndT,
+                                               &#34;truncated&#34;, False).entryList
+        
+        if len(subPhoneEntryList) == 0:
+            phoneDur = (wordEndT - wordStartT) / len(phoneList)
+            
+            phoneStartT = wordStartT
+            for phone in phoneList:
+                phoneEndT = phoneStartT + phoneDur
+                subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
+                phoneStartT = phoneEndT
+
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the phone tier
+    newPhoneTier = tgio.IntervalTier(phoneTierName,
+                                     phoneEntryList,
+                                     tg.minTimestamp,
+                                     tg.maxTimestamp)
+    if phoneTier is not None:
+        tg.replaceTier(phoneTierName, newPhoneTier)
+    else:
+
+        tg.addTier(newPhoneTier)
+    
+    return tg
+
+
+def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
+                      skipLabelList=None, startT=None, stopT=None):
+    &#39;&#39;&#39;
+    Given a textgrid, syllabifies the phones in the textgrid
+    
+    skipLabelList allows you to skip labels without generating warnings
+    (e.g. &#39;&#39;, &#39;sp&#39;, etc.)
+    
+    The textgrid must have a word tier and a phone tier.
+    
+    Returns a textgrid with only two tiers containing syllable information
+    (syllabification of the phone tier and a tier marking word-stress).
+    &#39;&#39;&#39;
+    minT = tg.minTimestamp
+    maxT = tg.maxTimestamp
+    
+    wordTier = tg.tierDict[wordTierName]
+    phoneTier = tg.tierDict[phoneTierName]
+    
+    if skipLabelList is None:
+        skipLabelList = []
+    
+    syllableEntryList = []
+    tonicSEntryList = []
+    tonicPEntryList = []
+    
+    if startT is not None or stopT is not None:
+        if startT is None:
+            startT = minT
+        if stopT is None:
+            stopT = maxT
+    
+        wordTier = wordTier.crop(startT, stopT, &#34;truncated&#34;, False)
+    
+    for start, stop, word in wordTier.entryList:
+        
+        if word in skipLabelList:
+            continue
+        
+        subPhoneTier = phoneTier.crop(start, stop, &#34;strict&#34;, False)
+        
+        # entry = (start, stop, phone)
+        phoneList = [entry[2] for entry in subPhoneTier.entryList
+                     if entry[2] != &#39;&#39;]
+        phoneList = phoneList
+        
+        try:
+            sylTmp = pronunciationtools.findBestSyllabification(isleDict,
+                                                                word,
+                                                                phoneList)
+        except isletool.WordNotInISLE:
+            print(&#34;Word (&#39;%s&#39;) not is isle -- skipping syllabification&#34; % word)
+            continue
+        except (pronunciationtools.NullPronunciationError):
+            print(&#34;Word (&#39;%s&#39;) has no provided pronunciation&#34; % word)
+            continue
+        except AssertionError:
+            print(&#34;Unable to syllabify &#39;%s&#39;&#34; % word)
+            continue
+        
+
+        stressI = sylTmp[0]
+        stressJ = sylTmp[1]
+        syllableList = sylTmp[2]
+            
+        stressedPhone = None
+        if stressI is not None and stressJ is not None:
+            stressedPhone = syllableList[stressI][stressJ]
+            syllableList[stressI][stressJ] += u&#34;ˈ&#34;
+
+        i = 0
+#         print(syllableList)
+        for k, syllable in enumerate(syllableList):
+            
+            # Create the syllable tier entry
+            j = len(syllable)
+            stubEntryList = subPhoneTier.entryList[i:i + j]
+            i += j
+            
+            # The whole syllable was deleted
+            if len(stubEntryList) == 0:
+                continue
+            
+            syllableStart = stubEntryList[0][0]
+            syllableEnd = stubEntryList[-1][1]
+            label = &#34;-&#34;.join([entry[2] for entry in stubEntryList])
+        
+            syllableEntryList.append((syllableStart, syllableEnd, label))
+            
+            # Create the tonic syllable tier entry
+            if k == stressI:
+                tonicSEntryList.append((syllableStart, syllableEnd, &#39;T&#39;))
+            
+            # Create the tonic phone tier entry
+            if k == stressI:
+                syllablePhoneTier = phoneTier.crop(syllableStart,
+                                                   syllableEnd,
+                                                   &#34;strict&#34;, False)
+            
+                phoneList = [entry for entry in syllablePhoneTier.entryList
+                             if entry[2] != &#39;&#39;]
+                justPhones = [phone for _, _, phone in phoneList]
+                cvList = pronunciationtools._prepPronunciation(justPhones)
+                
+                try:
+                    tmpStressJ = cvList.index(&#39;V&#39;)
+                except ValueError:
+                    for char in [u&#39;r&#39;, u&#39;n&#39;, u&#39;l&#39;]:
+                        if char in cvList:
+                            tmpStressJ = cvList.index(char)
+                            break
+                        
+                phoneStart, phoneEnd = phoneList[tmpStressJ][:2]
+                tonicPEntryList.append((phoneStart, phoneEnd, &#39;T&#39;))
+    
+    # Create a textgrid with the two syllable-level tiers
+    syllableTier = tgio.IntervalTier(&#39;syllable&#39;, syllableEntryList,
+                                     minT, maxT)
+    tonicSTier = tgio.IntervalTier(&#39;tonicSyllable&#39;, tonicSEntryList,
+                                   minT, maxT)
+    tonicPTier = tgio.IntervalTier(&#39;tonicVowel&#39;, tonicPEntryList,
+                                   minT, maxT)
+    
+    syllableTG = tgio.Textgrid()
+    syllableTG.addTier(syllableTier)
+    syllableTG.addTier(tonicSTier)
+    syllableTG.addTier(tonicPTier)
+
+    return syllableTG</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pysle.praattools.naivePhoneAlignment"><code class="name flex">
+<span>def <span class="ident">naivePhoneAlignment</span></span>(<span>tg, wordTierName, phoneTierName, isleDict, removeOverlappingSegments=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Performs naive alignment for words in a textgrid</p>
+<p>Naive alignment gives each segment equal duration.
+Phone duration is determined by the duration of the word
+and the number of phones.</p>
+<p>removeOverlappingSegments - remove any labeled words or phones that
+fall under labeled utterances</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
+                        removeOverlappingSegments=False):
+    &#39;&#39;&#39;
+    Performs naive alignment for words in a textgrid
+    
+    Naive alignment gives each segment equal duration.
+    Phone duration is determined by the duration of the word
+    and the number of phones.
+    
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    &#39;&#39;&#39;
+    wordTier = tg.tierDict[wordTierName]
+    
+    phoneTier = None
+    if phoneTierName in tg.tierNameList:
+        phoneTier = tg.tierDict[phoneTierName]
+    
+    # Load in the phone tier, if it exists:
+    phoneEntryList = []
+    if phoneTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in wordTier.entryList:
+                phoneTier = phoneTier.eraseRegion(startT, stopT,
+                                                  &#39;truncate&#39;, False)
+        phoneEntryList = phoneTier.entryList
+
+    # Do the naive alignment
+    for wordStartT, wordEndT, word in wordTier.entryList:
+        
+        # Get the list of phones in this word
+        try:
+            firstSyllableList = isleDict.lookup(word)[0][0][0]
+        except isletool.WordNotInISLE:
+            continue
+
+        phoneList = [phone for syllable in firstSyllableList
+                     for phone in syllable]
+        for char in [u&#39;ˈ&#39;, u&#39;ˌ&#39;]:
+            phoneList = [phone.replace(char, &#39;&#39;) for phone in phoneList]
+        
+        # Get the naive alignment for phones, if alignment doesn&#39;t
+        # already exist for phones
+        subPhoneEntryList = []
+        if phoneTier is not None:
+            subPhoneEntryList = phoneTier.crop(wordStartT, wordEndT,
+                                               &#34;truncated&#34;, False).entryList
+        
+        if len(subPhoneEntryList) == 0:
+            phoneDur = (wordEndT - wordStartT) / len(phoneList)
+            
+            phoneStartT = wordStartT
+            for phone in phoneList:
+                phoneEndT = phoneStartT + phoneDur
+                subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
+                phoneStartT = phoneEndT
+
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the phone tier
+    newPhoneTier = tgio.IntervalTier(phoneTierName,
+                                     phoneEntryList,
+                                     tg.minTimestamp,
+                                     tg.maxTimestamp)
+    if phoneTier is not None:
+        tg.replaceTier(phoneTierName, newPhoneTier)
+    else:
+
+        tg.addTier(newPhoneTier)
+    
+    return tg</code></pre>
+</details>
+</dd>
+<dt id="pysle.praattools.naiveWordAlignment"><code class="name flex">
+<span>def <span class="ident">naiveWordAlignment</span></span>(<span>tg, utteranceTierName, wordTierName, isleDict, phoneHelperTierName=None, removeOverlappingSegments=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Performs naive alignment for utterances in a textgrid</p>
+<p>Naive alignment gives each segment equal duration.
+Word duration is
+determined by the duration of an utterance and the number of phones in
+the word.</p>
+<p>By 'utterance' I mean a string of words separated by a space bounded
+in time eg (0.5, 1.5, "he said he likes ketchup").</p>
+<p>phoneHelperTierName - creates a tier that is parallel to the word tier.
+However, the labels are the phones for the word,
+rather than the word
+removeOverlappingSegments - remove any labeled words or phones that
+fall under labeled utterances</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
+                       phoneHelperTierName=None,
+                       removeOverlappingSegments=False):
+    &#39;&#39;&#39;
+    Performs naive alignment for utterances in a textgrid
+    
+    Naive alignment gives each segment equal duration.  Word duration is
+    determined by the duration of an utterance and the number of phones in
+    the word.
+    
+    By &#39;utterance&#39; I mean a string of words separated by a space bounded
+    in time eg (0.5, 1.5, &#34;he said he likes ketchup&#34;).
+    
+    phoneHelperTierName - creates a tier that is parallel to the word tier.
+                          However, the labels are the phones for the word,
+                          rather than the word
+    removeOverlappingSegments - remove any labeled words or phones that
+                                fall under labeled utterances
+    &#39;&#39;&#39;
+    utteranceTier = tg.tierDict[utteranceTierName]
+    
+    wordTier = None
+    if wordTierName in tg.tierNameList:
+        wordTier = tg.tierDict[wordTierName]
+    
+    # Load in the word tier, if it exists:
+    wordEntryList = []
+    phoneEntryList = []
+    if wordTier is not None:
+        if removeOverlappingSegments:
+            for startT, stopT, _ in utteranceTier.entryList:
+                wordTier = wordTier.eraseRegion(startT, stopT,
+                                                &#39;truncate&#39;, False)
+        wordEntryList = wordTier.entryList
+
+    # Do the naive alignment
+    for startT, stopT, label in utteranceTier.entryList:
+        wordList = label.split()
+
+        # Get the list of phones in each word
+        superPhoneList = []
+        numPhones = 0
+        i = 0
+        while i &lt; len(wordList):
+            word = wordList[i]
+            try:
+                firstSyllableList = isleDict.lookup(word)[0][0][0]
+            except isletool.WordNotInISLE:
+                wordList.pop(i)
+                continue
+            phoneList = [phone for syllable in firstSyllableList
+                         for phone in syllable]
+            superPhoneList.append(phoneList)
+            numPhones += len(phoneList)
+            i += 1
+        
+        # Get the naive alignment for words, if alignment doesn&#39;t
+        # already exist for words
+        subWordEntryList = []
+        subPhoneEntryList = []
+        if wordTier is not None:
+            subWordEntryList = wordTier.crop(startT, stopT,
+                                             &#34;truncated&#34;, False).entryList
+        
+        if len(subWordEntryList) == 0:
+            wordStartT = startT
+            phoneDur = (stopT - startT) / float(numPhones)
+            for i, word in enumerate(wordList):
+                phoneListTxt = &#34; &#34;.join(superPhoneList[i])
+                wordStartT = wordStartT
+                wordEndT = wordStartT + (phoneDur * len(superPhoneList[i]))
+                subWordEntryList.append((wordStartT, wordEndT, word))
+                subPhoneEntryList.append((wordStartT, wordEndT, phoneListTxt))
+                wordStartT = wordEndT
+        
+        wordEntryList.extend(subWordEntryList)
+        phoneEntryList.extend(subPhoneEntryList)
+    
+    # Replace or add the word tier
+    newWordTier = tgio.IntervalTier(wordTierName,
+                                    wordEntryList,
+                                    tg.minTimestamp,
+                                    tg.maxTimestamp)
+    if wordTier is not None:
+        tg.replaceTier(wordTierName, newWordTier)
+    else:
+
+        tg.addTier(newWordTier)
+        
+    # Add the phone tier
+    # This is mainly used as an annotation tier
+    if phoneHelperTierName is not None and len(phoneEntryList) &gt; 0:
+        newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
+                                         phoneEntryList,
+                                         tg.minTimestamp,
+                                         tg.minTimestamp)
+        if phoneHelperTierName in tg.tierNameList:
+            tg.replaceTier(phoneHelperTierName, newPhoneTier)
+        else:
+            tg.addTier(newPhoneTier)
+    
+    return tg</code></pre>
+</details>
+</dd>
+<dt id="pysle.praattools.spellCheckTextgrid"><code class="name flex">
+<span>def <span class="ident">spellCheckTextgrid</span></span>(<span>tg, targetTierName, newTierName, isleDict, printEntries=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Spell check words by using the praatio spellcheck function</p>
+<p>Incorrect items are noted in a new tier and optionally
+printed to the screen</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def spellCheckTextgrid(tg, targetTierName, newTierName, isleDict,
+                       printEntries=False):
+    &#39;&#39;&#39;
+    Spell check words by using the praatio spellcheck function
+    
+    Incorrect items are noted in a new tier and optionally
+        printed to the screen
+    &#39;&#39;&#39;
+    
+    def checkFunc(word):
+        try:
+            isleDict.lookup(word)
+        except isletool.WordNotInISLE:
+            returnVal = False
+        else:
+            returnVal = True
+        
+        return returnVal
+    
+    tg = praatio_scripts.spellCheckEntries(tg, targetTierName, newTierName,
+                                           checkFunc, printEntries)
+    
+    return tg</code></pre>
+</details>
+</dd>
+<dt id="pysle.praattools.syllabifyTextgrid"><code class="name flex">
+<span>def <span class="ident">syllabifyTextgrid</span></span>(<span>isleDict, tg, wordTierName, phoneTierName, skipLabelList=None, startT=None, stopT=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Given a textgrid, syllabifies the phones in the textgrid</p>
+<p>skipLabelList allows you to skip labels without generating warnings
+(e.g. '', 'sp', etc.)</p>
+<p>The textgrid must have a word tier and a phone tier.</p>
+<p>Returns a textgrid with only two tiers containing syllable information
+(syllabification of the phone tier and a tier marking word-stress).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
+                      skipLabelList=None, startT=None, stopT=None):
+    &#39;&#39;&#39;
+    Given a textgrid, syllabifies the phones in the textgrid
+    
+    skipLabelList allows you to skip labels without generating warnings
+    (e.g. &#39;&#39;, &#39;sp&#39;, etc.)
+    
+    The textgrid must have a word tier and a phone tier.
+    
+    Returns a textgrid with only two tiers containing syllable information
+    (syllabification of the phone tier and a tier marking word-stress).
+    &#39;&#39;&#39;
+    minT = tg.minTimestamp
+    maxT = tg.maxTimestamp
+    
+    wordTier = tg.tierDict[wordTierName]
+    phoneTier = tg.tierDict[phoneTierName]
+    
+    if skipLabelList is None:
+        skipLabelList = []
+    
+    syllableEntryList = []
+    tonicSEntryList = []
+    tonicPEntryList = []
+    
+    if startT is not None or stopT is not None:
+        if startT is None:
+            startT = minT
+        if stopT is None:
+            stopT = maxT
+    
+        wordTier = wordTier.crop(startT, stopT, &#34;truncated&#34;, False)
+    
+    for start, stop, word in wordTier.entryList:
+        
+        if word in skipLabelList:
+            continue
+        
+        subPhoneTier = phoneTier.crop(start, stop, &#34;strict&#34;, False)
+        
+        # entry = (start, stop, phone)
+        phoneList = [entry[2] for entry in subPhoneTier.entryList
+                     if entry[2] != &#39;&#39;]
+        phoneList = phoneList
+        
+        try:
+            sylTmp = pronunciationtools.findBestSyllabification(isleDict,
+                                                                word,
+                                                                phoneList)
+        except isletool.WordNotInISLE:
+            print(&#34;Word (&#39;%s&#39;) not is isle -- skipping syllabification&#34; % word)
+            continue
+        except (pronunciationtools.NullPronunciationError):
+            print(&#34;Word (&#39;%s&#39;) has no provided pronunciation&#34; % word)
+            continue
+        except AssertionError:
+            print(&#34;Unable to syllabify &#39;%s&#39;&#34; % word)
+            continue
+        
+
+        stressI = sylTmp[0]
+        stressJ = sylTmp[1]
+        syllableList = sylTmp[2]
+            
+        stressedPhone = None
+        if stressI is not None and stressJ is not None:
+            stressedPhone = syllableList[stressI][stressJ]
+            syllableList[stressI][stressJ] += u&#34;ˈ&#34;
+
+        i = 0
+#         print(syllableList)
+        for k, syllable in enumerate(syllableList):
+            
+            # Create the syllable tier entry
+            j = len(syllable)
+            stubEntryList = subPhoneTier.entryList[i:i + j]
+            i += j
+            
+            # The whole syllable was deleted
+            if len(stubEntryList) == 0:
+                continue
+            
+            syllableStart = stubEntryList[0][0]
+            syllableEnd = stubEntryList[-1][1]
+            label = &#34;-&#34;.join([entry[2] for entry in stubEntryList])
+        
+            syllableEntryList.append((syllableStart, syllableEnd, label))
+            
+            # Create the tonic syllable tier entry
+            if k == stressI:
+                tonicSEntryList.append((syllableStart, syllableEnd, &#39;T&#39;))
+            
+            # Create the tonic phone tier entry
+            if k == stressI:
+                syllablePhoneTier = phoneTier.crop(syllableStart,
+                                                   syllableEnd,
+                                                   &#34;strict&#34;, False)
+            
+                phoneList = [entry for entry in syllablePhoneTier.entryList
+                             if entry[2] != &#39;&#39;]
+                justPhones = [phone for _, _, phone in phoneList]
+                cvList = pronunciationtools._prepPronunciation(justPhones)
+                
+                try:
+                    tmpStressJ = cvList.index(&#39;V&#39;)
+                except ValueError:
+                    for char in [u&#39;r&#39;, u&#39;n&#39;, u&#39;l&#39;]:
+                        if char in cvList:
+                            tmpStressJ = cvList.index(char)
+                            break
+                        
+                phoneStart, phoneEnd = phoneList[tmpStressJ][:2]
+                tonicPEntryList.append((phoneStart, phoneEnd, &#39;T&#39;))
+    
+    # Create a textgrid with the two syllable-level tiers
+    syllableTier = tgio.IntervalTier(&#39;syllable&#39;, syllableEntryList,
+                                     minT, maxT)
+    tonicSTier = tgio.IntervalTier(&#39;tonicSyllable&#39;, tonicSEntryList,
+                                   minT, maxT)
+    tonicPTier = tgio.IntervalTier(&#39;tonicVowel&#39;, tonicPEntryList,
+                                   minT, maxT)
+    
+    syllableTG = tgio.Textgrid()
+    syllableTG.addTier(syllableTier)
+    syllableTG.addTier(tonicSTier)
+    syllableTG.addTier(tonicPTier)
+
+    return syllableTG</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pysle.praattools.OptionalFeatureError"><code class="flex name class">
+<span>class <span class="ident">OptionalFeatureError</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Import can't find module, or can't find name in module.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OptionalFeatureError(ImportError):
+    
+    def __str__(self):
+        return &#34;ERROR: You must have praatio installed to use pysle.praatTools&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.ImportError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pysle" href="index.html">pysle</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pysle.praattools.naivePhoneAlignment" href="#pysle.praattools.naivePhoneAlignment">naivePhoneAlignment</a></code></li>
+<li><code><a title="pysle.praattools.naiveWordAlignment" href="#pysle.praattools.naiveWordAlignment">naiveWordAlignment</a></code></li>
+<li><code><a title="pysle.praattools.spellCheckTextgrid" href="#pysle.praattools.spellCheckTextgrid">spellCheckTextgrid</a></code></li>
+<li><code><a title="pysle.praattools.syllabifyTextgrid" href="#pysle.praattools.syllabifyTextgrid">syllabifyTextgrid</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pysle.praattools.OptionalFeatureError" href="#pysle.praattools.OptionalFeatureError">OptionalFeatureError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

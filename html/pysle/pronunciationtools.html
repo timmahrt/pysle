@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pysle.pronunciationtools API documentation</title>
+<meta name="description" content="Created on Oct 15, 2014 …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pysle.pronunciationtools</code></h1>
+</header>
+<section id="section-intro">
+<p>Created on Oct 15, 2014</p>
+<p>@author: tmahrt</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#encoding: utf-8
+&#39;&#39;&#39;
+Created on Oct 15, 2014
+
+@author: tmahrt
+&#39;&#39;&#39;
+
+import itertools
+import copy
+
+from pysle import isletool
+
+
+class TooManyVowelsInSyllable(Exception):
+    
+    def __init__(self, syllable, syllableCVMapped):
+        super(TooManyVowelsInSyllable, self).__init__()
+        self.syllable = syllable
+        self.syllableCVMapped = syllableCVMapped
+        
+    def __str__(self):
+        errStr = (&#34;Error: syllable &#39;%s&#39; found to have more than &#34;
+                  &#34;one vowel.\n This was the CV mapping: &#39;%s&#39;&#34;)
+        syllableStr = u&#34;&#34;.join(self.syllable)
+        syllableCVStr = u&#34;&#34;.join(self.syllableCVMapped)
+        
+        return errStr % (syllableStr, syllableCVStr)
+
+
+class NumWordsMismatchError(Exception):
+    
+    def __init__(self, word, numMatches):
+        super(NumWordsMismatchError, self).__init__()
+        self.word = word
+        self.numMatches = numMatches
+    
+    def __str__(self):
+        errStr = (&#34;Error: %d matches found in isleDict for &#39;%s&#39;.\n&#34;
+                  &#34;Only 1 match allowed--likely you need to break&#34;
+                  &#34;up your query text into separate words.&#34;)
+        return errStr % (self.numMatches, self.word)
+
+
+class WrongTypeError(Exception):
+    
+    def __init__(self, errMsg):
+        super(WrongTypeError, self).__init__()
+        self.str = errMsg
+    
+    def __str__(self):
+        return self.str
+
+
+class NullPronunciationError(Exception):
+    
+    def __init__(self, word):
+        super(NullPronunciationError, self).__init__()
+        self.word = word
+    
+    def __str__(self):
+        return &#34;No pronunciation given for word &#39;%s&#39;&#34; % self.word
+
+
+class NullPhoneError(Exception):
+
+    def __str(self):
+        return &#34;Received an empty phone in the pronunciation list&#34;
+
+
+def _lcs_lens(xs, ys):
+    curr = list(itertools.repeat(0, 1 + len(ys)))
+    for x in xs:
+        prev = list(curr)
+        for i, y in enumerate(ys):
+            if x == y:
+                curr[i + 1] = prev[i] + 1
+            else:
+                curr[i + 1] = max(curr[i], prev[i + 1])
+    return curr
+
+
+def _lcs(xs, ys):
+    nx, ny = len(xs), len(ys)
+    if nx == 0:
+        return []
+    elif nx == 1:
+        return [xs[0]] if xs[0] in ys else []
+    else:
+        i = nx // 2
+        xb, xe = xs[:i], xs[i:]
+        ll_b = _lcs_lens(xb, ys)
+        ll_e = _lcs_lens(xe[::-1], ys[::-1])
+        _, k = max((ll_b[j] + ll_e[ny - j], j)
+                   for j in range(ny + 1))
+        yb, ye = ys[:k], ys[k:]
+        return _lcs(xb, yb) + _lcs(xe, ye)
+
+
+def _prepPronunciation(phoneList):
+    retList = []
+    for phone in phoneList:
+        
+        # Remove diacritics
+        for diacritic in isletool.diacriticList:
+            phone = phone.replace(diacritic, u&#39;&#39;)
+        
+        # Unify rhotics
+        if &#39;r&#39; in phone:
+            phone = &#39;r&#39;
+
+        phone = phone.lower()
+
+        # Unify vowels
+        if isletool.isVowel(phone):
+            phone = u&#39;V&#39;
+        
+        # Only represent the string by its first letter
+        try:
+            phone = phone[0]
+        except IndexError:
+            raise NullPhoneError()
+        
+        # Unify vowels (reducing the vowel to one char)
+        if isletool.isVowel(phone):
+            phone = u&#39;V&#39;
+        
+        retList.append(phone)
+    
+    return retList
+
+
+def _adjustSyllabification(adjustedPhoneList, syllableList):
+    &#39;&#39;&#39;
+    Inserts spaces into a syllable if needed
+    
+    Originally the phone list and syllable list contained the same number
+    of phones.  But the adjustedPhoneList may have some insertions which are
+    not accounted for in the syllableList.
+    &#39;&#39;&#39;
+    i = 0
+    retSyllableList = []
+    for syllableNum, syllable in enumerate(syllableList):
+        j = len(syllable)
+        if syllableNum == len(syllableList) - 1:
+            j = len(adjustedPhoneList) - i
+        tmpPhoneList = adjustedPhoneList[i:i + j]
+        numBlanks = -1
+        phoneList = tmpPhoneList[:]
+        while numBlanks != 0:
+            
+            numBlanks = tmpPhoneList.count(u&#34;&#39;&#39;&#34;)
+            if numBlanks &gt; 0:
+                tmpPhoneList = adjustedPhoneList[i + j:i + j + numBlanks]
+                phoneList.extend(tmpPhoneList)
+                j += numBlanks
+        
+        for k, phone in enumerate(phoneList):
+            if phone == u&#34;&#39;&#39;&#34;:
+                syllable.insert(k, u&#34;&#39;&#39;&#34;)
+        
+        i += j
+        
+        retSyllableList.append(syllable)
+    
+    return retSyllableList
+        
+
+def _findBestPronunciation(isleWordList, aPron):
+    &#39;&#39;&#39;
+    Words may have multiple candidates in ISLE; returns the &#39;optimal&#39; one.
+    &#39;&#39;&#39;
+    
+    aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
+    
+    numDiffList = []
+    withStress = []
+    i = 0
+    alignedSyllabificationList = []
+    alignedActualPronunciationList = []
+    for wordTuple in isleWordList:
+        aPronMap = copy.deepcopy(aPron)
+        syllableList = wordTuple[0]  # syllableList, stressList
+        
+        iP = [phone for phoneList in syllableList for phone in phoneList]
+        iP = _prepPronunciation(iP)
+
+        alignedIP, alignedAP = alignPronunciations(iP, aP)
+        
+        # Remapping to actual phones
+#         alignedAP = [origPronDict.get(phon, u&#34;&#39;&#39;&#34;) for phon in alignedAP]
+        alignedAP = [aPronMap.pop(0) if phon != u&#34;&#39;&#39;&#34; else u&#34;&#39;&#39;&#34;
+                     for phon in alignedAP]
+        alignedActualPronunciationList.append(alignedAP)
+        
+        # Adjusting the syllabification for differences between the dictionary
+        # pronunciation and the actual pronunciation
+        alignedSyllabification = _adjustSyllabification(alignedIP,
+                                                        syllableList)
+        alignedSyllabificationList.append(alignedSyllabification)
+        
+        # Count the number of misalignments between the two
+        numDiff = alignedIP.count(u&#34;&#39;&#39;&#34;) + alignedAP.count(u&#34;&#39;&#39;&#34;)
+        numDiffList.append(numDiff)
+        
+        # Is there stress in this word
+        hasStress = False
+        for syllable in syllableList:
+            for phone in syllable:
+                hasStress = u&#34;ˈ&#34; in phone or hasStress
+        
+        if hasStress:
+            withStress.append(i)
+        i += 1
+    
+    # Return the pronunciation that had the fewest differences
+    #     to the actual pronunciation
+    minDiff = min(numDiffList)
+    
+    # When there are multiple candidates that have the minimum number
+    #     of differences, prefer one that has stress in it
+    bestIndex = None
+    bestIsStressed = None
+    for i, numDiff in enumerate(numDiffList):
+        if numDiff != minDiff:
+            continue
+        if bestIndex is None:
+            bestIndex = i
+            bestIsStressed = i in withStress
+        else:
+            if not bestIsStressed and i in withStress:
+                bestIndex = i
+                bestIsStressed = True
+    
+    return (isleWordList, alignedActualPronunciationList,
+            alignedSyllabificationList, bestIndex)
+
+
+def _syllabifyPhones(phoneList, syllableList):
+    &#39;&#39;&#39;
+    Given a phone list and a syllable list, syllabify the phones
+    
+    Typically used by findBestSyllabification which first aligns the phoneList
+    with a dictionary phoneList and then uses the dictionary syllabification
+    to syllabify the input phoneList.
+    &#39;&#39;&#39;
+    
+    numPhoneList = [len(syllable) for syllable in syllableList]
+    
+    start = 0
+    syllabifiedList = []
+    for end in numPhoneList:
+        
+        syllable = phoneList[start:start + end]
+        syllabifiedList.append(syllable)
+        
+        start += end
+    
+    return syllabifiedList
+
+
+def alignPronunciations(phoneListA, phoneListB):
+    &#39;&#39;&#39;
+    Align the phones in two pronunciations
+
+    This will find the longest (non-continuous) common sequence and fill in the gaps
+    before, between, and after the characters such that the common elements
+    occur at the same points and the character strings are the same length
+
+    In the following example, the phone lists share the sequence [&#39;a&#39;, &#39;d&#39;]
+    
+    ```python
+    phoneListA = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
+    phoneListB = [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#39;d&#39;, &#39;u&#39;]
+    a, b = alignPronunciations(phoneListA, phoneListB)
+    print(a) &gt; [&#34;&#39;&#39;&#34;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
+    print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#34;&#39;&#39;&#34;, &#39;d&#39;, &#39;u&#39;, &#34;&#39;&#39;&#34;]
+    ```
+    &#39;&#39;&#39;
+    
+    # First prep the two pronunctions
+    phoneListA = [char for char in phoneListA]
+    phoneListB = [char for char in phoneListB]
+    
+    # Remove any elements not in the other list (but maintain order)
+    pronATmp = phoneListA
+    pronBTmp = phoneListB
+
+    # Find the longest sequence
+    sequence = _lcs(pronBTmp, pronATmp)
+
+    # Find the index of the sequence
+    # TODO: investigate ambiguous cases
+    startA = 0
+    startB = 0
+    sequenceIndexListA = []
+    sequenceIndexListB = []
+    for phone in sequence:
+        startA = phoneListA.index(phone, startA)
+        startB = phoneListB.index(phone, startB)
+
+        sequenceIndexListA.append(startA)
+        sequenceIndexListB.append(startB)
+    
+    # An index on the tail of both will be used to create output strings
+    # of the same length
+    sequenceIndexListA.append(len(phoneListA))
+    sequenceIndexListB.append(len(phoneListB))
+    
+    # Fill in any blanks such that the sequential items have the same
+    # index and the two strings are the same length
+    for x in range(len(sequenceIndexListA)):
+        indexA = sequenceIndexListA[x]
+        indexB = sequenceIndexListB[x]
+        if indexA &lt; indexB:
+            for x in range(indexB - indexA):
+                phoneListA.insert(indexA, &#34;&#39;&#39;&#34;)
+            sequenceIndexListA = [val + indexB - indexA
+                                  for val in sequenceIndexListA]
+        elif indexA &gt; indexB:
+            for x in range(indexA - indexB):
+                phoneListB.insert(indexB, &#34;&#39;&#39;&#34;)
+            sequenceIndexListB = [val + indexA - indexB
+                                  for val in sequenceIndexListB]
+    
+    return phoneListA, phoneListB
+   
+
+def findBestSyllabification(isleDict, wordText, phoneList):
+    &#39;&#39;&#39;
+    Find the best syllabification for a word
+
+    First find the closest pronunciation to a given pronunciation. Then take
+    the syllabification for that pronunciation and map it onto the
+    input pronunciation.
+    &#39;&#39;&#39;
+    try:
+        phoneList = [[unicode(char, &#34;utf-8&#34;) for char in row]
+                     for row in phoneList]
+    except (NameError, TypeError):
+        pass
+    
+    isleWordList = isleDict.lookup(wordText)[0]
+    
+    return _findBestSyllabification(isleWordList, phoneList)
+        
+    
+def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
+    &#39;&#39;&#39;
+    Find the best syllabification for a word
+    
+    First find the closest pronunciation to a given pronunciation. Then take
+    the syllabification for that pronunciation and map it onto the
+    input pronunciation.
+    &#39;&#39;&#39;
+    retList = _findBestPronunciation(inputIsleWordList,
+                                     actualPronunciationList)
+    isleWordList, alignedAPronList, alignedSyllableList, bestIndex = retList
+    
+    alignedPhoneList = alignedAPronList[bestIndex]
+    alignedSyllables = alignedSyllableList[bestIndex]
+    syllabification = isleWordList[bestIndex][0]
+    stressedSyllableIndexList = isleWordList[bestIndex][1]
+    stressedPhoneIndexList = isleWordList[bestIndex][2]
+    
+    syllableList = _syllabifyPhones(alignedPhoneList, alignedSyllables)
+    
+    # Get the location of stress in the generated file
+    try:
+        stressedSyllableI = stressedSyllableIndexList[0]
+    except IndexError:
+        stressedSyllableI = None
+        stressedVowelI = None
+    else:
+        stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
+    
+    # Count the index of the stressed phones, if the stress list has
+    # become flattened (no syllable information)
+    flattenedStressIndexList = []
+    for i, j in zip(stressedSyllableIndexList, stressedPhoneIndexList):
+        k = j
+        for l in range(i):
+            k += len(syllableList[l])
+        flattenedStressIndexList.append(k)
+    
+    return (stressedSyllableI, stressedVowelI, syllableList, syllabification,
+            stressedSyllableIndexList, stressedPhoneIndexList,
+            flattenedStressIndexList)
+
+
+def _getSyllableNucleus(phoneList):
+    &#39;&#39;&#39;
+    Given the phones in a syllable, retrieves the vowel index
+    &#39;&#39;&#39;
+    cvList = [&#39;V&#39; if isletool.isVowel(phone) else &#39;C&#39; for phone in phoneList]
+    
+    vowelCount = cvList.count(&#39;V&#39;)
+    if vowelCount &gt; 1:
+        raise TooManyVowelsInSyllable(phoneList, cvList)
+    
+    if vowelCount == 1:
+        stressI = cvList.index(&#39;V&#39;)
+    else:
+        stressI = None
+        
+    return stressI
+
+
+def findClosestPronunciation(isleDict, word, phoneList):
+    &#39;&#39;&#39;
+    Find the closest dictionary pronunciation to a provided pronunciation
+    &#39;&#39;&#39;
+    isleWordList = isleDict.lookup(word)
+
+
+    retList = _findBestPronunciation(isleWordList[0], phoneList)
+    isleWordList = retList[0]
+    bestIndex = retList[3]
+    
+    return isleWordList[bestIndex]</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pysle.pronunciationtools.alignPronunciations"><code class="name flex">
+<span>def <span class="ident">alignPronunciations</span></span>(<span>phoneListA, phoneListB)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Align the phones in two pronunciations</p>
+<p>This will find the longest (non-continuous) common sequence and fill in the gaps
+before, between, and after the characters such that the common elements
+occur at the same points and the character strings are the same length</p>
+<p>In the following example, the phone lists share the sequence ['a', 'd']</p>
+<pre><code class="python">phoneListA = ['a', 'b', 'c', 'd', 'e', 'f']
+phoneListB = ['l', 'a', 'z', 'd', 'u']
+a, b = alignPronunciations(phoneListA, phoneListB)
+print(a) &gt; [&quot;''&quot;, 'a', 'b', 'c', 'd', 'e', 'f']
+print(b) &gt; ['l', 'a', 'z', &quot;''&quot;, 'd', 'u', &quot;''&quot;]
+</code></pre></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def alignPronunciations(phoneListA, phoneListB):
+    &#39;&#39;&#39;
+    Align the phones in two pronunciations
+
+    This will find the longest (non-continuous) common sequence and fill in the gaps
+    before, between, and after the characters such that the common elements
+    occur at the same points and the character strings are the same length
+
+    In the following example, the phone lists share the sequence [&#39;a&#39;, &#39;d&#39;]
+    
+    ```python
+    phoneListA = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
+    phoneListB = [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#39;d&#39;, &#39;u&#39;]
+    a, b = alignPronunciations(phoneListA, phoneListB)
+    print(a) &gt; [&#34;&#39;&#39;&#34;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
+    print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#34;&#39;&#39;&#34;, &#39;d&#39;, &#39;u&#39;, &#34;&#39;&#39;&#34;]
+    ```
+    &#39;&#39;&#39;
+    
+    # First prep the two pronunctions
+    phoneListA = [char for char in phoneListA]
+    phoneListB = [char for char in phoneListB]
+    
+    # Remove any elements not in the other list (but maintain order)
+    pronATmp = phoneListA
+    pronBTmp = phoneListB
+
+    # Find the longest sequence
+    sequence = _lcs(pronBTmp, pronATmp)
+
+    # Find the index of the sequence
+    # TODO: investigate ambiguous cases
+    startA = 0
+    startB = 0
+    sequenceIndexListA = []
+    sequenceIndexListB = []
+    for phone in sequence:
+        startA = phoneListA.index(phone, startA)
+        startB = phoneListB.index(phone, startB)
+
+        sequenceIndexListA.append(startA)
+        sequenceIndexListB.append(startB)
+    
+    # An index on the tail of both will be used to create output strings
+    # of the same length
+    sequenceIndexListA.append(len(phoneListA))
+    sequenceIndexListB.append(len(phoneListB))
+    
+    # Fill in any blanks such that the sequential items have the same
+    # index and the two strings are the same length
+    for x in range(len(sequenceIndexListA)):
+        indexA = sequenceIndexListA[x]
+        indexB = sequenceIndexListB[x]
+        if indexA &lt; indexB:
+            for x in range(indexB - indexA):
+                phoneListA.insert(indexA, &#34;&#39;&#39;&#34;)
+            sequenceIndexListA = [val + indexB - indexA
+                                  for val in sequenceIndexListA]
+        elif indexA &gt; indexB:
+            for x in range(indexA - indexB):
+                phoneListB.insert(indexB, &#34;&#39;&#39;&#34;)
+            sequenceIndexListB = [val + indexA - indexB
+                                  for val in sequenceIndexListB]
+    
+    return phoneListA, phoneListB</code></pre>
+</details>
+</dd>
+<dt id="pysle.pronunciationtools.findBestSyllabification"><code class="name flex">
+<span>def <span class="ident">findBestSyllabification</span></span>(<span>isleDict, wordText, phoneList)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Find the best syllabification for a word</p>
+<p>First find the closest pronunciation to a given pronunciation. Then take
+the syllabification for that pronunciation and map it onto the
+input pronunciation.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findBestSyllabification(isleDict, wordText, phoneList):
+    &#39;&#39;&#39;
+    Find the best syllabification for a word
+
+    First find the closest pronunciation to a given pronunciation. Then take
+    the syllabification for that pronunciation and map it onto the
+    input pronunciation.
+    &#39;&#39;&#39;
+    try:
+        phoneList = [[unicode(char, &#34;utf-8&#34;) for char in row]
+                     for row in phoneList]
+    except (NameError, TypeError):
+        pass
+    
+    isleWordList = isleDict.lookup(wordText)[0]
+    
+    return _findBestSyllabification(isleWordList, phoneList)</code></pre>
+</details>
+</dd>
+<dt id="pysle.pronunciationtools.findClosestPronunciation"><code class="name flex">
+<span>def <span class="ident">findClosestPronunciation</span></span>(<span>isleDict, word, phoneList)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Find the closest dictionary pronunciation to a provided pronunciation</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findClosestPronunciation(isleDict, word, phoneList):
+    &#39;&#39;&#39;
+    Find the closest dictionary pronunciation to a provided pronunciation
+    &#39;&#39;&#39;
+    isleWordList = isleDict.lookup(word)
+
+
+    retList = _findBestPronunciation(isleWordList[0], phoneList)
+    isleWordList = retList[0]
+    bestIndex = retList[3]
+    
+    return isleWordList[bestIndex]</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pysle.pronunciationtools.NullPhoneError"><code class="flex name class">
+<span>class <span class="ident">NullPhoneError</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NullPhoneError(Exception):
+
+    def __str(self):
+        return &#34;Received an empty phone in the pronunciation list&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="pysle.pronunciationtools.NullPronunciationError"><code class="flex name class">
+<span>class <span class="ident">NullPronunciationError</span></span>
+<span>(</span><span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NullPronunciationError(Exception):
+    
+    def __init__(self, word):
+        super(NullPronunciationError, self).__init__()
+        self.word = word
+    
+    def __str__(self):
+        return &#34;No pronunciation given for word &#39;%s&#39;&#34; % self.word</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="pysle.pronunciationtools.NumWordsMismatchError"><code class="flex name class">
+<span>class <span class="ident">NumWordsMismatchError</span></span>
+<span>(</span><span>word, numMatches)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NumWordsMismatchError(Exception):
+    
+    def __init__(self, word, numMatches):
+        super(NumWordsMismatchError, self).__init__()
+        self.word = word
+        self.numMatches = numMatches
+    
+    def __str__(self):
+        errStr = (&#34;Error: %d matches found in isleDict for &#39;%s&#39;.\n&#34;
+                  &#34;Only 1 match allowed--likely you need to break&#34;
+                  &#34;up your query text into separate words.&#34;)
+        return errStr % (self.numMatches, self.word)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="pysle.pronunciationtools.TooManyVowelsInSyllable"><code class="flex name class">
+<span>class <span class="ident">TooManyVowelsInSyllable</span></span>
+<span>(</span><span>syllable, syllableCVMapped)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TooManyVowelsInSyllable(Exception):
+    
+    def __init__(self, syllable, syllableCVMapped):
+        super(TooManyVowelsInSyllable, self).__init__()
+        self.syllable = syllable
+        self.syllableCVMapped = syllableCVMapped
+        
+    def __str__(self):
+        errStr = (&#34;Error: syllable &#39;%s&#39; found to have more than &#34;
+                  &#34;one vowel.\n This was the CV mapping: &#39;%s&#39;&#34;)
+        syllableStr = u&#34;&#34;.join(self.syllable)
+        syllableCVStr = u&#34;&#34;.join(self.syllableCVMapped)
+        
+        return errStr % (syllableStr, syllableCVStr)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="pysle.pronunciationtools.WrongTypeError"><code class="flex name class">
+<span>class <span class="ident">WrongTypeError</span></span>
+<span>(</span><span>errMsg)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WrongTypeError(Exception):
+    
+    def __init__(self, errMsg):
+        super(WrongTypeError, self).__init__()
+        self.str = errMsg
+    
+    def __str__(self):
+        return self.str</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pysle" href="index.html">pysle</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pysle.pronunciationtools.alignPronunciations" href="#pysle.pronunciationtools.alignPronunciations">alignPronunciations</a></code></li>
+<li><code><a title="pysle.pronunciationtools.findBestSyllabification" href="#pysle.pronunciationtools.findBestSyllabification">findBestSyllabification</a></code></li>
+<li><code><a title="pysle.pronunciationtools.findClosestPronunciation" href="#pysle.pronunciationtools.findClosestPronunciation">findClosestPronunciation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pysle.pronunciationtools.NullPhoneError" href="#pysle.pronunciationtools.NullPhoneError">NullPhoneError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pysle.pronunciationtools.NullPronunciationError" href="#pysle.pronunciationtools.NullPronunciationError">NullPronunciationError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pysle.pronunciationtools.NumWordsMismatchError" href="#pysle.pronunciationtools.NumWordsMismatchError">NumWordsMismatchError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pysle.pronunciationtools.TooManyVowelsInSyllable" href="#pysle.pronunciationtools.TooManyVowelsInSyllable">TooManyVowelsInSyllable</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pysle.pronunciationtools.WrongTypeError" href="#pysle.pronunciationtools.WrongTypeError">WrongTypeError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pysle.isletool API documentation</title>
+<meta name="description" content="Created on Oct 11, 2012 …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pysle.isletool</code></h1>
+</header>
+<section id="section-intro">
+<p>Created on Oct 11, 2012</p>
+<p>@author: timmahrt</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#encoding: utf-8
+&#39;&#39;&#39;
+Created on Oct 11, 2012
+
+@author: timmahrt
+&#39;&#39;&#39;
+
+import io
+import re
+
+
+charList = [u&#39;#&#39;, u&#39;.&#39;, u&#39;aʊ&#39;, u&#39;b&#39;, u&#39;d&#39;, u&#39;dʒ&#39;, u&#39;ei&#39;, u&#39;f&#39;, u&#39;g&#39;,
+            u&#39;h&#39;, u&#39;i&#39;, u&#39;j&#39;, u&#39;k&#39;, u&#39;l&#39;, u&#39;m&#39;, u&#39;n&#39;, u&#39;oʊ&#39;, u&#39;p&#39;,
+            u&#39;r&#39;, u&#39;s&#39;, u&#39;t&#39;, u&#39;tʃ&#39;, u&#39;u&#39;, u&#39;v&#39;, u&#39;w&#39;, u&#39;z&#39;, u&#39;æ&#39;,
+            u&#39;ð&#39;, u&#39;ŋ&#39;, u&#39;ɑ&#39;, u&#39;ɑɪ&#39;, u&#39;ɔ&#39;, u&#39;ɔi&#39;, u&#39;ə&#39;, u&#39;ɚ&#39;, u&#39;ɛ&#39;, u&#39;ɝ&#39;,
+            u&#39;ɪ&#39;, u&#39;ɵ&#39;, u&#39;ɹ&#39;, u&#39;ʃ&#39;, u&#39;ʊ&#39;, u&#39;ʒ&#39;, u&#39;æ&#39;, u&#39;ʌ&#39;, ]
+
+diacriticList = [u&#39;˺&#39;, u&#39;ˌ&#39;, u&#39;̩&#39;, u&#39;̃&#39;, u&#39;ˈ&#39;, ]
+
+monophthongList = [u&#39;u&#39;, u&#39;æ&#39;, u&#39;ɑ&#39;, u&#39;ɔ&#39;, u&#39;ə&#39;, u&#39;i&#39;, u&#39;ɛ&#39;, u&#39;ɪ&#39;, u&#39;ʊ&#39;, u&#39;ʌ&#39;, u&#39;a&#39;, u&#39;e&#39;, u&#39;o&#39;, ]
+
+diphthongList = [u&#39;ɑɪ&#39;, u&#39;aʊ&#39;, u&#39;ei&#39;, u&#39;ɔi&#39;, u&#39;oʊ&#39;, u&#39;ae&#39;]
+
+syllabicConsonantList = [u&#39;l̩&#39;, u&#39;n̩&#39;, u&#39;ɚ&#39;, u&#39;ɝ&#39;]
+
+# ISLE words are part of speech tagged using the Penn Part of Speech Tagset
+posList = [&#39;cc&#39;, &#39;cd&#39;, &#39;dt&#39;, &#39;fw&#39;, &#39;in&#39;, &#39;jj&#39;, &#39;jjr&#39;, &#39;jjs&#39;, &#39;ls&#39;, &#39;md&#39;,
+           &#39;nn&#39;, &#39;nnd&#39;, &#39;nnp&#39;, &#39;nnps&#39;, &#39;nns&#39;, &#39;pdt&#39;, &#39;prp&#39;, &#39;punc&#39;, &#39;rb&#39;,
+           &#39;rbr&#39;, &#39;rbs&#39;, &#39;rp&#39;, &#39;sym&#39;, &#39;to&#39;, &#39;uh&#39;, &#39;vb&#39;, &#39;vbd&#39;, &#39;vbg&#39;, &#39;vbn&#39;,
+           &#39;vbp&#39;, &#39;vbz&#39;, &#39;vpb&#39;, &#39;wdt&#39;, &#39;wp&#39;, &#39;wrb&#39;]
+
+vowelList = monophthongList + diphthongList + syllabicConsonantList
+
+
+def isVowel(char):
+    return any([vowel in char for vowel in vowelList])
+
+
+def sequenceMatch(matchChar, searchStr):
+    return matchChar in searchStr
+
+
+class WordNotInISLE(Exception):
+    
+    def __init__(self, word):
+        super(WordNotInISLE, self).__init__()
+        self.word = word
+        
+    def __str__(self):
+        return (&#34;Word &#39;%s&#39; not in ISLE dictionary.  &#34;
+                &#34;Please add it to continue.&#34; % self.word)
+
+
+class LexicalTool():
+    
+    def __init__(self, islePath):
+        &#39;&#39;&#39;
+        
+        
+        self.data: the pronunciation data {(word, pronunciationList),}
+        self.dataExtra: pos and other info {(word, infoList),}
+        &#39;&#39;&#39;
+        self.islePath = islePath
+        self.data = self._buildDict()
+    
+    def _buildDict(self):
+        &#39;&#39;&#39;
+        Builds the isle textfile into a dictionary for fast searching
+        &#39;&#39;&#39;
+        lexDict = {}
+        with io.open(self.islePath, &#34;r&#34;, encoding=&#39;utf-8&#39;) as fd:
+            wordList = [line.rstrip(&#39;\n&#39;) for line in fd]
+        
+        for row in wordList:
+            word, pronunciation = row.split(&#34; &#34;, 1)
+            word, extraInfo = word.split(&#34;(&#34;, 1)
+            
+            extraInfo = extraInfo.replace(&#34;)&#34;, &#34;&#34;)
+            extraInfoList = [segment for segment in extraInfo.split(&#34;,&#34;)
+                             if (&#34;_&#34; not in segment and &#34;+&#34; not in segment and
+                                 &#39;:&#39; not in segment and segment != &#39;&#39;)]
+            
+            lexDict.setdefault(word, [])
+            lexDict[word].append((pronunciation, extraInfoList))
+        
+        return lexDict
+    
+    def lookup(self, word):
+        &#39;&#39;&#39;
+        Lookup a word and receive a list of syllables and stressInfo
+        
+        Output example for the word &#39;another&#39; which has two pronunciations
+        [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),
+          ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]
+        &#39;&#39;&#39;
+        
+        # All words must be lowercase with no extraneous whitespace
+        word = word.lower()
+        word = word.strip()
+        
+        pronList = self.data.get(word, None)
+        
+        if pronList is None:
+            raise WordNotInISLE(word)
+        else:
+            pronList = [_parsePronunciation(pronunciationStr)
+                        for pronunciationStr, _ in pronList]
+            pronList = list(zip(*pronList))
+        
+        return pronList
+
+    def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
+               wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
+               multiword=&#39;ok&#39;, pos=None):
+        &#39;&#39;&#39;
+        for help on isletool.LexicalTool.search(), see see isletool.search()
+        &#39;&#39;&#39;
+        return search(self.data.items(), matchStr, numSyllables=numSyllables,
+                      wordInitial=wordInitial, wordFinal=wordFinal,
+                      spanSyllable=spanSyllable,
+                      stressedSyllable=stressedSyllable,
+                      multiword=multiword, pos=pos)
+
+
+def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
+                     spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;):
+    &#39;&#39;&#39;
+    Prepares a user&#39;s RE string for a search
+    &#39;&#39;&#39;
+    
+    # Protect sounds that are two characters
+    # After this we can assume that each character represents a sound
+    # (We&#39;ll revert back when we&#39;re done processing the RE)
+    replList = [(u&#39;ei&#39;, u&#39;9&#39;), (u&#39;tʃ&#39;, u&#39;=&#39;), (u&#39;oʊ&#39;, u&#39;~&#39;),
+                (u&#39;dʒ&#39;, u&#39;@&#39;), (u&#39;aʊ&#39;, u&#39;%&#39;), (u&#39;ɑɪ&#39;, u&#39;&amp;&#39;),
+                (u&#39;ɔi&#39;, u&#39;$&#39;)]
+
+    # Add to the replList
+    currentReplNum = 0
+    startI = 0
+    for left, right in ((&#39;(&#39;, &#39;)&#39;), (&#39;[&#39;, &#39;]&#39;)):
+        while True:
+            try:
+                i = matchStr.index(left, startI)
+            except ValueError:
+                break
+            j = matchStr.index(right, i) + 1
+            replList.append((matchStr[i:j], str(currentReplNum)))
+            currentReplNum += 1
+            startI = j
+    
+    for charA, charB in replList:
+        matchStr = matchStr.replace(charA, charB)
+    
+    # Characters to check between all other characters
+    # Don&#39;t check between all other characters if the character is already
+    # in the search string or
+    interleaveStr = None
+    stressOpt = (stressedSyllable == &#39;ok&#39; or stressedSyllable == &#39;only&#39;)
+    spanOpt = (spanSyllable == &#39;ok&#39; or spanSyllable == &#39;only&#39;)
+    if stressOpt and spanOpt:
+        interleaveStr = u&#34;\.?ˈ?&#34;
+    elif stressOpt:
+        interleaveStr = u&#34;ˈ?&#34;
+    elif spanOpt:
+        interleaveStr = u&#34;\.?&#34;
+    
+    if interleaveStr is not None:
+        matchStr = interleaveStr.join(matchStr)
+    
+    # Setting search boundaries
+    # We search on &#39;[^\.#]&#39; and not &#39;.&#39; so that the search doesn&#39;t span
+    # multiple syllables or words
+    if wordInitial == &#39;only&#39;:
+        matchStr = u&#39;#&#39; + matchStr
+    elif wordInitial == &#39;no&#39;:
+        # Match the closest preceeding syllable.  If there is none, look
+        # for word boundary plus at least one other character
+        matchStr = u&#39;(?:\.[^\.#]*?|#[^\.#]+?)&#39; + matchStr
+    else:
+        matchStr = u&#39;[#\.][^\.#]*?&#39; + matchStr
+    
+    if wordFinal == &#39;only&#39;:
+        matchStr = matchStr + u&#39;#&#39;
+    elif wordFinal == &#39;no&#39;:
+        matchStr = matchStr + u&#34;(?:[^\.#]*?\.|[^\.#]+?#)&#34;
+    else:
+        matchStr = matchStr + u&#39;[^\.#]*?[#\.]&#39;
+    
+    # For sounds that are designated two characters, prevent
+    # detecting those sounds if the user wanted a sound
+    # designated by one of the contained characters
+    
+    # Forward search (&#39;a&#39; and not &#39;ab&#39;)
+    insertList = []
+    for charA, charB in [(u&#39;e&#39;, u&#39;i&#39;), (u&#39;t&#39;, u&#39;ʃ&#39;), (u&#39;d&#39;, u&#39;ʒ&#39;),
+                         (u&#39;o&#39;, u&#39;ʊ&#39;), (u&#39;a&#39;, u&#39;ʊ|ɪ&#39;), (u&#39;ɔ&#39;, u&#39;i&#39;), ]:
+        startI = 0
+        while True:
+            try:
+                i = matchStr.index(charA, startI)
+            except ValueError:
+                break
+            if matchStr[i + 1] != charB:
+                forwardStr = u&#39;(?!%s)&#39; % charB
+#                 matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]
+                startI = i + 1 + len(forwardStr)
+                insertList.append((i + 1, forwardStr))
+        
+    # Backward search (&#39;b&#39; and not &#39;ab&#39;)
+    for charA, charB in [(u&#39;t&#39;, u&#39;ʃ&#39;), (u&#39;d&#39;, u&#39;ʒ&#39;),
+                         (u&#39;a|o&#39;, u&#39;ʊ&#39;), (u&#39;e|ɔ&#39;, u&#39;i&#39;), (u&#39;ɑ&#39; u&#39;ɪ&#39;), ]:
+        startI = 0
+        while True:
+            try:
+                i = matchStr.index(charB, startI)
+            except ValueError:
+                break
+            if matchStr[i - 1] != charA:
+                backStr = u&#39;(?&lt;!%s)&#39; % charA
+#                 matchStr = matchStr[:i] + backStr + matchStr[i:]
+                startI = i + 1 + len(backStr)
+                insertList.append((i, backStr))
+                
+    insertList.sort()
+    for i, insertStr in insertList[::-1]:
+        matchStr = matchStr[:i] + insertStr + matchStr[i:]
+    
+    # Revert the special sounds back from 1 character to 2 characters
+    for charA, charB in replList:
+        matchStr = matchStr.replace(charB, charA)
+
+    # Replace special characters
+    replDict = {&#34;D&#34;: u&#34;(?:t(?!ʃ)|d(?!ʒ)|[sz])&#34;,  # dentals
+                &#34;F&#34;: u&#34;[ʃʒfvszɵðh]&#34;,  # fricatives
+                &#34;S&#34;: u&#34;(?:t(?!ʃ)|d(?!ʒ)|[pbkg])&#34;,  # stops
+                &#34;N&#34;: u&#34;[nmŋ]&#34;,  # nasals
+                &#34;R&#34;: u&#34;[rɝɚ]&#34;,  # rhotics
+                &#34;V&#34;: u&#34;(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?&#34;,  # vowels
+                &#34;B&#34;: u&#34;\.&#34;,  # syllable boundary
+                }
+
+    for char, replStr in replDict.items():
+        matchStr = matchStr.replace(char, replStr)
+
+    return matchStr
+
+
+def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
+           wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
+           multiword=&#39;ok&#39;, pos=None):
+    &#39;&#39;&#39;
+    Searches for words in searchList that match the specified pronunciation; uses regular expressions
+    
+    wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
+    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;.
+    
+    pos: a tag in the Penn Part of Speech tagset
+        see isletool.posList for the full list of possible tags
+    
+    Special search characters:
+    &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
+    &#39;V&#39; - any vowel; &#39;N&#39; - any nasal; &#39;R&#39; - any rhotic
+    &#39;#&#39; - word boundary
+    &#39;B&#39; - syllable boundary
+    &#39;.&#39; - anything
+    
+    For advanced queries:
+    Regular expression syntax applies, so if you wanted to search for any
+    word ending with a vowel or rhotic, matchStr = &#39;(?:VR)#&#39;, &#39;[VR]#&#39;, etc.
+
+    Compared with LexicalTool().search(), this function can be used to search through a smaller
+    set of data than the entire ISLEdict dictionary.
+    &#39;&#39;&#39;
+    # Run search for words
+    
+    matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
+                                spanSyllable, stressedSyllable)
+    
+    compiledRE = re.compile(matchStr)
+    retList = []
+    for word, pronList in searchList:
+        newPronList = []
+        for pron, posList in pronList:
+            searchPron = pron.replace(&#34;,&#34;, &#34;&#34;).replace(&#34; &#34;, &#34;&#34;)
+            
+            # Search for pos
+            if pos is not None:
+                if pos not in posList:
+                    continue
+            
+            # Ignore diacritics for now:
+            for diacritic in diacriticList:
+                if diacritic not in matchStr:
+                    searchPron = searchPron.replace(diacritic, &#34;&#34;)
+            
+            if numSyllables is not None:
+                if numSyllables != searchPron.count(&#39;.&#39;) + 1:
+                    continue
+            
+            # Is this a compound word?
+            if multiword == &#39;only&#39;:
+                if searchPron.count(&#39;#&#39;) == 2:
+                    continue
+            elif multiword == &#39;no&#39;:
+                if searchPron.count(&#39;#&#39;) &gt; 2:
+                    continue
+            
+            matchList = compiledRE.findall(searchPron)
+            if len(matchList) &gt; 0:
+                if stressedSyllable == &#39;only&#39;:
+                    if all([u&#34;ˈ&#34; not in match for match in matchList]):
+                        continue
+                if stressedSyllable == &#39;no&#39;:
+                    if all([u&#34;ˈ&#34; in match for match in matchList]):
+                        continue
+                
+                # For syllable spanning, we check if there is a syllable
+                # marker inside (not at the border) of the match.
+                if spanSyllable == &#39;only&#39;:
+                    if all([&#34;.&#34; not in txt[1:-1] for txt in matchList]):
+                        continue
+                if spanSyllable == &#39;no&#39;:
+                    if all([&#34;.&#34; in txt[1:-1] for txt in matchList]):
+                        continue
+                newPronList.append((pron, posList))
+        
+        if len(newPronList) &gt; 0:
+            retList.append((word, newPronList))
+    
+    retList.sort()
+    return retList
+
+
+def _parsePronunciation(pronunciationStr):
+    &#39;&#39;&#39;
+    Parses the pronunciation string
+    
+    Returns the list of syllables and a list of primary and
+    secondary stress locations
+    &#39;&#39;&#39;
+    retList = []
+    for syllableTxt in pronunciationStr.split(&#34;#&#34;):
+        if syllableTxt == &#34;&#34;:
+            continue
+        syllableList = [x.split() for x in syllableTxt.split(&#39; . &#39;)]
+        
+        # Find stress
+        stressedSyllableList = []
+        stressedPhoneList = []
+        for i, syllable in enumerate(syllableList):
+            for j, phone in enumerate(syllable):
+                if u&#34;ˈ&#34; in phone:
+                    stressedSyllableList.insert(0, i)
+                    stressedPhoneList.insert(0, j)
+                    break
+                elif u&#39;ˌ&#39; in phone:
+                    stressedSyllableList.append(i)
+                    stressedPhoneList.append(j)
+        
+        retList.append((syllableList, stressedSyllableList, stressedPhoneList))
+    
+    return retList
+            
+            
+def getNumPhones(isleDict, word, maxFlag):
+    &#39;&#39;&#39;
+    Get the number of syllables and phones in this word
+    
+    If maxFlag=True, use the longest pronunciation.  Otherwise, take the
+    average length.
+    &#39;&#39;&#39;
+    phoneCount = 0
+    syllableCount = 0
+    
+    syllableCountList = []
+    phoneCountList = []
+    
+    wordList = isleDict.lookup(word)
+    entryList = zip(*wordList)
+    
+    for lookupResultList in entryList:
+        syllableList = []
+        for wordSyllableList in lookupResultList:
+            syllableList.extend(wordSyllableList)
+        
+        syllableCountList.append(len(syllableList))
+        phoneCountList.append(len([phon for phoneList in syllableList for
+                                   phon in phoneList]))
+    
+    # The average number of phones for all possible pronunciations
+    #    of this word
+    if maxFlag is True:
+        syllableCount += max(syllableCountList)
+        phoneCount += max(phoneCountList)
+    else:
+        syllableCount += (sum(syllableCountList) /
+                          float(len(syllableCountList)))
+        phoneCount += sum(phoneCountList) / float(len(phoneCountList))
+    
+    return syllableCount, phoneCount
+
+
+def findOODWords(isleDict, wordList):
+    &#39;&#39;&#39;
+    Returns all of the out-of-dictionary words found in a list of utterances
+    &#39;&#39;&#39;
+    oodList = []
+    for word in wordList:
+        try:
+            isleDict.lookup(word)
+        except WordNotInISLE:
+            oodList.append(word)
+                
+    oodList = list(set(oodList))
+    oodList.sort()
+    
+    return oodList
+
+
+def autopair(isleDict, wordList):
+    &#39;&#39;&#39;
+    Tests whether adjacent words are OOD or not
+    
+    It returns complete wordLists with the matching words replaced.
+    Each match yields one sentence.
+    
+    e.g.
+    red ball chaser
+    would return
+    [[red_ball chaser], [red ball_chaser]], [0, 1]
+    
+    if &#39;red_ball&#39; and &#39;ball_chaser&#39; were both in the dictionary
+    &#39;&#39;&#39;
+    
+    newWordList = [(&#34;%s_%s&#34; % (wordList[i], wordList[i + 1]), i)
+                   for i in range(0, len(wordList) - 1)]
+    
+    sentenceList = []
+    indexList = []
+    for word, i in newWordList:
+        if word in isleDict.data:
+            sentenceList.append(wordList[:i] + [word, ] + wordList[i + 1:])
+            indexList.append(i)
+    
+    return sentenceList, indexList</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pysle.isletool.autopair"><code class="name flex">
+<span>def <span class="ident">autopair</span></span>(<span>isleDict, wordList)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Tests whether adjacent words are OOD or not</p>
+<p>It returns complete wordLists with the matching words replaced.
+Each match yields one sentence.</p>
+<p>e.g.
+red ball chaser
+would return
+[[red_ball chaser], [red ball_chaser]], [0, 1]</p>
+<p>if 'red_ball' and 'ball_chaser' were both in the dictionary</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def autopair(isleDict, wordList):
+    &#39;&#39;&#39;
+    Tests whether adjacent words are OOD or not
+    
+    It returns complete wordLists with the matching words replaced.
+    Each match yields one sentence.
+    
+    e.g.
+    red ball chaser
+    would return
+    [[red_ball chaser], [red ball_chaser]], [0, 1]
+    
+    if &#39;red_ball&#39; and &#39;ball_chaser&#39; were both in the dictionary
+    &#39;&#39;&#39;
+    
+    newWordList = [(&#34;%s_%s&#34; % (wordList[i], wordList[i + 1]), i)
+                   for i in range(0, len(wordList) - 1)]
+    
+    sentenceList = []
+    indexList = []
+    for word, i in newWordList:
+        if word in isleDict.data:
+            sentenceList.append(wordList[:i] + [word, ] + wordList[i + 1:])
+            indexList.append(i)
+    
+    return sentenceList, indexList</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.findOODWords"><code class="name flex">
+<span>def <span class="ident">findOODWords</span></span>(<span>isleDict, wordList)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns all of the out-of-dictionary words found in a list of utterances</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findOODWords(isleDict, wordList):
+    &#39;&#39;&#39;
+    Returns all of the out-of-dictionary words found in a list of utterances
+    &#39;&#39;&#39;
+    oodList = []
+    for word in wordList:
+        try:
+            isleDict.lookup(word)
+        except WordNotInISLE:
+            oodList.append(word)
+                
+    oodList = list(set(oodList))
+    oodList.sort()
+    
+    return oodList</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.getNumPhones"><code class="name flex">
+<span>def <span class="ident">getNumPhones</span></span>(<span>isleDict, word, maxFlag)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get the number of syllables and phones in this word</p>
+<p>If maxFlag=True, use the longest pronunciation.
+Otherwise, take the
+average length.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getNumPhones(isleDict, word, maxFlag):
+    &#39;&#39;&#39;
+    Get the number of syllables and phones in this word
+    
+    If maxFlag=True, use the longest pronunciation.  Otherwise, take the
+    average length.
+    &#39;&#39;&#39;
+    phoneCount = 0
+    syllableCount = 0
+    
+    syllableCountList = []
+    phoneCountList = []
+    
+    wordList = isleDict.lookup(word)
+    entryList = zip(*wordList)
+    
+    for lookupResultList in entryList:
+        syllableList = []
+        for wordSyllableList in lookupResultList:
+            syllableList.extend(wordSyllableList)
+        
+        syllableCountList.append(len(syllableList))
+        phoneCountList.append(len([phon for phoneList in syllableList for
+                                   phon in phoneList]))
+    
+    # The average number of phones for all possible pronunciations
+    #    of this word
+    if maxFlag is True:
+        syllableCount += max(syllableCountList)
+        phoneCount += max(phoneCountList)
+    else:
+        syllableCount += (sum(syllableCountList) /
+                          float(len(syllableCountList)))
+        phoneCount += sum(phoneCountList) / float(len(phoneCountList))
+    
+    return syllableCount, phoneCount</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.isVowel"><code class="name flex">
+<span>def <span class="ident">isVowel</span></span>(<span>char)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isVowel(char):
+    return any([vowel in char for vowel in vowelList])</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>searchList, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Searches for words in searchList that match the specified pronunciation; uses regular expressions</p>
+<p>wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
+can take three different values: 'ok', 'only', or 'no'.</p>
+<p>pos: a tag in the Penn Part of Speech tagset
+see isletool.posList for the full list of possible tags</p>
+<p>Special search characters:
+'D' - any dental; 'F' - any fricative; 'S' - any stop
+'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
+'#' - word boundary
+'B' - syllable boundary
+'.' - anything</p>
+<p>For advanced queries:
+Regular expression syntax applies, so if you wanted to search for any
+word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.</p>
+<p>Compared with LexicalTool().search(), this function can be used to search through a smaller
+set of data than the entire ISLEdict dictionary.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
+           wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
+           multiword=&#39;ok&#39;, pos=None):
+    &#39;&#39;&#39;
+    Searches for words in searchList that match the specified pronunciation; uses regular expressions
+    
+    wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
+    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;.
+    
+    pos: a tag in the Penn Part of Speech tagset
+        see isletool.posList for the full list of possible tags
+    
+    Special search characters:
+    &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
+    &#39;V&#39; - any vowel; &#39;N&#39; - any nasal; &#39;R&#39; - any rhotic
+    &#39;#&#39; - word boundary
+    &#39;B&#39; - syllable boundary
+    &#39;.&#39; - anything
+    
+    For advanced queries:
+    Regular expression syntax applies, so if you wanted to search for any
+    word ending with a vowel or rhotic, matchStr = &#39;(?:VR)#&#39;, &#39;[VR]#&#39;, etc.
+
+    Compared with LexicalTool().search(), this function can be used to search through a smaller
+    set of data than the entire ISLEdict dictionary.
+    &#39;&#39;&#39;
+    # Run search for words
+    
+    matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
+                                spanSyllable, stressedSyllable)
+    
+    compiledRE = re.compile(matchStr)
+    retList = []
+    for word, pronList in searchList:
+        newPronList = []
+        for pron, posList in pronList:
+            searchPron = pron.replace(&#34;,&#34;, &#34;&#34;).replace(&#34; &#34;, &#34;&#34;)
+            
+            # Search for pos
+            if pos is not None:
+                if pos not in posList:
+                    continue
+            
+            # Ignore diacritics for now:
+            for diacritic in diacriticList:
+                if diacritic not in matchStr:
+                    searchPron = searchPron.replace(diacritic, &#34;&#34;)
+            
+            if numSyllables is not None:
+                if numSyllables != searchPron.count(&#39;.&#39;) + 1:
+                    continue
+            
+            # Is this a compound word?
+            if multiword == &#39;only&#39;:
+                if searchPron.count(&#39;#&#39;) == 2:
+                    continue
+            elif multiword == &#39;no&#39;:
+                if searchPron.count(&#39;#&#39;) &gt; 2:
+                    continue
+            
+            matchList = compiledRE.findall(searchPron)
+            if len(matchList) &gt; 0:
+                if stressedSyllable == &#39;only&#39;:
+                    if all([u&#34;ˈ&#34; not in match for match in matchList]):
+                        continue
+                if stressedSyllable == &#39;no&#39;:
+                    if all([u&#34;ˈ&#34; in match for match in matchList]):
+                        continue
+                
+                # For syllable spanning, we check if there is a syllable
+                # marker inside (not at the border) of the match.
+                if spanSyllable == &#39;only&#39;:
+                    if all([&#34;.&#34; not in txt[1:-1] for txt in matchList]):
+                        continue
+                if spanSyllable == &#39;no&#39;:
+                    if all([&#34;.&#34; in txt[1:-1] for txt in matchList]):
+                        continue
+                newPronList.append((pron, posList))
+        
+        if len(newPronList) &gt; 0:
+            retList.append((word, newPronList))
+    
+    retList.sort()
+    return retList</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.sequenceMatch"><code class="name flex">
+<span>def <span class="ident">sequenceMatch</span></span>(<span>matchChar, searchStr)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sequenceMatch(matchChar, searchStr):
+    return matchChar in searchStr</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pysle.isletool.LexicalTool"><code class="flex name class">
+<span>class <span class="ident">LexicalTool</span></span>
+<span>(</span><span>islePath)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>self.data: the pronunciation data {(word, pronunciationList),}
+self.dataExtra: pos and other info {(word, infoList),}</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LexicalTool():
+    
+    def __init__(self, islePath):
+        &#39;&#39;&#39;
+        
+        
+        self.data: the pronunciation data {(word, pronunciationList),}
+        self.dataExtra: pos and other info {(word, infoList),}
+        &#39;&#39;&#39;
+        self.islePath = islePath
+        self.data = self._buildDict()
+    
+    def _buildDict(self):
+        &#39;&#39;&#39;
+        Builds the isle textfile into a dictionary for fast searching
+        &#39;&#39;&#39;
+        lexDict = {}
+        with io.open(self.islePath, &#34;r&#34;, encoding=&#39;utf-8&#39;) as fd:
+            wordList = [line.rstrip(&#39;\n&#39;) for line in fd]
+        
+        for row in wordList:
+            word, pronunciation = row.split(&#34; &#34;, 1)
+            word, extraInfo = word.split(&#34;(&#34;, 1)
+            
+            extraInfo = extraInfo.replace(&#34;)&#34;, &#34;&#34;)
+            extraInfoList = [segment for segment in extraInfo.split(&#34;,&#34;)
+                             if (&#34;_&#34; not in segment and &#34;+&#34; not in segment and
+                                 &#39;:&#39; not in segment and segment != &#39;&#39;)]
+            
+            lexDict.setdefault(word, [])
+            lexDict[word].append((pronunciation, extraInfoList))
+        
+        return lexDict
+    
+    def lookup(self, word):
+        &#39;&#39;&#39;
+        Lookup a word and receive a list of syllables and stressInfo
+        
+        Output example for the word &#39;another&#39; which has two pronunciations
+        [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),
+          ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]
+        &#39;&#39;&#39;
+        
+        # All words must be lowercase with no extraneous whitespace
+        word = word.lower()
+        word = word.strip()
+        
+        pronList = self.data.get(word, None)
+        
+        if pronList is None:
+            raise WordNotInISLE(word)
+        else:
+            pronList = [_parsePronunciation(pronunciationStr)
+                        for pronunciationStr, _ in pronList]
+            pronList = list(zip(*pronList))
+        
+        return pronList
+
+    def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
+               wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
+               multiword=&#39;ok&#39;, pos=None):
+        &#39;&#39;&#39;
+        for help on isletool.LexicalTool.search(), see see isletool.search()
+        &#39;&#39;&#39;
+        return search(self.data.items(), matchStr, numSyllables=numSyllables,
+                      wordInitial=wordInitial, wordFinal=wordFinal,
+                      spanSyllable=spanSyllable,
+                      stressedSyllable=stressedSyllable,
+                      multiword=multiword, pos=pos)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pysle.isletool.LexicalTool.lookup"><code class="name flex">
+<span>def <span class="ident">lookup</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Lookup a word and receive a list of syllables and stressInfo</p>
+<p>Output example for the word 'another' which has two pronunciations
+[(([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ɚ']], [1], [1]),
+([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ə', u'ɹ']], [1], [1]))]</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lookup(self, word):
+    &#39;&#39;&#39;
+    Lookup a word and receive a list of syllables and stressInfo
+    
+    Output example for the word &#39;another&#39; which has two pronunciations
+    [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),
+      ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]
+    &#39;&#39;&#39;
+    
+    # All words must be lowercase with no extraneous whitespace
+    word = word.lower()
+    word = word.strip()
+    
+    pronList = self.data.get(word, None)
+    
+    if pronList is None:
+        raise WordNotInISLE(word)
+    else:
+        pronList = [_parsePronunciation(pronunciationStr)
+                    for pronunciationStr, _ in pronList]
+        pronList = list(zip(*pronList))
+    
+    return pronList</code></pre>
+</details>
+</dd>
+<dt id="pysle.isletool.LexicalTool.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>self, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>for help on isletool.LexicalTool.search(), see see isletool.search()</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
+           wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
+           multiword=&#39;ok&#39;, pos=None):
+    &#39;&#39;&#39;
+    for help on isletool.LexicalTool.search(), see see isletool.search()
+    &#39;&#39;&#39;
+    return search(self.data.items(), matchStr, numSyllables=numSyllables,
+                  wordInitial=wordInitial, wordFinal=wordFinal,
+                  spanSyllable=spanSyllable,
+                  stressedSyllable=stressedSyllable,
+                  multiword=multiword, pos=pos)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pysle.isletool.WordNotInISLE"><code class="flex name class">
+<span>class <span class="ident">WordNotInISLE</span></span>
+<span>(</span><span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WordNotInISLE(Exception):
+    
+    def __init__(self, word):
+        super(WordNotInISLE, self).__init__()
+        self.word = word
+        
+    def __str__(self):
+        return (&#34;Word &#39;%s&#39; not in ISLE dictionary.  &#34;
+                &#34;Please add it to continue.&#34; % self.word)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pysle" href="index.html">pysle</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="pysle.isletool.autopair" href="#pysle.isletool.autopair">autopair</a></code></li>
+<li><code><a title="pysle.isletool.findOODWords" href="#pysle.isletool.findOODWords">findOODWords</a></code></li>
+<li><code><a title="pysle.isletool.getNumPhones" href="#pysle.isletool.getNumPhones">getNumPhones</a></code></li>
+<li><code><a title="pysle.isletool.isVowel" href="#pysle.isletool.isVowel">isVowel</a></code></li>
+<li><code><a title="pysle.isletool.search" href="#pysle.isletool.search">search</a></code></li>
+<li><code><a title="pysle.isletool.sequenceMatch" href="#pysle.isletool.sequenceMatch">sequenceMatch</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pysle.isletool.LexicalTool" href="#pysle.isletool.LexicalTool">LexicalTool</a></code></h4>
+<ul class="">
+<li><code><a title="pysle.isletool.LexicalTool.lookup" href="#pysle.isletool.LexicalTool.lookup">lookup</a></code></li>
+<li><code><a title="pysle.isletool.LexicalTool.search" href="#pysle.isletool.LexicalTool.search">search</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pysle.isletool.WordNotInISLE" href="#pysle.isletool.WordNotInISLE">WordNotInISLE</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
