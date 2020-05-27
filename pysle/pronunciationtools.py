@@ -334,8 +334,7 @@ def findBestSyllabification(isleDict, wordText, phoneList):
     input pronunciation.
     '''
     try:
-        phoneList = [[unicode(char, "utf-8") for char in row]
-                     for row in phoneList]
+        phoneList = [unicode(char, "utf-8") for phone in phoneList]
     except (NameError, TypeError):
         pass
     

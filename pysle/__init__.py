@@ -1,3 +1,4 @@
+#encoding: utf-8
 """
 Pysle is an interface to the ISLEX English pronunciation dictionary
 
