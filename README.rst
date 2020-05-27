@@ -23,14 +23,22 @@ pysle
 Pronounced like 'p' + 'isle'.
 
 An interface to a pronunciation dictionary with stress markings
-(ISLEX - the international speech lexicon), 
-along with some tools for working with comparing and aligning 
-pronunciations (e.g. a list of phones someone said versus a standard or 
-canonical dictionary pronunciation). 
+(ISLEX - the international speech lexicon),
+along with some tools for working with comparing and aligning
+pronunciations (e.g. a list of phones someone said versus a standard or
+canonical dictionary pronunciation).
 
 
 .. sectnum::
 .. contents::
+
+
+Documentation
+================
+
+Automatically generated pdocs can be found here:
+
+http://timmahrt.github.io/pysle/
 
 
 Common Use Cases
@@ -38,31 +46,39 @@ Common Use Cases
 
 What can you do with this library?
 
-- look up the list of phones and syllables for canonical pronunciations 
+- look up the list of phones and syllables for canonical pronunciations
   of a word::
   
-    pysle.isletool.LexicalTool.lookup('cat')
+    isletool.LexicalTool('ISLEdict.txt').lookup('cat')
 
-- map an actual pronunciation to a dictionary pronunciation (can be used 
+- map an actual pronunciation to a dictionary pronunciation (can be used
   to automatically find speech errors)::
   
-    pysle.pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['k', 'æ',])
+    pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['k', 'æ',])
 
-- automatically syllabify a praat textgrid containing words and phones 
-  (e.g. force-aligned text) -- requires my 
+- automatically syllabify a praat textgrid containing words and phones
+  (e.g. force-aligned text) -- requires the
   `praatIO <https://github.com/timmahrt/praatIO>`_ library::
   
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
 
 - search for words based on pronunciation::
 
-    e.g. Words that start with a sound, or have a sound word medially, or 
+    isletool.LexicalTool('ISLEdict.txt').search('dVV') # Any word containing a 'd' followed by two vowels
+
+    e.g. Words that start with a sound, or have a sound word medially, or
     in stressed vowel position, etc.
-    
+
     see /tests/dictionary_search.py
-    
-Major revisions
+
+Version History
 ================
+
+Ver 2.0 (May 27, 2020)
+
+- cleaned up the api a little, including some functions that weren't usable
+
+- updated documentation and readme files.  Added pdoc documentation
 
 Ver 1.5 (March 3, 2017)
 
@@ -100,13 +116,13 @@ Requirements
 
 - Before you use this library (before or after installing it) you will need
   to download the ILSEX dictionary.  It can be downloaded here under the
-  section 'English' linked under the text 'English Pronlex'
+  section 'English'
   (with a file name of ISLEdict.txt):
 
-  `ISLEX project page <http://isle.illinois.edu/sst/data/g2ps/>`_
+  `ISLEX github page <https://github.com/uiuc-sst/g2ps>`_
 
   `Direct link to the ISLEX file used in this project
-  <http://isle.illinois.edu/sst/data/g2ps/English/ISLEdict.txt>`_ (ISLEdict.txt)
+  <https://raw.githubusercontent.com/uiuc-sst/g2ps/master/English/ISLEdict.txt>`_ (ISLEdict.txt)
 
 - ``Python 2.7.*`` or above
 
@@ -119,9 +135,6 @@ Requirements
 
 Installation
 ================
-
-If you on Windows, you can use the installer found here (check that it is up to date though)
-`Windows installer <http://www.timmahrt.com/python_installers>`_
 
 Psyle is on pypi and can be installed or upgraded from the command-line shell with pip like so::
 
@@ -141,23 +154,24 @@ Example usage
 
 Here is a typical common usage::
 
-    from pysle import isle
-    isleDict = isle.LexicalTool('C:\islev2.dict')
-    print isleDict.lookup('catatonic')[0] # Get the first pronunciation
-    >> [['k', 'ˌæ'], ['t˺', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']] [2, 0]
+    from pysle import isletool
+    isleDict = isletool.LexicalTool('C:\islev2.dict')
+    print(isleDict.lookup('catatonic')[0]) # Get the first pronunciation
+    >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
 
 and another::
 
-    from pysle import isle
-    from psyle import pronunciationTools
+    from pysle import isletool
+    from pysle import pronunciationtools
     
-    searchWord = 'another'
-    anotherPhoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
+    isleDict = isletool.LexicalTool('C:\islev2.dict')
 
-    returnList = pronunciationTools.findBestSyllabification(isleDict, 
-                                                            searchWord, 
-                                                            anotherPhoneList)
-    print syllableList
+    searchWord = 'another'
+    phoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
+
+    returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, phoneList)
+    syllableList = returnList[2]
+    print(syllableList)
     >> [["''"], ['n', '@'], ['th', 'r']]
     
 

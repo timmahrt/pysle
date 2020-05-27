@@ -267,7 +267,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         # entry = (start, stop, phone)
         phoneList = [entry[2] for entry in subPhoneTier.entryList
                      if entry[2] != '']
-        phoneList = [phoneList, ]
+        phoneList = phoneList
         
         try:
             sylTmp = pronunciationtools.findBestSyllabification(isleDict,
@@ -283,60 +283,60 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             print("Unable to syllabify '%s'" % word)
             continue
         
-        for syllabificationResultList in sylTmp:
-            stressI = syllabificationResultList[0]
-            stressJ = syllabificationResultList[1]
-            syllableList = syllabificationResultList[2]
-                
-            stressedPhone = None
-            if stressI is not None and stressJ is not None:
-                stressedPhone = syllableList[stressI][stressJ]
-                syllableList[stressI][stressJ] += u"ˈ"
-    
-            i = 0
-    #         print(syllableList)
-            for k, syllable in enumerate(syllableList):
-                
-                # Create the syllable tier entry
-                j = len(syllable)
-                stubEntryList = subPhoneTier.entryList[i:i + j]
-                i += j
-                
-                # The whole syllable was deleted
-                if len(stubEntryList) == 0:
-                    continue
-                
-                syllableStart = stubEntryList[0][0]
-                syllableEnd = stubEntryList[-1][1]
-                label = "-".join([entry[2] for entry in stubEntryList])
+
+        stressI = sylTmp[0]
+        stressJ = sylTmp[1]
+        syllableList = sylTmp[2]
             
-                syllableEntryList.append((syllableStart, syllableEnd, label))
+        stressedPhone = None
+        if stressI is not None and stressJ is not None:
+            stressedPhone = syllableList[stressI][stressJ]
+            syllableList[stressI][stressJ] += u"ˈ"
+
+        i = 0
+#         print(syllableList)
+        for k, syllable in enumerate(syllableList):
+            
+            # Create the syllable tier entry
+            j = len(syllable)
+            stubEntryList = subPhoneTier.entryList[i:i + j]
+            i += j
+            
+            # The whole syllable was deleted
+            if len(stubEntryList) == 0:
+                continue
+            
+            syllableStart = stubEntryList[0][0]
+            syllableEnd = stubEntryList[-1][1]
+            label = "-".join([entry[2] for entry in stubEntryList])
+        
+            syllableEntryList.append((syllableStart, syllableEnd, label))
+            
+            # Create the tonic syllable tier entry
+            if k == stressI:
+                tonicSEntryList.append((syllableStart, syllableEnd, 'T'))
+            
+            # Create the tonic phone tier entry
+            if k == stressI:
+                syllablePhoneTier = phoneTier.crop(syllableStart,
+                                                   syllableEnd,
+                                                   "strict", False)
+            
+                phoneList = [entry for entry in syllablePhoneTier.entryList
+                             if entry[2] != '']
+                justPhones = [phone for _, _, phone in phoneList]
+                cvList = pronunciationtools._prepPronunciation(justPhones)
                 
-                # Create the tonic syllable tier entry
-                if k == stressI:
-                    tonicSEntryList.append((syllableStart, syllableEnd, 'T'))
-                
-                # Create the tonic phone tier entry
-                if k == stressI:
-                    syllablePhoneTier = phoneTier.crop(syllableStart,
-                                                       syllableEnd,
-                                                       "strict", False)
-                
-                    phoneList = [entry for entry in syllablePhoneTier.entryList
-                                 if entry[2] != '']
-                    justPhones = [phone for _, _, phone in phoneList]
-                    cvList = pronunciationtools._prepPronunciation(justPhones)
-                    
-                    try:
-                        tmpStressJ = cvList.index('V')
-                    except ValueError:
-                        for char in [u'r', u'n', u'l']:
-                            if char in cvList:
-                                tmpStressJ = cvList.index(char)
-                                break
-                            
-                    phoneStart, phoneEnd = phoneList[tmpStressJ][:2]
-                    tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
+                try:
+                    tmpStressJ = cvList.index('V')
+                except ValueError:
+                    for char in [u'r', u'n', u'l']:
+                        if char in cvList:
+                            tmpStressJ = cvList.index(char)
+                            break
+                        
+                phoneStart, phoneEnd = phoneList[tmpStressJ][:2]
+                tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
     
     # Create a textgrid with the two syllable-level tiers
     syllableTier = tgio.IntervalTier('syllable', syllableEntryList,

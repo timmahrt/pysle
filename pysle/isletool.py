@@ -250,7 +250,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
            wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
            multiword='ok', pos=None):
     '''
-    Searches for matching words in the dictionary with regular expressions
+    Searches for words in searchList that match the specified pronunciation; uses regular expressions
     
     wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
     can take three different values: 'ok', 'only', or 'no'.
@@ -268,6 +268,9 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     For advanced queries:
     Regular expression syntax applies, so if you wanted to search for any
     word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.
+
+    Compared with LexicalTool().search(), this function can be used to search through a smaller
+    set of data than the entire ISLEdict dictionary.
     '''
     # Run search for words
     

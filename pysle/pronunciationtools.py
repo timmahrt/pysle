@@ -258,90 +258,90 @@ def _syllabifyPhones(phoneList, syllableList):
     return syllabifiedList
 
 
-def alignPronunciations(pronI, pronA):
+def alignPronunciations(phoneListA, phoneListB):
     '''
     Align the phones in two pronunciations
+
+    This will find the longest (non-continuous) common sequence and fill in the gaps
+    before, between, and after the characters such that the common elements
+    occur at the same points and the character strings are the same length
+
+    In the following example, the phone lists share the sequence ['a', 'd']
+    
+    ```python
+    phoneListA = ['a', 'b', 'c', 'd', 'e', 'f']
+    phoneListB = ['l', 'a', 'z', 'd', 'u']
+    a, b = alignPronunciations(phoneListA, phoneListB)
+    print(a) > ["''", 'a', 'b', 'c', 'd', 'e', 'f']
+    print(b) > ['l', 'a', 'z', "''", 'd', 'u', "''"]
+    ```
     '''
     
     # First prep the two pronunctions
-    pronI = [char for char in pronI]
-    pronA = [char for char in pronA]
+    phoneListA = [char for char in phoneListA]
+    phoneListB = [char for char in phoneListB]
     
     # Remove any elements not in the other list (but maintain order)
-    pronITmp = pronI
-    pronATmp = pronA
+    pronATmp = phoneListA
+    pronBTmp = phoneListB
 
     # Find the longest sequence
-    sequence = _lcs(pronITmp, pronATmp)
+    sequence = _lcs(pronBTmp, pronATmp)
 
     # Find the index of the sequence
     # TODO: investigate ambiguous cases
     startA = 0
-    startI = 0
+    startB = 0
     sequenceIndexListA = []
-    sequenceIndexListI = []
+    sequenceIndexListB = []
     for phone in sequence:
-        startA = pronA.index(phone, startA)
-        startI = pronI.index(phone, startI)
-        
+        startA = phoneListA.index(phone, startA)
+        startB = phoneListB.index(phone, startB)
+
         sequenceIndexListA.append(startA)
-        sequenceIndexListI.append(startI)
+        sequenceIndexListB.append(startB)
     
     # An index on the tail of both will be used to create output strings
     # of the same length
-    sequenceIndexListA.append(len(pronA))
-    sequenceIndexListI.append(len(pronI))
+    sequenceIndexListA.append(len(phoneListA))
+    sequenceIndexListB.append(len(phoneListB))
     
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
     for x in range(len(sequenceIndexListA)):
         indexA = sequenceIndexListA[x]
-        indexI = sequenceIndexListI[x]
-        if indexA < indexI:
-            for x in range(indexI - indexA):
-                pronA.insert(indexA, "''")
-            sequenceIndexListA = [val + indexI - indexA
+        indexB = sequenceIndexListB[x]
+        if indexA < indexB:
+            for x in range(indexB - indexA):
+                phoneListA.insert(indexA, "''")
+            sequenceIndexListA = [val + indexB - indexA
                                   for val in sequenceIndexListA]
-        elif indexA > indexI:
-            for x in range(indexA - indexI):
-                pronI.insert(indexI, "''")
-            sequenceIndexListI = [val + indexA - indexI
-                                  for val in sequenceIndexListI]
+        elif indexA > indexB:
+            for x in range(indexA - indexB):
+                phoneListB.insert(indexB, "''")
+            sequenceIndexListB = [val + indexA - indexB
+                                  for val in sequenceIndexListB]
     
-    return pronI, pronA
+    return phoneListA, phoneListB
    
 
-def findBestSyllabification(isleDict, wordText,
-                            actualPronListOfLists):
-    
-    for aPron in actualPronListOfLists:
-        if not isinstance(aPron, list):
-            raise WrongTypeError("The pronunciation list must be a list"
-                                 "of lists, even if it only has one sublist."
-                                 "\ne.g. labyrinth\n"
-                                 "[[l ˈæ . b ɚ . ˌɪ n ɵ], ]")
-        if len(aPron) == 0:
-            raise NullPronunciationError(wordText)
+def findBestSyllabification(isleDict, wordText, phoneList):
+    '''
+    Find the best syllabification for a word
 
+    First find the closest pronunciation to a given pronunciation. Then take
+    the syllabification for that pronunciation and map it onto the
+    input pronunciation.
+    '''
     try:
-        actualPronListOfLists = [[unicode(char, "utf-8") for char in row]
-                                 for row in actualPronListOfLists]
+        phoneList = [[unicode(char, "utf-8") for char in row]
+                     for row in phoneList]
     except (NameError, TypeError):
         pass
     
-    numWords = len(actualPronListOfLists)
+    isleWordList = isleDict.lookup(wordText)[0]
     
-    isleWordList = isleDict.lookup(wordText)
-    
-    
-    if len(isleWordList) == numWords:
-        retList = []
-        for isleWordList, aPron in zip(isleWordList, actualPronListOfLists):
-            retList.append(_findBestSyllabification(isleWordList, aPron))
-    else:
-        raise NumWordsMismatchError(wordText, len(isleWordList))
-    
-    return retList
+    return _findBestSyllabification(isleWordList, phoneList)
         
     
 def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
@@ -405,12 +405,14 @@ def _getSyllableNucleus(phoneList):
     return stressI
 
 
-def findClosestPronunciation(inputIsleWordList, aPron):
+def findClosestPronunciation(isleDict, word, phoneList):
     '''
     Find the closest dictionary pronunciation to a provided pronunciation
     '''
-    
-    retList = _findBestPronunciation(inputIsleWordList, aPron)
+    isleWordList = isleDict.lookup(word)
+
+
+    retList = _findBestPronunciation(isleWordList[0], phoneList)
     isleWordList = retList[0]
     bestIndex = retList[3]
     
