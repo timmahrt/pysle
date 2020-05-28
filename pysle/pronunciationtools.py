@@ -1,8 +1,8 @@
 #encoding: utf-8
 '''
-Created on Oct 15, 2014
+Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary.
 
-@author: tmahrt
+see **examples/pronunciationtools_examples.py**
 '''
 
 import itertools

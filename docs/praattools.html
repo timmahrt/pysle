@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>pysle.praattools API documentation</title>
-<meta name="description" content="Created on Oct 22, 2014 …" />
+<meta name="description" content="Various utilities for using the ISLE dictionary with praat textgrids …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +20,21 @@
 <h1 class="title">Module <code>pysle.praattools</code></h1>
 </header>
 <section id="section-intro">
-<p>Created on Oct 22, 2014</p>
-<p>@author: tmahrt</p>
+<p>Various utilities for using the ISLE dictionary with praat textgrids</p>
+<p>see
+<strong>examples/alignment_example.py</strong>
+<strong>examples/syllabify_textgrid.py</strong></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#encoding: utf-8
 &#39;&#39;&#39;
-Created on Oct 22, 2014
+Various utilities for using the ISLE dictionary with praat textgrids
 
-@author: tmahrt
+see
+**examples/alignment_example.py**
+**examples/syllabify_textgrid.py**
 &#39;&#39;&#39;
 
 
@@ -322,7 +326,6 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             syllableList[stressI][stressJ] += u&#34;ˈ&#34;
 
         i = 0
-#         print(syllableList)
         for k, syllable in enumerate(syllableList):
             
             # Create the syllable tier entry
@@ -721,7 +724,6 @@ printed to the screen</p></section>
             syllableList[stressI][stressJ] += u&#34;ˈ&#34;
 
         i = 0
-#         print(syllableList)
         for k, syllable in enumerate(syllableList):
             
             # Create the syllable tier entry

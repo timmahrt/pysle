@@ -1,8 +1,5 @@
+#encoding: utf-8
 '''
-Created on Oct 22, 2014
-
-@author: tmahrt
-
 An example of how to syllabify a textgrid.
 
 This code is an optional feature of pysle that requires the

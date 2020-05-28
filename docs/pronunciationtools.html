@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>pysle.pronunciationtools API documentation</title>
-<meta name="description" content="Created on Oct 15, 2014 …" />
+<meta name="description" content="Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +20,17 @@
 <h1 class="title">Module <code>pysle.pronunciationtools</code></h1>
 </header>
 <section id="section-intro">
-<p>Created on Oct 15, 2014</p>
-<p>@author: tmahrt</p>
+<p>Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary.</p>
+<p>see <strong>examples/pronunciationtools_examples.py</strong></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#encoding: utf-8
 &#39;&#39;&#39;
-Created on Oct 15, 2014
+Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary.
 
-@author: tmahrt
+see **examples/pronunciationtools_examples.py**
 &#39;&#39;&#39;
 
 import itertools
@@ -362,8 +362,7 @@ def findBestSyllabification(isleDict, wordText, phoneList):
     input pronunciation.
     &#39;&#39;&#39;
     try:
-        phoneList = [[unicode(char, &#34;utf-8&#34;) for char in row]
-                     for row in phoneList]
+        phoneList = [unicode(char, &#34;utf-8&#34;) for phone in phoneList]
     except (NameError, TypeError):
         pass
     
@@ -561,8 +560,7 @@ input pronunciation.</p></section>
     input pronunciation.
     &#39;&#39;&#39;
     try:
-        phoneList = [[unicode(char, &#34;utf-8&#34;) for char in row]
-                     for row in phoneList]
+        phoneList = [unicode(char, &#34;utf-8&#34;) for phone in phoneList]
     except (NameError, TypeError):
         pass
     

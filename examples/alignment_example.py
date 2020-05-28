@@ -1,7 +1,5 @@
 #encoding: utf-8
 '''
-Created on Apr 11, 2017
-
 An example of using the naive alignment code.  There are two functions
 for naive alignment.  naiveWordAlignment and naivePhoneAlignment.  They
 operate at the word and phone levels respectively.
@@ -17,8 +15,6 @@ In general, for best performance, one should run 'naiveWordAlignment',
 correct the output and then run 'naivePhoneAlignment' and correct the
 output, unless the speech segments are very short and without a lot
 of emotion or inflection (e.g. read speech).
-
-@author: Tim
 '''
 
 from os.path import join

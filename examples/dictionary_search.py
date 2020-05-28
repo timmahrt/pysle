@@ -1,9 +1,5 @@
 #encoding: utf-8
 '''
-Created on July 08, 2016
-
-@author: tmahrt
-
 Examples of how to use pysle's regular-expression-based
 search functionality.
 '''
@@ -38,8 +34,8 @@ def printOutMatches(matchStr, numSyllables=None, wordInitial='ok',
         if numMatches is not None and i > numMatches:
             break
         word, pronList = matchTuple
-        pronList = ["%s(%s)" % (word, ",".join(posInfo))
-                    for word, posInfo in pronList]
+        pronList = ["%s(%s)" % (tmpWord, ",".join(posInfo))
+                    for tmpWord, posInfo in pronList]
         print("%s: %s" % (word, ",".join(pronList)))
     print("")
     

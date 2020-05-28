@@ -2,11 +2,11 @@
 """
 Pysle is an interface to the ISLEX English pronunciation dictionary
 
-ISLEX contains multiple variations in pronunciations for words--like [b ɚ ɹ d] or [b ˈɝ d].  In contains primary and secondary stress information as in [ˈɛ . l ə . v ˌei . ɾ ɚ]
+ISLEX contains multiple variations in pronunciations for words--like [b ɚ ɹ d] or [b ˈɝ d] for 'bird'.  In contains primary and secondary stress information as in [ˈɛ . l ə . v ˌei . ɾ ɚ]
 
 Using pysle, you can query this resource.
 
-**isletool.py** contains the fundamental parts of the code.  This code is responsible for looking up words and getting their pronunciation. With the search() function, you can look up words based on their pronunication too.  For example, every word that starts with a vowel or that ends in 'c a t', etc.
+**isletool.py** contains the fundamental parts of the code.  This code is responsible for looking up words and getting their pronunciation. With the search() function, you can look up words based on their pronunication too.  For example, every word that starts with a vowel or that ends in [k æ t] ('scat', 'cat', 'muscat'), etc.
 
 **pronunciationtools.py** contains useful utilities when working with a corpus of pronunciation data.  You can compare pronunciations from your own data with "ideal" pronunciations from the ISLEX dictionary.  Such data can be used to explore speech data--which syllables are expected to be stressed?  Are there phones or syllables that might have been dropped in the pronunciation?
 

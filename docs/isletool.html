@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>pysle.isletool API documentation</title>
-<meta name="description" content="Created on Oct 11, 2012 …" />
+<meta name="description" content="The main interface for working with the ISLE dictionary …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +20,29 @@
 <h1 class="title">Module <code>pysle.isletool</code></h1>
 </header>
 <section id="section-intro">
-<p>Created on Oct 11, 2012</p>
-<p>@author: timmahrt</p>
+<p>The main interface for working with the ISLE dictionary.</p>
+<p>Can be used to run searches based on written form or
+pronunciation ('cat' vs [kat]).</p>
+<p>Also has various utility functions.</p>
+<p>see
+<strong>examples/basic_examples.py</strong>
+<strong>examples/dictionary_search.py</strong></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#encoding: utf-8
 &#39;&#39;&#39;
-Created on Oct 11, 2012
+The main interface for working with the ISLE dictionary.
 
-@author: timmahrt
+Can be used to run searches based on written form or
+pronunciation (&#39;cat&#39; vs [kat]).
+
+Also has various utility functions.
+
+see
+**examples/basic_examples.py**
+**examples/dictionary_search.py**
 &#39;&#39;&#39;
 
 import io
@@ -187,11 +199,11 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     stressOpt = (stressedSyllable == &#39;ok&#39; or stressedSyllable == &#39;only&#39;)
     spanOpt = (spanSyllable == &#39;ok&#39; or spanSyllable == &#39;only&#39;)
     if stressOpt and spanOpt:
-        interleaveStr = u&#34;\.?ˈ?&#34;
+        interleaveStr = u&#34;\\.?ˈ?&#34;
     elif stressOpt:
         interleaveStr = u&#34;ˈ?&#34;
     elif spanOpt:
-        interleaveStr = u&#34;\.?&#34;
+        interleaveStr = u&#34;\\.?&#34;
     
     if interleaveStr is not None:
         matchStr = interleaveStr.join(matchStr)
@@ -204,16 +216,16 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     elif wordInitial == &#39;no&#39;:
         # Match the closest preceeding syllable.  If there is none, look
         # for word boundary plus at least one other character
-        matchStr = u&#39;(?:\.[^\.#]*?|#[^\.#]+?)&#39; + matchStr
+        matchStr = u&#39;(?:\\.[^\\.#]*?|#[^\\.#]+?)&#39; + matchStr
     else:
-        matchStr = u&#39;[#\.][^\.#]*?&#39; + matchStr
+        matchStr = u&#39;[#\\.][^\\.#]*?&#39; + matchStr
     
     if wordFinal == &#39;only&#39;:
         matchStr = matchStr + u&#39;#&#39;
     elif wordFinal == &#39;no&#39;:
-        matchStr = matchStr + u&#34;(?:[^\.#]*?\.|[^\.#]+?#)&#34;
+        matchStr = matchStr + u&#34;(?:[^\\.#]*?\\.|[^\\.#]+?#)&#34;
     else:
-        matchStr = matchStr + u&#39;[^\.#]*?[#\.]&#39;
+        matchStr = matchStr + u&#39;[^\\.#]*?[#\\.]&#39;
     
     # For sounds that are designated two characters, prevent
     # detecting those sounds if the user wanted a sound
@@ -265,7 +277,7 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
                 &#34;N&#34;: u&#34;[nmŋ]&#34;,  # nasals
                 &#34;R&#34;: u&#34;[rɝɚ]&#34;,  # rhotics
                 &#34;V&#34;: u&#34;(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?&#34;,  # vowels
-                &#34;B&#34;: u&#34;\.&#34;,  # syllable boundary
+                &#34;B&#34;: u&#34;\\.&#34;,  # syllable boundary
                 }
 
     for char, replStr in replDict.items():

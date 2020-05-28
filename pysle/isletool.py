@@ -1,8 +1,15 @@
 #encoding: utf-8
 '''
-Created on Oct 11, 2012
+The main interface for working with the ISLE dictionary.
 
-@author: timmahrt
+Can be used to run searches based on written form or
+pronunciation ('cat' vs [kat]).
+
+Also has various utility functions.
+
+see
+**examples/basic_examples.py**
+**examples/dictionary_search.py**
 '''
 
 import io

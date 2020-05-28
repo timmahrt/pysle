@@ -1,8 +1,10 @@
 #encoding: utf-8
 '''
-Created on Oct 22, 2014
+Various utilities for using the ISLE dictionary with praat textgrids
 
-@author: tmahrt
+see
+**examples/alignment_example.py**
+**examples/syllabify_textgrid.py**
 '''
 
 
@@ -294,7 +296,6 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
             syllableList[stressI][stressJ] += u"ˈ"
 
         i = 0
-#         print(syllableList)
         for k, syllable in enumerate(syllableList):
             
             # Create the syllable tier entry
