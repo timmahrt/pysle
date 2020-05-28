@@ -40,28 +40,28 @@ from pysle import isletool
 
 
 class TooManyVowelsInSyllable(Exception):
-    
+
     def __init__(self, syllable, syllableCVMapped):
         super(TooManyVowelsInSyllable, self).__init__()
         self.syllable = syllable
         self.syllableCVMapped = syllableCVMapped
-        
+
     def __str__(self):
         errStr = (&#34;Error: syllable &#39;%s&#39; found to have more than &#34;
                   &#34;one vowel.\n This was the CV mapping: &#39;%s&#39;&#34;)
         syllableStr = u&#34;&#34;.join(self.syllable)
         syllableCVStr = u&#34;&#34;.join(self.syllableCVMapped)
-        
+
         return errStr % (syllableStr, syllableCVStr)
 
 
 class NumWordsMismatchError(Exception):
-    
+
     def __init__(self, word, numMatches):
         super(NumWordsMismatchError, self).__init__()
         self.word = word
         self.numMatches = numMatches
-    
+
     def __str__(self):
         errStr = (&#34;Error: %d matches found in isleDict for &#39;%s&#39;.\n&#34;
                   &#34;Only 1 match allowed--likely you need to break&#34;
@@ -70,28 +70,28 @@ class NumWordsMismatchError(Exception):
 
 
 class WrongTypeError(Exception):
-    
+
     def __init__(self, errMsg):
         super(WrongTypeError, self).__init__()
         self.str = errMsg
-    
+
     def __str__(self):
         return self.str
 
 
 class NullPronunciationError(Exception):
-    
+
     def __init__(self, word):
         super(NullPronunciationError, self).__init__()
         self.word = word
-    
+
     def __str__(self):
         return &#34;No pronunciation given for word &#39;%s&#39;&#34; % self.word
 
 
 class NullPhoneError(Exception):
 
-    def __str(self):
+    def __str__(self):
         return &#34;Received an empty phone in the pronunciation list&#34;
 
 
@@ -111,27 +111,33 @@ def _lcs(xs, ys):
     nx, ny = len(xs), len(ys)
     if nx == 0:
         return []
-    elif nx == 1:
+
+    if nx == 1:
         return [xs[0]] if xs[0] in ys else []
-    else:
-        i = nx // 2
-        xb, xe = xs[:i], xs[i:]
-        ll_b = _lcs_lens(xb, ys)
-        ll_e = _lcs_lens(xe[::-1], ys[::-1])
-        _, k = max((ll_b[j] + ll_e[ny - j], j)
-                   for j in range(ny + 1))
-        yb, ye = ys[:k], ys[k:]
-        return _lcs(xb, yb) + _lcs(xe, ye)
+
+    i = nx // 2
+    xb, xe = xs[:i], xs[i:]
+    ll_b = _lcs_lens(xb, ys)
+    ll_e = _lcs_lens(xe[::-1], ys[::-1])
+    _, k = max((ll_b[j] + ll_e[ny - j], j)
+               for j in range(ny + 1))
+    yb, ye = ys[:k], ys[k:]
+    return _lcs(xb, yb) + _lcs(xe, ye)
 
 
-def _prepPronunciation(phoneList):
+def simplifyPronunciation(phoneList):
+    &#39;&#39;&#39;
+    Simplifies pronunciation
+
+    Removes diacritics and unifies vowels and rhotics
+    &#39;&#39;&#39;
     retList = []
     for phone in phoneList:
-        
+
         # Remove diacritics
         for diacritic in isletool.diacriticList:
             phone = phone.replace(diacritic, u&#39;&#39;)
-        
+
         # Unify rhotics
         if &#39;r&#39; in phone:
             phone = &#39;r&#39;
@@ -141,26 +147,26 @@ def _prepPronunciation(phoneList):
         # Unify vowels
         if isletool.isVowel(phone):
             phone = u&#39;V&#39;
-        
+
         # Only represent the string by its first letter
         try:
             phone = phone[0]
         except IndexError:
             raise NullPhoneError()
-        
+
         # Unify vowels (reducing the vowel to one char)
         if isletool.isVowel(phone):
             phone = u&#39;V&#39;
-        
+
         retList.append(phone)
-    
+
     return retList
 
 
 def _adjustSyllabification(adjustedPhoneList, syllableList):
     &#39;&#39;&#39;
     Inserts spaces into a syllable if needed
-    
+
     Originally the phone list and syllable list contained the same number
     of phones.  But the adjustedPhoneList may have some insertions which are
     not accounted for in the syllableList.
@@ -175,31 +181,31 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
         numBlanks = -1
         phoneList = tmpPhoneList[:]
         while numBlanks != 0:
-            
+
             numBlanks = tmpPhoneList.count(u&#34;&#39;&#39;&#34;)
             if numBlanks &gt; 0:
                 tmpPhoneList = adjustedPhoneList[i + j:i + j + numBlanks]
                 phoneList.extend(tmpPhoneList)
                 j += numBlanks
-        
+
         for k, phone in enumerate(phoneList):
             if phone == u&#34;&#39;&#39;&#34;:
                 syllable.insert(k, u&#34;&#39;&#39;&#34;)
-        
+
         i += j
-        
+
         retSyllableList.append(syllable)
-    
+
     return retSyllableList
-        
+
 
 def _findBestPronunciation(isleWordList, aPron):
     &#39;&#39;&#39;
     Words may have multiple candidates in ISLE; returns the &#39;optimal&#39; one.
     &#39;&#39;&#39;
-    
-    aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
-    
+
+    aP = simplifyPronunciation(aPron)  # Mapping to simplified phone inventory
+
     numDiffList = []
     withStress = []
     i = 0
@@ -208,42 +214,42 @@ def _findBestPronunciation(isleWordList, aPron):
     for wordTuple in isleWordList:
         aPronMap = copy.deepcopy(aPron)
         syllableList = wordTuple[0]  # syllableList, stressList
-        
+
         iP = [phone for phoneList in syllableList for phone in phoneList]
-        iP = _prepPronunciation(iP)
+        iP = simplifyPronunciation(iP)
 
         alignedIP, alignedAP = alignPronunciations(iP, aP)
-        
+
         # Remapping to actual phones
 #         alignedAP = [origPronDict.get(phon, u&#34;&#39;&#39;&#34;) for phon in alignedAP]
         alignedAP = [aPronMap.pop(0) if phon != u&#34;&#39;&#39;&#34; else u&#34;&#39;&#39;&#34;
                      for phon in alignedAP]
         alignedActualPronunciationList.append(alignedAP)
-        
+
         # Adjusting the syllabification for differences between the dictionary
         # pronunciation and the actual pronunciation
         alignedSyllabification = _adjustSyllabification(alignedIP,
                                                         syllableList)
         alignedSyllabificationList.append(alignedSyllabification)
-        
+
         # Count the number of misalignments between the two
         numDiff = alignedIP.count(u&#34;&#39;&#39;&#34;) + alignedAP.count(u&#34;&#39;&#39;&#34;)
         numDiffList.append(numDiff)
-        
+
         # Is there stress in this word
         hasStress = False
         for syllable in syllableList:
             for phone in syllable:
                 hasStress = u&#34;ˈ&#34; in phone or hasStress
-        
+
         if hasStress:
             withStress.append(i)
         i += 1
-    
+
     # Return the pronunciation that had the fewest differences
     #     to the actual pronunciation
     minDiff = min(numDiffList)
-    
+
     # When there are multiple candidates that have the minimum number
     #     of differences, prefer one that has stress in it
     bestIndex = None
@@ -258,7 +264,7 @@ def _findBestPronunciation(isleWordList, aPron):
             if not bestIsStressed and i in withStress:
                 bestIndex = i
                 bestIsStressed = True
-    
+
     return (isleWordList, alignedActualPronunciationList,
             alignedSyllabificationList, bestIndex)
 
@@ -266,23 +272,23 @@ def _findBestPronunciation(isleWordList, aPron):
 def _syllabifyPhones(phoneList, syllableList):
     &#39;&#39;&#39;
     Given a phone list and a syllable list, syllabify the phones
-    
+
     Typically used by findBestSyllabification which first aligns the phoneList
     with a dictionary phoneList and then uses the dictionary syllabification
     to syllabify the input phoneList.
     &#39;&#39;&#39;
-    
+
     numPhoneList = [len(syllable) for syllable in syllableList]
-    
+
     start = 0
     syllabifiedList = []
     for end in numPhoneList:
-        
+
         syllable = phoneList[start:start + end]
         syllabifiedList.append(syllable)
-        
+
         start += end
-    
+
     return syllabifiedList
 
 
@@ -295,7 +301,7 @@ def alignPronunciations(phoneListA, phoneListB):
     occur at the same points and the character strings are the same length
 
     In the following example, the phone lists share the sequence [&#39;a&#39;, &#39;d&#39;]
-    
+
     ```python
     phoneListA = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
     phoneListB = [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#39;d&#39;, &#39;u&#39;]
@@ -304,11 +310,7 @@ def alignPronunciations(phoneListA, phoneListB):
     print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#34;&#39;&#39;&#34;, &#39;d&#39;, &#39;u&#39;, &#34;&#39;&#39;&#34;]
     ```
     &#39;&#39;&#39;
-    
-    # First prep the two pronunctions
-    phoneListA = [char for char in phoneListA]
-    phoneListB = [char for char in phoneListB]
-    
+
     # Remove any elements not in the other list (but maintain order)
     pronATmp = phoneListA
     pronBTmp = phoneListB
@@ -328,30 +330,30 @@ def alignPronunciations(phoneListA, phoneListB):
 
         sequenceIndexListA.append(startA)
         sequenceIndexListB.append(startB)
-    
+
     # An index on the tail of both will be used to create output strings
     # of the same length
     sequenceIndexListA.append(len(phoneListA))
     sequenceIndexListB.append(len(phoneListB))
-    
+
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
-    for x in range(len(sequenceIndexListA)):
-        indexA = sequenceIndexListA[x]
-        indexB = sequenceIndexListB[x]
+    for i, _ in enumerate(sequenceIndexListA):
+        indexA = sequenceIndexListA[i]
+        indexB = sequenceIndexListB[i]
         if indexA &lt; indexB:
-            for x in range(indexB - indexA):
+            for _ in range(indexB - indexA):
                 phoneListA.insert(indexA, &#34;&#39;&#39;&#34;)
             sequenceIndexListA = [val + indexB - indexA
                                   for val in sequenceIndexListA]
         elif indexA &gt; indexB:
-            for x in range(indexA - indexB):
+            for _ in range(indexA - indexB):
                 phoneListB.insert(indexB, &#34;&#39;&#39;&#34;)
             sequenceIndexListB = [val + indexA - indexB
                                   for val in sequenceIndexListB]
-    
+
     return phoneListA, phoneListB
-   
+
 
 def findBestSyllabification(isleDict, wordText, phoneList):
     &#39;&#39;&#39;
@@ -365,16 +367,16 @@ def findBestSyllabification(isleDict, wordText, phoneList):
         phoneList = [unicode(char, &#34;utf-8&#34;) for phone in phoneList]
     except (NameError, TypeError):
         pass
-    
+
     isleWordList = isleDict.lookup(wordText)[0]
-    
+
     return _findBestSyllabification(isleWordList, phoneList)
-        
-    
+
+
 def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     &#39;&#39;&#39;
     Find the best syllabification for a word
-    
+
     First find the closest pronunciation to a given pronunciation. Then take
     the syllabification for that pronunciation and map it onto the
     input pronunciation.
@@ -382,15 +384,15 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     retList = _findBestPronunciation(inputIsleWordList,
                                      actualPronunciationList)
     isleWordList, alignedAPronList, alignedSyllableList, bestIndex = retList
-    
+
     alignedPhoneList = alignedAPronList[bestIndex]
     alignedSyllables = alignedSyllableList[bestIndex]
     syllabification = isleWordList[bestIndex][0]
     stressedSyllableIndexList = isleWordList[bestIndex][1]
     stressedPhoneIndexList = isleWordList[bestIndex][2]
-    
+
     syllableList = _syllabifyPhones(alignedPhoneList, alignedSyllables)
-    
+
     # Get the location of stress in the generated file
     try:
         stressedSyllableI = stressedSyllableIndexList[0]
@@ -399,7 +401,7 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
         stressedVowelI = None
     else:
         stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
-    
+
     # Count the index of the stressed phones, if the stress list has
     # become flattened (no syllable information)
     flattenedStressIndexList = []
@@ -408,7 +410,7 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
         for l in range(i):
             k += len(syllableList[l])
         flattenedStressIndexList.append(k)
-    
+
     return (stressedSyllableI, stressedVowelI, syllableList, syllabification,
             stressedSyllableIndexList, stressedPhoneIndexList,
             flattenedStressIndexList)
@@ -419,16 +421,16 @@ def _getSyllableNucleus(phoneList):
     Given the phones in a syllable, retrieves the vowel index
     &#39;&#39;&#39;
     cvList = [&#39;V&#39; if isletool.isVowel(phone) else &#39;C&#39; for phone in phoneList]
-    
+
     vowelCount = cvList.count(&#39;V&#39;)
     if vowelCount &gt; 1:
         raise TooManyVowelsInSyllable(phoneList, cvList)
-    
+
     if vowelCount == 1:
         stressI = cvList.index(&#39;V&#39;)
     else:
         stressI = None
-        
+
     return stressI
 
 
@@ -438,11 +440,10 @@ def findClosestPronunciation(isleDict, word, phoneList):
     &#39;&#39;&#39;
     isleWordList = isleDict.lookup(word)
 
-
     retList = _findBestPronunciation(isleWordList[0], phoneList)
     isleWordList = retList[0]
     bestIndex = retList[3]
-    
+
     return isleWordList[bestIndex]</code></pre>
 </details>
 </section>
@@ -481,7 +482,7 @@ print(b) &gt; ['l', 'a', 'z', &quot;''&quot;, 'd', 'u', &quot;''&quot;]
     occur at the same points and the character strings are the same length
 
     In the following example, the phone lists share the sequence [&#39;a&#39;, &#39;d&#39;]
-    
+
     ```python
     phoneListA = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]
     phoneListB = [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#39;d&#39;, &#39;u&#39;]
@@ -490,11 +491,7 @@ print(b) &gt; ['l', 'a', 'z', &quot;''&quot;, 'd', 'u', &quot;''&quot;]
     print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &#34;&#39;&#39;&#34;, &#39;d&#39;, &#39;u&#39;, &#34;&#39;&#39;&#34;]
     ```
     &#39;&#39;&#39;
-    
-    # First prep the two pronunctions
-    phoneListA = [char for char in phoneListA]
-    phoneListB = [char for char in phoneListB]
-    
+
     # Remove any elements not in the other list (but maintain order)
     pronATmp = phoneListA
     pronBTmp = phoneListB
@@ -514,28 +511,28 @@ print(b) &gt; ['l', 'a', 'z', &quot;''&quot;, 'd', 'u', &quot;''&quot;]
 
         sequenceIndexListA.append(startA)
         sequenceIndexListB.append(startB)
-    
+
     # An index on the tail of both will be used to create output strings
     # of the same length
     sequenceIndexListA.append(len(phoneListA))
     sequenceIndexListB.append(len(phoneListB))
-    
+
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
-    for x in range(len(sequenceIndexListA)):
-        indexA = sequenceIndexListA[x]
-        indexB = sequenceIndexListB[x]
+    for i, _ in enumerate(sequenceIndexListA):
+        indexA = sequenceIndexListA[i]
+        indexB = sequenceIndexListB[i]
         if indexA &lt; indexB:
-            for x in range(indexB - indexA):
+            for _ in range(indexB - indexA):
                 phoneListA.insert(indexA, &#34;&#39;&#39;&#34;)
             sequenceIndexListA = [val + indexB - indexA
                                   for val in sequenceIndexListA]
         elif indexA &gt; indexB:
-            for x in range(indexA - indexB):
+            for _ in range(indexA - indexB):
                 phoneListB.insert(indexB, &#34;&#39;&#39;&#34;)
             sequenceIndexListB = [val + indexA - indexB
                                   for val in sequenceIndexListB]
-    
+
     return phoneListA, phoneListB</code></pre>
 </details>
 </dd>
@@ -563,9 +560,9 @@ input pronunciation.</p></section>
         phoneList = [unicode(char, &#34;utf-8&#34;) for phone in phoneList]
     except (NameError, TypeError):
         pass
-    
+
     isleWordList = isleDict.lookup(wordText)[0]
-    
+
     return _findBestSyllabification(isleWordList, phoneList)</code></pre>
 </details>
 </dd>
@@ -584,12 +581,59 @@ input pronunciation.</p></section>
     &#39;&#39;&#39;
     isleWordList = isleDict.lookup(word)
 
-
     retList = _findBestPronunciation(isleWordList[0], phoneList)
     isleWordList = retList[0]
     bestIndex = retList[3]
-    
+
     return isleWordList[bestIndex]</code></pre>
+</details>
+</dd>
+<dt id="pysle.pronunciationtools.simplifyPronunciation"><code class="name flex">
+<span>def <span class="ident">simplifyPronunciation</span></span>(<span>phoneList)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Simplifies pronunciation</p>
+<p>Removes diacritics and unifies vowels and rhotics</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def simplifyPronunciation(phoneList):
+    &#39;&#39;&#39;
+    Simplifies pronunciation
+
+    Removes diacritics and unifies vowels and rhotics
+    &#39;&#39;&#39;
+    retList = []
+    for phone in phoneList:
+
+        # Remove diacritics
+        for diacritic in isletool.diacriticList:
+            phone = phone.replace(diacritic, u&#39;&#39;)
+
+        # Unify rhotics
+        if &#39;r&#39; in phone:
+            phone = &#39;r&#39;
+
+        phone = phone.lower()
+
+        # Unify vowels
+        if isletool.isVowel(phone):
+            phone = u&#39;V&#39;
+
+        # Only represent the string by its first letter
+        try:
+            phone = phone[0]
+        except IndexError:
+            raise NullPhoneError()
+
+        # Unify vowels (reducing the vowel to one char)
+        if isletool.isVowel(phone):
+            phone = u&#39;V&#39;
+
+        retList.append(phone)
+
+    return retList</code></pre>
 </details>
 </dd>
 </dl>
@@ -609,7 +653,7 @@ input pronunciation.</p></section>
 </summary>
 <pre><code class="python">class NullPhoneError(Exception):
 
-    def __str(self):
+    def __str__(self):
         return &#34;Received an empty phone in the pronunciation list&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -629,11 +673,11 @@ input pronunciation.</p></section>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class NullPronunciationError(Exception):
-    
+
     def __init__(self, word):
         super(NullPronunciationError, self).__init__()
         self.word = word
-    
+
     def __str__(self):
         return &#34;No pronunciation given for word &#39;%s&#39;&#34; % self.word</code></pre>
 </details>
@@ -654,12 +698,12 @@ input pronunciation.</p></section>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class NumWordsMismatchError(Exception):
-    
+
     def __init__(self, word, numMatches):
         super(NumWordsMismatchError, self).__init__()
         self.word = word
         self.numMatches = numMatches
-    
+
     def __str__(self):
         errStr = (&#34;Error: %d matches found in isleDict for &#39;%s&#39;.\n&#34;
                   &#34;Only 1 match allowed--likely you need to break&#34;
@@ -683,18 +727,18 @@ input pronunciation.</p></section>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class TooManyVowelsInSyllable(Exception):
-    
+
     def __init__(self, syllable, syllableCVMapped):
         super(TooManyVowelsInSyllable, self).__init__()
         self.syllable = syllable
         self.syllableCVMapped = syllableCVMapped
-        
+
     def __str__(self):
         errStr = (&#34;Error: syllable &#39;%s&#39; found to have more than &#34;
                   &#34;one vowel.\n This was the CV mapping: &#39;%s&#39;&#34;)
         syllableStr = u&#34;&#34;.join(self.syllable)
         syllableCVStr = u&#34;&#34;.join(self.syllableCVMapped)
-        
+
         return errStr % (syllableStr, syllableCVStr)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -714,11 +758,11 @@ input pronunciation.</p></section>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class WrongTypeError(Exception):
-    
+
     def __init__(self, errMsg):
         super(WrongTypeError, self).__init__()
         self.str = errMsg
-    
+
     def __str__(self):
         return self.str</code></pre>
 </details>
@@ -747,6 +791,7 @@ input pronunciation.</p></section>
 <li><code><a title="pysle.pronunciationtools.alignPronunciations" href="#pysle.pronunciationtools.alignPronunciations">alignPronunciations</a></code></li>
 <li><code><a title="pysle.pronunciationtools.findBestSyllabification" href="#pysle.pronunciationtools.findBestSyllabification">findBestSyllabification</a></code></li>
 <li><code><a title="pysle.pronunciationtools.findClosestPronunciation" href="#pysle.pronunciationtools.findClosestPronunciation">findClosestPronunciation</a></code></li>
+<li><code><a title="pysle.pronunciationtools.simplifyPronunciation" href="#pysle.pronunciationtools.simplifyPronunciation">simplifyPronunciation</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
