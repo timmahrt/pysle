@@ -119,7 +119,6 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
             phoneDur = (stopT - startT) / float(numPhones)
             for i, word in enumerate(wordList):
                 phoneListTxt = " ".join(superPhoneList[i])
-                wordStartT = wordStartT
                 wordEndT = wordStartT + (phoneDur * len(superPhoneList[i]))
                 subWordEntryList.append((wordStartT, wordEndT, word))
                 subPhoneEntryList.append((wordStartT, wordEndT, phoneListTxt))
@@ -271,7 +270,6 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         # entry = (start, stop, phone)
         phoneList = [entry[2] for entry in subPhoneTier.entryList
                      if entry[2] != '']
-        phoneList = phoneList
 
         try:
             sylTmp = pronunciationtools.findBestSyllabification(isleDict,
@@ -280,7 +278,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         except isletool.WordNotInISLE:
             print("Word ('%s') not is isle -- skipping syllabification" % word)
             continue
-        except (pronunciationtools.NullPronunciationError):
+        except pronunciationtools.NullPronunciationError:
             print("Word ('%s') has no provided pronunciation" % word)
             continue
         except AssertionError:
@@ -291,9 +289,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
         stressJ = sylTmp[1]
         syllableList = sylTmp[2]
 
-        stressedPhone = None
         if stressI is not None and stressJ is not None:
-            stressedPhone = syllableList[stressI][stressJ]
             syllableList[stressI][stressJ] += u"ˈ"
 
         i = 0
@@ -327,7 +323,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 phoneList = [entry for entry in syllablePhoneTier.entryList
                              if entry[2] != '']
                 justPhones = [phone for _, _, phone in phoneList]
-                cvList = pronunciationtools._prepPronunciation(justPhones)
+                cvList = pronunciationtools.simplifyPronunciation(justPhones)
 
                 try:
                     tmpStressJ = cvList.index('V')

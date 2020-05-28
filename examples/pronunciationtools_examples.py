@@ -21,8 +21,8 @@ returnList = pronunciationtools.findBestSyllabification(
     isleDict, searchWord, anotherPhoneList)
 
 (stressedSyllable, stressedPhone, syllableList, syllabification,
-    stressedSyllableIndexList, stressedPhoneIndexList,
-    flattenedStressIndexList) = returnList
+ stressedSyllableIndexList, stressedPhoneIndexList,
+ flattenedStressIndexList) = returnList
 print(searchWord)
 print(anotherPhoneList)
 print(stressedSyllableIndexList)  # We can see the first syllable was elided

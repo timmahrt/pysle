@@ -41,10 +41,12 @@ vowelList = monophthongList + diphthongList + syllabicConsonantList
 
 
 def isVowel(char):
+    '''Is this character a vowel?'''
     return any([vowel in char for vowel in vowelList])
 
 
 def sequenceMatch(matchChar, searchStr):
+    '''Does marchChar appear in searchStr?'''
     return matchChar in searchStr
 
 
@@ -110,10 +112,10 @@ class LexicalTool():
 
         if pronList is None:
             raise WordNotInISLE(word)
-        else:
-            pronList = [_parsePronunciation(pronunciationStr)
-                        for pronunciationStr, _ in pronList]
-            pronList = list(zip(*pronList))
+
+        pronList = [_parsePronunciation(pronunciationStr)
+                    for pronunciationStr, _ in pronList]
+        pronList = list(zip(*pronList))
 
         return pronList
 
@@ -164,8 +166,9 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     # Don't check between all other characters if the character is already
     # in the search string or
     interleaveStr = None
-    stressOpt = (stressedSyllable == 'ok' or stressedSyllable == 'only')
-    spanOpt = (spanSyllable == 'ok' or spanSyllable == 'only')
+    acceptList = ['ok', 'only']
+    stressOpt = stressedSyllable in acceptList
+    spanOpt = spanSyllable in acceptList
     if stressOpt and spanOpt:
         interleaveStr = u"\\.?ˈ?"
     elif stressOpt:
@@ -217,7 +220,7 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
 
     # Backward search ('b' and not 'ab')
     for charA, charB in [(u't', u'ʃ'), (u'd', u'ʒ'),
-                         (u'a|o', u'ʊ'), (u'e|ɔ', u'i'), (u'ɑ' u'ɪ'), ]:
+                         (u'a|o', u'ʊ'), (u'e|ɔ', u'i'), (u'ɑ', u'ɪ'), ]:
         startI = 0
         while True:
             try:
@@ -258,7 +261,9 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
            wordFinal='ok', spanSyllable='ok', stressedSyllable='ok',
            multiword='ok', pos=None):
     '''
-    Searches for words in searchList that match the specified pronunciation; uses regular expressions
+    Searches for words in searchList that match the pronunciation 'matchStr'
+
+    Internally, uses regular expressions
 
     wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
     can take three different values: 'ok', 'only', or 'no'.
@@ -289,12 +294,12 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     retList = []
     for word, pronList in searchList:
         newPronList = []
-        for pron, posList in pronList:
+        for pron, tmpPosList in pronList:
             searchPron = pron.replace(",", "").replace(" ", "")
 
             # Search for pos
             if pos is not None:
-                if pos not in posList:
+                if pos not in tmpPosList:
                     continue
 
             # Ignore diacritics for now:
@@ -331,7 +336,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
                 if spanSyllable == 'no':
                     if all(["." in txt[1:-1] for txt in matchList]):
                         continue
-                newPronList.append((pron, posList))
+                newPronList.append((pron, tmpPosList))
 
         if len(newPronList) > 0:
             retList.append((word, newPronList))
@@ -362,7 +367,8 @@ def _parsePronunciation(pronunciationStr):
                     stressedSyllableList.insert(0, i)
                     stressedPhoneList.insert(0, j)
                     break
-                elif u'ˌ' in phone:
+
+                if u'ˌ' in phone:
                     stressedSyllableList.append(i)
                     stressedPhoneList.append(j)
 

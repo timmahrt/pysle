@@ -63,7 +63,7 @@ class NullPronunciationError(Exception):
 
 class NullPhoneError(Exception):
 
-    def __str(self):
+    def __str__(self):
         return "Received an empty phone in the pronunciation list"
 
 
@@ -83,20 +83,26 @@ def _lcs(xs, ys):
     nx, ny = len(xs), len(ys)
     if nx == 0:
         return []
-    elif nx == 1:
+
+    if nx == 1:
         return [xs[0]] if xs[0] in ys else []
-    else:
-        i = nx // 2
-        xb, xe = xs[:i], xs[i:]
-        ll_b = _lcs_lens(xb, ys)
-        ll_e = _lcs_lens(xe[::-1], ys[::-1])
-        _, k = max((ll_b[j] + ll_e[ny - j], j)
-                   for j in range(ny + 1))
-        yb, ye = ys[:k], ys[k:]
-        return _lcs(xb, yb) + _lcs(xe, ye)
+
+    i = nx // 2
+    xb, xe = xs[:i], xs[i:]
+    ll_b = _lcs_lens(xb, ys)
+    ll_e = _lcs_lens(xe[::-1], ys[::-1])
+    _, k = max((ll_b[j] + ll_e[ny - j], j)
+               for j in range(ny + 1))
+    yb, ye = ys[:k], ys[k:]
+    return _lcs(xb, yb) + _lcs(xe, ye)
 
 
-def _prepPronunciation(phoneList):
+def simplifyPronunciation(phoneList):
+    '''
+    Simplifies pronunciation
+
+    Removes diacritics and unifies vowels and rhotics
+    '''
     retList = []
     for phone in phoneList:
 
@@ -170,7 +176,7 @@ def _findBestPronunciation(isleWordList, aPron):
     Words may have multiple candidates in ISLE; returns the 'optimal' one.
     '''
 
-    aP = _prepPronunciation(aPron)  # Mapping to simplified phone inventory
+    aP = simplifyPronunciation(aPron)  # Mapping to simplified phone inventory
 
     numDiffList = []
     withStress = []
@@ -182,7 +188,7 @@ def _findBestPronunciation(isleWordList, aPron):
         syllableList = wordTuple[0]  # syllableList, stressList
 
         iP = [phone for phoneList in syllableList for phone in phoneList]
-        iP = _prepPronunciation(iP)
+        iP = simplifyPronunciation(iP)
 
         alignedIP, alignedAP = alignPronunciations(iP, aP)
 
@@ -277,10 +283,6 @@ def alignPronunciations(phoneListA, phoneListB):
     ```
     '''
 
-    # First prep the two pronunctions
-    phoneListA = [char for char in phoneListA]
-    phoneListB = [char for char in phoneListB]
-
     # Remove any elements not in the other list (but maintain order)
     pronATmp = phoneListA
     pronBTmp = phoneListB
@@ -308,16 +310,16 @@ def alignPronunciations(phoneListA, phoneListB):
 
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
-    for x in range(len(sequenceIndexListA)):
-        indexA = sequenceIndexListA[x]
-        indexB = sequenceIndexListB[x]
+    for i, _ in enumerate(sequenceIndexListA):
+        indexA = sequenceIndexListA[i]
+        indexB = sequenceIndexListB[i]
         if indexA < indexB:
-            for x in range(indexB - indexA):
+            for _ in range(indexB - indexA):
                 phoneListA.insert(indexA, "''")
             sequenceIndexListA = [val + indexB - indexA
                                   for val in sequenceIndexListA]
         elif indexA > indexB:
-            for x in range(indexA - indexB):
+            for _ in range(indexA - indexB):
                 phoneListB.insert(indexB, "''")
             sequenceIndexListB = [val + indexA - indexB
                                   for val in sequenceIndexListB]

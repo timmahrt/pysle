@@ -2,7 +2,7 @@
 '''
 Runs integration tests
 
-The examples were all written as scripts.  They weren't meant to be 
+The examples were all written as scripts.  They weren't meant to be
 imported or run from other code.  So here, the integration test is just
 importing the scripts, which causes them to execute.  If the code completes
 with no errors, then the code is at least able to complete.
@@ -63,7 +63,6 @@ class IntegrationTests(unittest.TestCase):
 
         root = os.path.join(".", "files")
         endingList = os.listdir(root)
-        endingDir = os.getcwd()
         rmList = [fn for fn in endingList if fn not in self.startingList]
 
         if self.oldRoot == root:

@@ -9,7 +9,6 @@ Basic examples of common usage.
 from os.path import join
 
 from pysle import isletool
-from pysle import pronunciationtools
 
 root = join(".", "files")
 isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
