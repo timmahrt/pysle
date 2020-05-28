@@ -3,8 +3,8 @@
 Pysle is an interface to the ISLEX English pronunciation dictionary
 
 ISLEX contains multiple variations in pronunciations for words--
-like [b ɚ ɹ d] or [b ˈɝ d] for 'bird'.  In contains primary and
-secondary stress information as in [ˈɛ . l ə . v ˌei . ɾ ɚ]
+like [b ɚ ɹ d] or [b ˈɝ d] for 'bird'.  It contains primary and
+secondary stress information as in [ˈɛ . l ə . v ˌei . ɾ ɚ] for 'elevator'
 
 Using pysle, you can query this resource.
 
