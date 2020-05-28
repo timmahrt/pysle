@@ -166,11 +166,11 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     stressOpt = (stressedSyllable == 'ok' or stressedSyllable == 'only')
     spanOpt = (spanSyllable == 'ok' or spanSyllable == 'only')
     if stressOpt and spanOpt:
-        interleaveStr = u"\.?ˈ?"
+        interleaveStr = u"\\.?ˈ?"
     elif stressOpt:
         interleaveStr = u"ˈ?"
     elif spanOpt:
-        interleaveStr = u"\.?"
+        interleaveStr = u"\\.?"
     
     if interleaveStr is not None:
         matchStr = interleaveStr.join(matchStr)
@@ -183,16 +183,16 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     elif wordInitial == 'no':
         # Match the closest preceeding syllable.  If there is none, look
         # for word boundary plus at least one other character
-        matchStr = u'(?:\.[^\.#]*?|#[^\.#]+?)' + matchStr
+        matchStr = u'(?:\\.[^\\.#]*?|#[^\\.#]+?)' + matchStr
     else:
-        matchStr = u'[#\.][^\.#]*?' + matchStr
+        matchStr = u'[#\\.][^\\.#]*?' + matchStr
     
     if wordFinal == 'only':
         matchStr = matchStr + u'#'
     elif wordFinal == 'no':
-        matchStr = matchStr + u"(?:[^\.#]*?\.|[^\.#]+?#)"
+        matchStr = matchStr + u"(?:[^\\.#]*?\\.|[^\\.#]+?#)"
     else:
-        matchStr = matchStr + u'[^\.#]*?[#\.]'
+        matchStr = matchStr + u'[^\\.#]*?[#\\.]'
     
     # For sounds that are designated two characters, prevent
     # detecting those sounds if the user wanted a sound
@@ -244,7 +244,7 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
                 "N": u"[nmŋ]",  # nasals
                 "R": u"[rɝɚ]",  # rhotics
                 "V": u"(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?",  # vowels
-                "B": u"\.",  # syllable boundary
+                "B": u"\\.",  # syllable boundary
                 }
 
     for char, replStr in replDict.items():
