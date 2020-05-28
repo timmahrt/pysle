@@ -22,7 +22,8 @@ lookupResults = isleDict.lookup(searchWord)
 
 firstEntry = lookupResults[0][0]
 firstSyllableList = firstEntry[0]
-firstSyllableList = ".".join([u" ".join(syllable) for syllable in firstSyllableList])
+firstSyllableList = ".".join([u" ".join(syllable)
+                              for syllable in firstSyllableList])
 firstStressList = firstEntry[1]
 
 print(searchWord)

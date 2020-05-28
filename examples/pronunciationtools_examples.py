@@ -17,7 +17,8 @@ print('-' * 50)
 searchWord = 'another'
 anotherPhoneList = ['n', '@', 'th', 'r']
 isleWordList = isleDict.lookup(searchWord)
-returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, anotherPhoneList)
+returnList = pronunciationtools.findBestSyllabification(
+    isleDict, searchWord, anotherPhoneList)
 
 (stressedSyllable, stressedPhone, syllableList, syllabification,
     stressedSyllableIndexList, stressedPhoneIndexList,
@@ -38,7 +39,8 @@ print('-' * 50)
 searchWord = 'labyrinth'
 phoneList = ['l', 'a', 'b', 'e', 'r', 'e', 'n', 'th']
 isleWordList = isleDict.lookup(searchWord)
-retList = pronunciationtools.findClosestPronunciation(isleDict, searchWord, phoneList)
+retList = pronunciationtools.findClosestPronunciation(
+    isleDict, searchWord, phoneList)
 print(searchWord)
 print(phoneList)
 print(isleWordList)
@@ -47,7 +49,8 @@ print(retList)
 print('===========================')
 searchWord = 'labyrinth'
 phoneList = ['l', 'a', 'b', 'e', 'r', 'e', 'n', 'th']
-x = pronunciationtools.findBestSyllabification(isleDict, searchWord, anotherPhoneList)
+x = pronunciationtools.findBestSyllabification(
+    isleDict, searchWord, anotherPhoneList)
 print(x)
 
 
@@ -58,6 +61,7 @@ print(x)
 print('-' * 50)
 phoneListA = ['a', 'b', 'c', 'd', 'e', 'f']
 phoneListB = ['l', 'a', 'z', 'd', 'u']
-alignedPhoneListA, alignedPhoneListB = pronunciationtools.alignPronunciations(phoneListA, phoneListB)
+alignedPhoneListA, alignedPhoneListB = pronunciationtools.alignPronunciations(
+    phoneListA, phoneListB)
 print(alignedPhoneListA)
 print(alignedPhoneListB)

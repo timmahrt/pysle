@@ -24,7 +24,8 @@ charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
 
 diacriticList = [u'˺', u'ˌ', u'̩', u'̃', u'ˈ', ]
 
-monophthongList = [u'u', u'æ', u'ɑ', u'ɔ', u'ə', u'i', u'ɛ', u'ɪ', u'ʊ', u'ʌ', u'a', u'e', u'o', ]
+monophthongList = [u'u', u'æ', u'ɑ', u'ɔ', u'ə',
+                   u'i', u'ɛ', u'ɪ', u'ʊ', u'ʌ', u'a', u'e', u'o', ]
 
 diphthongList = [u'ɑɪ', u'aʊ', u'ei', u'ɔi', u'oʊ', u'ae']
 
@@ -48,28 +49,28 @@ def sequenceMatch(matchChar, searchStr):
 
 
 class WordNotInISLE(Exception):
-    
+
     def __init__(self, word):
         super(WordNotInISLE, self).__init__()
         self.word = word
-        
+
     def __str__(self):
         return ("Word '%s' not in ISLE dictionary.  "
                 "Please add it to continue." % self.word)
 
 
 class LexicalTool():
-    
+
     def __init__(self, islePath):
         '''
-        
-        
+
+
         self.data: the pronunciation data {(word, pronunciationList),}
         self.dataExtra: pos and other info {(word, infoList),}
         '''
         self.islePath = islePath
         self.data = self._buildDict()
-    
+
     def _buildDict(self):
         '''
         Builds the isle textfile into a dictionary for fast searching
@@ -77,43 +78,43 @@ class LexicalTool():
         lexDict = {}
         with io.open(self.islePath, "r", encoding='utf-8') as fd:
             wordList = [line.rstrip('\n') for line in fd]
-        
+
         for row in wordList:
             word, pronunciation = row.split(" ", 1)
             word, extraInfo = word.split("(", 1)
-            
+
             extraInfo = extraInfo.replace(")", "")
             extraInfoList = [segment for segment in extraInfo.split(",")
                              if ("_" not in segment and "+" not in segment and
                                  ':' not in segment and segment != '')]
-            
+
             lexDict.setdefault(word, [])
             lexDict[word].append((pronunciation, extraInfoList))
-        
+
         return lexDict
-    
+
     def lookup(self, word):
         '''
         Lookup a word and receive a list of syllables and stressInfo
-        
+
         Output example for the word 'another' which has two pronunciations
         [(([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ɚ']], [1], [1]),
           ([[u'ə'], [u'n', u'ˈʌ'], [u'ð', u'ə', u'ɹ']], [1], [1]))]
         '''
-        
+
         # All words must be lowercase with no extraneous whitespace
         word = word.lower()
         word = word.strip()
-        
+
         pronList = self.data.get(word, None)
-        
+
         if pronList is None:
             raise WordNotInISLE(word)
         else:
             pronList = [_parsePronunciation(pronunciationStr)
                         for pronunciationStr, _ in pronList]
             pronList = list(zip(*pronList))
-        
+
         return pronList
 
     def search(self, matchStr, numSyllables=None, wordInitial='ok',
@@ -134,7 +135,7 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
     '''
     Prepares a user's RE string for a search
     '''
-    
+
     # Protect sounds that are two characters
     # After this we can assume that each character represents a sound
     # (We'll revert back when we're done processing the RE)
@@ -155,10 +156,10 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
             replList.append((matchStr[i:j], str(currentReplNum)))
             currentReplNum += 1
             startI = j
-    
+
     for charA, charB in replList:
         matchStr = matchStr.replace(charA, charB)
-    
+
     # Characters to check between all other characters
     # Don't check between all other characters if the character is already
     # in the search string or
@@ -171,10 +172,10 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
         interleaveStr = u"ˈ?"
     elif spanOpt:
         interleaveStr = u"\\.?"
-    
+
     if interleaveStr is not None:
         matchStr = interleaveStr.join(matchStr)
-    
+
     # Setting search boundaries
     # We search on '[^\.#]' and not '.' so that the search doesn't span
     # multiple syllables or words
@@ -186,18 +187,18 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
         matchStr = u'(?:\\.[^\\.#]*?|#[^\\.#]+?)' + matchStr
     else:
         matchStr = u'[#\\.][^\\.#]*?' + matchStr
-    
+
     if wordFinal == 'only':
         matchStr = matchStr + u'#'
     elif wordFinal == 'no':
         matchStr = matchStr + u"(?:[^\\.#]*?\\.|[^\\.#]+?#)"
     else:
         matchStr = matchStr + u'[^\\.#]*?[#\\.]'
-    
+
     # For sounds that are designated two characters, prevent
     # detecting those sounds if the user wanted a sound
     # designated by one of the contained characters
-    
+
     # Forward search ('a' and not 'ab')
     insertList = []
     for charA, charB in [(u'e', u'i'), (u't', u'ʃ'), (u'd', u'ʒ'),
@@ -213,7 +214,7 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
 #                 matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]
                 startI = i + 1 + len(forwardStr)
                 insertList.append((i + 1, forwardStr))
-        
+
     # Backward search ('b' and not 'ab')
     for charA, charB in [(u't', u'ʃ'), (u'd', u'ʒ'),
                          (u'a|o', u'ʊ'), (u'e|ɔ', u'i'), (u'ɑ' u'ɪ'), ]:
@@ -228,11 +229,11 @@ def _prepRESearchStr(matchStr, wordInitial='ok', wordFinal='ok',
 #                 matchStr = matchStr[:i] + backStr + matchStr[i:]
                 startI = i + 1 + len(backStr)
                 insertList.append((i, backStr))
-                
+
     insertList.sort()
     for i, insertStr in insertList[::-1]:
         matchStr = matchStr[:i] + insertStr + matchStr[i:]
-    
+
     # Revert the special sounds back from 1 character to 2 characters
     for charA, charB in replList:
         matchStr = matchStr.replace(charB, charA)
@@ -258,20 +259,20 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
            multiword='ok', pos=None):
     '''
     Searches for words in searchList that match the specified pronunciation; uses regular expressions
-    
+
     wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
     can take three different values: 'ok', 'only', or 'no'.
-    
+
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
-    
+
     Special search characters:
     'D' - any dental; 'F' - any fricative; 'S' - any stop
     'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
     '#' - word boundary
     'B' - syllable boundary
     '.' - anything
-    
+
     For advanced queries:
     Regular expression syntax applies, so if you wanted to search for any
     word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.
@@ -280,31 +281,31 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
     set of data than the entire ISLEdict dictionary.
     '''
     # Run search for words
-    
+
     matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
                                 spanSyllable, stressedSyllable)
-    
+
     compiledRE = re.compile(matchStr)
     retList = []
     for word, pronList in searchList:
         newPronList = []
         for pron, posList in pronList:
             searchPron = pron.replace(",", "").replace(" ", "")
-            
+
             # Search for pos
             if pos is not None:
                 if pos not in posList:
                     continue
-            
+
             # Ignore diacritics for now:
             for diacritic in diacriticList:
                 if diacritic not in matchStr:
                     searchPron = searchPron.replace(diacritic, "")
-            
+
             if numSyllables is not None:
                 if numSyllables != searchPron.count('.') + 1:
                     continue
-            
+
             # Is this a compound word?
             if multiword == 'only':
                 if searchPron.count('#') == 2:
@@ -312,7 +313,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
             elif multiword == 'no':
                 if searchPron.count('#') > 2:
                     continue
-            
+
             matchList = compiledRE.findall(searchPron)
             if len(matchList) > 0:
                 if stressedSyllable == 'only':
@@ -321,7 +322,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
                 if stressedSyllable == 'no':
                     if all([u"ˈ" in match for match in matchList]):
                         continue
-                
+
                 # For syllable spanning, we check if there is a syllable
                 # marker inside (not at the border) of the match.
                 if spanSyllable == 'only':
@@ -331,10 +332,10 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
                     if all(["." in txt[1:-1] for txt in matchList]):
                         continue
                 newPronList.append((pron, posList))
-        
+
         if len(newPronList) > 0:
             retList.append((word, newPronList))
-    
+
     retList.sort()
     return retList
 
@@ -342,7 +343,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
 def _parsePronunciation(pronunciationStr):
     '''
     Parses the pronunciation string
-    
+
     Returns the list of syllables and a list of primary and
     secondary stress locations
     '''
@@ -351,7 +352,7 @@ def _parsePronunciation(pronunciationStr):
         if syllableTxt == "":
             continue
         syllableList = [x.split() for x in syllableTxt.split(' . ')]
-        
+
         # Find stress
         stressedSyllableList = []
         stressedPhoneList = []
@@ -364,37 +365,37 @@ def _parsePronunciation(pronunciationStr):
                 elif u'ˌ' in phone:
                     stressedSyllableList.append(i)
                     stressedPhoneList.append(j)
-        
+
         retList.append((syllableList, stressedSyllableList, stressedPhoneList))
-    
+
     return retList
-            
-            
+
+
 def getNumPhones(isleDict, word, maxFlag):
     '''
     Get the number of syllables and phones in this word
-    
+
     If maxFlag=True, use the longest pronunciation.  Otherwise, take the
     average length.
     '''
     phoneCount = 0
     syllableCount = 0
-    
+
     syllableCountList = []
     phoneCountList = []
-    
+
     wordList = isleDict.lookup(word)
     entryList = zip(*wordList)
-    
+
     for lookupResultList in entryList:
         syllableList = []
         for wordSyllableList in lookupResultList:
             syllableList.extend(wordSyllableList)
-        
+
         syllableCountList.append(len(syllableList))
         phoneCountList.append(len([phon for phoneList in syllableList for
                                    phon in phoneList]))
-    
+
     # The average number of phones for all possible pronunciations
     #    of this word
     if maxFlag is True:
@@ -404,7 +405,7 @@ def getNumPhones(isleDict, word, maxFlag):
         syllableCount += (sum(syllableCountList) /
                           float(len(syllableCountList)))
         phoneCount += sum(phoneCountList) / float(len(phoneCountList))
-    
+
     return syllableCount, phoneCount
 
 
@@ -418,36 +419,36 @@ def findOODWords(isleDict, wordList):
             isleDict.lookup(word)
         except WordNotInISLE:
             oodList.append(word)
-                
+
     oodList = list(set(oodList))
     oodList.sort()
-    
+
     return oodList
 
 
 def autopair(isleDict, wordList):
     '''
     Tests whether adjacent words are OOD or not
-    
+
     It returns complete wordLists with the matching words replaced.
     Each match yields one sentence.
-    
+
     e.g.
     red ball chaser
     would return
     [[red_ball chaser], [red ball_chaser]], [0, 1]
-    
+
     if 'red_ball' and 'ball_chaser' were both in the dictionary
     '''
-    
+
     newWordList = [("%s_%s" % (wordList[i], wordList[i + 1]), i)
                    for i in range(0, len(wordList) - 1)]
-    
+
     sentenceList = []
     indexList = []
     for word, i in newWordList:
         if word in isleDict.data:
             sentenceList.append(wordList[:i] + [word, ] + wordList[i + 1:])
             indexList.append(i)
-    
+
     return sentenceList, indexList

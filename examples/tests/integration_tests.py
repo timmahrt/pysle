@@ -19,14 +19,15 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 _root = os.path.split(cwd)[0]
 sys.path.append(_root)
 
+
 class IntegrationTests(unittest.TestCase):
     """Integration tests"""
-        
+
     def test_alignment(self):
         """Running 'alignment_example.py'"""
         print("\nalignment_example.py" + "\n" + "-" * 10)
         import alignment_example
-    
+
     def test_basic_examples(self):
         """Running 'basic_examples.py'"""
         print("\nbasic_examples.py" + "\n" + "-" * 10)
@@ -36,17 +37,17 @@ class IntegrationTests(unittest.TestCase):
         """Running 'pronunciationtools_examples.py'"""
         print("\npronunciationtools_examples.py" + "\n" + "-" * 10)
         import pronunciationtools_examples
-  
+
     def test_dictionary_search(self):
         """Running 'dictionary_search.py'"""
         print("\ndictionary_search.py" + "\n" + "-" * 10)
         import dictionary_search
-    
+
     def test_syllabify_textgrid(self):
         """Running 'syllabify_textgrid.py'"""
         print("\nsyllabify_textgrid.py" + "\n" + "-" * 10)
         import syllabify_textgrid
-    
+
     def setUp(self):
         unittest.TestCase.setUp(self)
 
@@ -55,16 +56,16 @@ class IntegrationTests(unittest.TestCase):
         os.chdir(_root)
         self.startingList = os.listdir(root)
         self.startingDir = os.getcwd()
-    
+
     def tearDown(self):
         '''Remove any files generated during the test'''
-        #unittest.TestCase.tearDown(self)
-        
+        # unittest.TestCase.tearDown(self)
+
         root = os.path.join(".", "files")
         endingList = os.listdir(root)
         endingDir = os.getcwd()
         rmList = [fn for fn in endingList if fn not in self.startingList]
-        
+
         if self.oldRoot == root:
             for fn in rmList:
                 fnFullPath = os.path.join(root, fn)
@@ -72,9 +73,9 @@ class IntegrationTests(unittest.TestCase):
                     os.rmdir(fnFullPath)
                 else:
                     os.remove(fnFullPath)
-        
+
         os.chdir(self.oldRoot)
-        
+
 
 if __name__ == '__main__':
     unittest.main()
