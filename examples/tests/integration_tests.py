@@ -1,9 +1,5 @@
 #encoding: utf-8
 '''
-Created on Oct 20, 2016
-
-@author: tmahrt
-
 Runs integration tests
 
 The examples were all written as scripts.  They weren't meant to be 
@@ -35,6 +31,11 @@ class IntegrationTests(unittest.TestCase):
         """Running 'basic_examples.py'"""
         print("\nbasic_examples.py" + "\n" + "-" * 10)
         import basic_examples
+
+    def test_pronunciationtools_examples(self):
+        """Running 'pronunciationtools_examples.py'"""
+        print("\npronunciationtools_examples.py" + "\n" + "-" * 10)
+        import pronunciationtools_examples
   
     def test_dictionary_search(self):
         """Running 'dictionary_search.py'"""
