@@ -494,7 +494,15 @@ def transcribe(isleDict, sentenceTxt, preference=None):
 
         transcribedWordsList.append(phoneListOfLists[i])
 
-    return [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
+    def cleanPron(pron):
+        for val in [&#39;ˈ&#39;, &#39;ˌ&#39;, &#39; &#39;]:
+            pron = pron.replace(val, &#39;&#39;)
+        return pron
+
+    phoneList = [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
+    phoneList = [cleanPron(phones) for phones in phoneList]
+
+    return &#34; &#34;.join(phoneList)
 
 
 def autopair(isleDict, wordList):
@@ -839,7 +847,15 @@ pronunciation and 'longest' a more formal one.</p></section>
 
         transcribedWordsList.append(phoneListOfLists[i])
 
-    return [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]</code></pre>
+    def cleanPron(pron):
+        for val in [&#39;ˈ&#39;, &#39;ˌ&#39;, &#39; &#39;]:
+            pron = pron.replace(val, &#39;&#39;)
+        return pron
+
+    phoneList = [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
+    phoneList = [cleanPron(phones) for phones in phoneList]
+
+    return &#34; &#34;.join(phoneList)</code></pre>
 </details>
 </dd>
 </dl>
