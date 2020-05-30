@@ -28,10 +28,10 @@ class IntegrationTests(unittest.TestCase):
         print("\nalignment_example.py" + "\n" + "-" * 10)
         import alignment_example
 
-    def test_basic_examples(self):
-        """Running 'basic_examples.py'"""
-        print("\nbasic_examples.py" + "\n" + "-" * 10)
-        import basic_examples
+    def test_isletool_examples(self):
+        """Running 'isletool_examples.py'"""
+        print("\nisletool_examples.py" + "\n" + "-" * 10)
+        import isletool_examples
 
     def test_pronunciationtools_examples(self):
         """Running 'pronunciationtools_examples.py'"""

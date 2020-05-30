@@ -8,7 +8,7 @@ pronunciation ('cat' vs [kat]).
 Also has various utility functions.
 
 see
-**examples/basic_examples.py**
+**examples/isletool_examples.py**
 **examples/dictionary_search.py**
 '''
 

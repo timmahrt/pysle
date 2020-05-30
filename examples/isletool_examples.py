@@ -1,6 +1,6 @@
 #encoding: utf-8
 '''
-Basic examples of common usage.
+Examples that use the isletool
 - looking up words based on their pronunciation
 - syllabifying a user-specified phone list based on a pronunciation
   in the dictionary
