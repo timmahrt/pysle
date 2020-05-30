@@ -465,6 +465,38 @@ def findOODWords(isleDict, wordList):
     return oodList
 
 
+def transcribe(isleDict, sentenceTxt, preference=None):
+    &#39;&#39;&#39;
+    Can be used to generate a hypothetical pronunciation for a sequence of words
+
+    sentenceTxt is a string with words separated by space e.g. &#39;Hello world&#39;
+    preference is one of None, &#39;shortest&#39;, or &#39;longest&#39;
+
+    For words with multiple entries in the dictionary, the first entry is chosen
+    unless preference is set.  If preference is set to &#39;longest&#39; or &#39;shortest&#39; it
+    will choose an appropriate pronunciation.  &#39;shortest&#39; is likely a casual
+    pronunciation and &#39;longest&#39; a more formal one.
+    &#39;&#39;&#39;
+    transcribedWordsList = []
+    wordList = sentenceTxt.split(&#34; &#34;)
+    for word in wordList:
+        pronList = isleDict.lookup(word)
+
+        phoneListOfLists = [[phone for syllable in pron[0][0] for phone in syllable]
+                            for pron in pronList]
+        numPhones = [len(phoneList) for phoneList in phoneListOfLists]
+
+        i = 0
+        if preference == &#39;shortest&#39;:
+            i = numPhones.index(min(numPhones))
+        elif preference == &#39;longest&#39;:
+            i = numPhones.index(max(numPhones))
+
+        transcribedWordsList.append(phoneListOfLists[i])
+
+    return [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
+
+
 def autopair(isleDict, wordList):
     &#39;&#39;&#39;
     Tests whether adjacent words are OOD or not
@@ -761,6 +793,55 @@ set of data than the entire ISLEdict dictionary.</p></section>
     return matchChar in searchStr</code></pre>
 </details>
 </dd>
+<dt id="pysle.isletool.transcribe"><code class="name flex">
+<span>def <span class="ident">transcribe</span></span>(<span>isleDict, sentenceTxt, preference=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Can be used to generate a hypothetical pronunciation for a sequence of words</p>
+<p>sentenceTxt is a string with words separated by space e.g. 'Hello world'
+preference is one of None, 'shortest', or 'longest'</p>
+<p>For words with multiple entries in the dictionary, the first entry is chosen
+unless preference is set.
+If preference is set to 'longest' or 'shortest' it
+will choose an appropriate pronunciation.
+'shortest' is likely a casual
+pronunciation and 'longest' a more formal one.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transcribe(isleDict, sentenceTxt, preference=None):
+    &#39;&#39;&#39;
+    Can be used to generate a hypothetical pronunciation for a sequence of words
+
+    sentenceTxt is a string with words separated by space e.g. &#39;Hello world&#39;
+    preference is one of None, &#39;shortest&#39;, or &#39;longest&#39;
+
+    For words with multiple entries in the dictionary, the first entry is chosen
+    unless preference is set.  If preference is set to &#39;longest&#39; or &#39;shortest&#39; it
+    will choose an appropriate pronunciation.  &#39;shortest&#39; is likely a casual
+    pronunciation and &#39;longest&#39; a more formal one.
+    &#39;&#39;&#39;
+    transcribedWordsList = []
+    wordList = sentenceTxt.split(&#34; &#34;)
+    for word in wordList:
+        pronList = isleDict.lookup(word)
+
+        phoneListOfLists = [[phone for syllable in pron[0][0] for phone in syllable]
+                            for pron in pronList]
+        numPhones = [len(phoneList) for phoneList in phoneListOfLists]
+
+        i = 0
+        if preference == &#39;shortest&#39;:
+            i = numPhones.index(min(numPhones))
+        elif preference == &#39;longest&#39;:
+            i = numPhones.index(max(numPhones))
+
+        transcribedWordsList.append(phoneListOfLists[i])
+
+    return [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -958,6 +1039,7 @@ self.dataExtra: pos and other info {(word, infoList),}</p></section>
 <li><code><a title="pysle.isletool.isVowel" href="#pysle.isletool.isVowel">isVowel</a></code></li>
 <li><code><a title="pysle.isletool.search" href="#pysle.isletool.search">search</a></code></li>
 <li><code><a title="pysle.isletool.sequenceMatch" href="#pysle.isletool.sequenceMatch">sequenceMatch</a></code></li>
+<li><code><a title="pysle.isletool.transcribe" href="#pysle.isletool.transcribe">transcribe</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
