@@ -432,6 +432,38 @@ def findOODWords(isleDict, wordList):
     return oodList
 
 
+def transcribe(isleDict, sentenceTxt, preference=None):
+    '''
+    Can be used to generate a hypothetical pronunciation for a sequence of words
+
+    sentenceTxt is a string with words separated by space e.g. 'Hello world'
+    preference is one of None, 'shortest', or 'longest'
+
+    For words with multiple entries in the dictionary, the first entry is chosen
+    unless preference is set.  If preference is set to 'longest' or 'shortest' it
+    will choose an appropriate pronunciation.  'shortest' is likely a casual
+    pronunciation and 'longest' a more formal one.
+    '''
+    transcribedWordsList = []
+    wordList = sentenceTxt.split(" ")
+    for word in wordList:
+        pronList = isleDict.lookup(word)
+
+        phoneListOfLists = [[phone for syllable in pron[0][0] for phone in syllable]
+                            for pron in pronList]
+        numPhones = [len(phoneList) for phoneList in phoneListOfLists]
+
+        i = 0
+        if preference == 'shortest':
+            i = numPhones.index(min(numPhones))
+        elif preference == 'longest':
+            i = numPhones.index(max(numPhones))
+
+        transcribedWordsList.append(phoneListOfLists[i])
+
+    return [" ".join(phoneList) for phoneList in transcribedWordsList]
+
+
 def autopair(isleDict, wordList):
     '''
     Tests whether adjacent words are OOD or not

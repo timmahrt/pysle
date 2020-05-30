@@ -136,9 +136,9 @@ Requirements
 Installation
 ================
 
-Psyle is on pypi and can be installed or upgraded from the command-line shell with pip like so::
+Pysle is on pypi and can be installed or upgraded from the command-line shell with pip like so::
 
-    python -m pip install psyle --upgrade
+    python -m pip install pysle --upgrade
 
 Otherwise, to manually install, after downloading the source from github, from a command-line shell, navigate to the directory containing setup.py and type::
 
