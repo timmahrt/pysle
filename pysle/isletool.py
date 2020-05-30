@@ -462,8 +462,8 @@ def transcribe(isleDict, sentenceTxt, preference=None):
         transcribedWordsList.append(phoneListOfLists[i])
 
     def cleanPron(pron):
-        for val in ['ˈ', 'ˌ', ' ']:
-            pron = pron.replace(val, '')
+        for val in [u'ˈ', u'ˌ', u' ']:
+            pron = pron.replace(val, u'')
         return pron
 
     phoneList = [" ".join(phoneList) for phoneList in transcribedWordsList]
