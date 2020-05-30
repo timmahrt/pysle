@@ -461,7 +461,15 @@ def transcribe(isleDict, sentenceTxt, preference=None):
 
         transcribedWordsList.append(phoneListOfLists[i])
 
-    return [" ".join(phoneList) for phoneList in transcribedWordsList]
+    def cleanPron(pron):
+        for val in ['ˈ', 'ˌ', ' ']:
+            pron = pron.replace(val, '')
+        return pron
+
+    phoneList = [" ".join(phoneList) for phoneList in transcribedWordsList]
+    phoneList = [cleanPron(phones) for phones in phoneList]
+
+    return " ".join(phoneList)
 
 
 def autopair(isleDict, wordList):
