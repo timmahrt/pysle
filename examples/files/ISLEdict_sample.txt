@@ -6,6 +6,7 @@ catatonia() # k ˌæ . t˺ ə . t ˈoʊ . n i . ə #
 catatonic(jj) # k ˌæ . t˺ ə . t ˈɑ . n ɪ k #
 catatonic_schizophrenia() # k ˌæ . t˺ ə . t ˈɑ . n ɪ k # s k ˌɪ . t s ə . f ɹ ˈi . n i . ə #
 conduce() # k n̩ . d ˈu s #
+do() # d u #
 innate(jj) # ɪ . n ˈei t #
 labyrinth(nn) # l ˈæ . b ɚ . ˌɪ n ɵ #
 labyrinth(nn) # l ˈæ . b ə . ɹ ɪ n ɵ #
@@ -18,5 +19,7 @@ pumpkinseed() # p ˈʌ m p . k ɪ n . s ˌi d #
 synth() # s ɪ n ɵ #
 tais() # t ˌɑɪ z . #
 vandall(nnp_surname_0.000) # v ˌæ n . d ˈɔ l #
+want() # w a n t #
 with(in,nnp,rp) # w ɪ ð #
 with(in,nnp,rp) # w ɪ ɵ #
+you() # j u #

@@ -1,6 +1,6 @@
 #encoding: utf-8
 '''
-Basic examples of common usage.
+Examples that use the isletool
 - looking up words based on their pronunciation
 - syllabifying a user-specified phone list based on a pronunciation
   in the dictionary
@@ -57,3 +57,10 @@ sentenceList = ["another", "australian", "seal", "pumpkins", "parley"]
 retList = isletool.autopair(isleDict, sentenceList)[0]
 for sentence in retList:
     print(sentence)
+
+# In the fifth example, we try to get a pronunciation for a whole
+# sentence all at once.
+print('-' * 50)
+sentence = "do you want another pumpkinseed"
+phoneList = isletool.transcribe(isleDict, sentence, 'longest')
+print(phoneList)
