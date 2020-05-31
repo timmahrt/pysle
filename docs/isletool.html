@@ -47,7 +47,7 @@ see
 
 import io
 import re
-
+import os
 
 charList = [u&#39;#&#39;, u&#39;.&#39;, u&#39;aʊ&#39;, u&#39;b&#39;, u&#39;d&#39;, u&#39;dʒ&#39;, u&#39;ei&#39;, u&#39;f&#39;, u&#39;g&#39;,
             u&#39;h&#39;, u&#39;i&#39;, u&#39;j&#39;, u&#39;k&#39;, u&#39;l&#39;, u&#39;m&#39;, u&#39;n&#39;, u&#39;oʊ&#39;, u&#39;p&#39;,
@@ -72,6 +72,7 @@ posList = [&#39;cc&#39;, &#39;cd&#39;, &#39;dt&#39;, &#39;fw&#39;, &#39;in&#39;,
 
 vowelList = monophthongList + diphthongList + syllabicConsonantList
 
+ISLE_DOWNLOAD_URL = &#39;https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt&#39;
 
 def isVowel(char):
     &#39;&#39;&#39;Is this character a vowel?&#39;&#39;&#39;
@@ -94,39 +95,31 @@ class WordNotInISLE(Exception):
                 &#34;Please add it to continue.&#34; % self.word)
 
 
+class IsleDictDoesNotExist(Exception):
+
+    def __str__(self):
+        return (&#34;The path to the ISLE dictionary file does not exist.\n&#34;
+                &#34;The ISLE dictionary is an external resource that must &#34;
+                &#34; be downloaded separately.  ISLEdict.txt can be found here:\n&#34;
+                + ISLE_DOWNLOAD_URL + &#34;\n&#34;
+                &#34;Please see the requirements section in the README file &#34;
+                &#34;for more details.&#34;)
+
+
 class LexicalTool():
+    &#39;&#39;&#39;
+    The interface for working with ISLEdict.txt
+
+    Requires ISLEdict.txt in order to use.
+    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the 
+    README file for the download location.
+    &#39;&#39;&#39;
 
     def __init__(self, islePath):
-        &#39;&#39;&#39;
+        if not os.path.exists(islePath):
+            raise IsleDictDoesNotExist()
 
-
-        self.data: the pronunciation data {(word, pronunciationList),}
-        self.dataExtra: pos and other info {(word, infoList),}
-        &#39;&#39;&#39;
-        self.islePath = islePath
-        self.data = self._buildDict()
-
-    def _buildDict(self):
-        &#39;&#39;&#39;
-        Builds the isle textfile into a dictionary for fast searching
-        &#39;&#39;&#39;
-        lexDict = {}
-        with io.open(self.islePath, &#34;r&#34;, encoding=&#39;utf-8&#39;) as fd:
-            wordList = [line.rstrip(&#39;\n&#39;) for line in fd]
-
-        for row in wordList:
-            word, pronunciation = row.split(&#34; &#34;, 1)
-            word, extraInfo = word.split(&#34;(&#34;, 1)
-
-            extraInfo = extraInfo.replace(&#34;)&#34;, &#34;&#34;)
-            extraInfoList = [segment for segment in extraInfo.split(&#34;,&#34;)
-                             if (&#34;_&#34; not in segment and &#34;+&#34; not in segment and
-                                 &#39;:&#39; not in segment and segment != &#39;&#39;)]
-
-            lexDict.setdefault(word, [])
-            lexDict[word].append((pronunciation, extraInfoList))
-
-        return lexDict
+        self.data = _readIsleDict(islePath)
 
     def lookup(self, word):
         &#39;&#39;&#39;
@@ -164,6 +157,27 @@ class LexicalTool():
                       stressedSyllable=stressedSyllable,
                       multiword=multiword, pos=pos)
 
+def _readIsleDict(islePath):
+    &#39;&#39;&#39;
+    Reads into memory and builds the isle textfile into a dictionary for fast searching
+    &#39;&#39;&#39;
+    lexDict = {}
+    with io.open(islePath, &#34;r&#34;, encoding=&#39;utf-8&#39;) as fd:
+        wordList = [line.rstrip(&#39;\n&#39;) for line in fd]
+
+    for row in wordList:
+        word, pronunciation = row.split(&#34; &#34;, 1)
+        word, extraInfo = word.split(&#34;(&#34;, 1)
+
+        extraInfo = extraInfo.replace(&#34;)&#34;, &#34;&#34;)
+        extraInfoList = [segment for segment in extraInfo.split(&#34;,&#34;)
+                         if (&#34;_&#34; not in segment and &#34;+&#34; not in segment and
+                             &#39;:&#39; not in segment and segment != &#39;&#39;)]
+
+        lexDict.setdefault(word, [])
+        lexDict[word].append((pronunciation, extraInfoList))
+
+    return lexDict
 
 def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
                      spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;):
@@ -495,8 +509,8 @@ def transcribe(isleDict, sentenceTxt, preference=None):
         transcribedWordsList.append(phoneListOfLists[i])
 
     def cleanPron(pron):
-        for val in [&#39;ˈ&#39;, &#39;ˌ&#39;, &#39; &#39;]:
-            pron = pron.replace(val, &#39;&#39;)
+        for val in [u&#39;ˈ&#39;, u&#39;ˌ&#39;, u&#39; &#39;]:
+            pron = pron.replace(val, u&#39;&#39;)
         return pron
 
     phoneList = [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
@@ -848,8 +862,8 @@ pronunciation and 'longest' a more formal one.</p></section>
         transcribedWordsList.append(phoneListOfLists[i])
 
     def cleanPron(pron):
-        for val in [&#39;ˈ&#39;, &#39;ˌ&#39;, &#39; &#39;]:
-            pron = pron.replace(val, &#39;&#39;)
+        for val in [u&#39;ˈ&#39;, u&#39;ˌ&#39;, u&#39; &#39;]:
+            pron = pron.replace(val, u&#39;&#39;)
         return pron
 
     phoneList = [&#34; &#34;.join(phoneList) for phoneList in transcribedWordsList]
@@ -863,50 +877,59 @@ pronunciation and 'longest' a more formal one.</p></section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="pysle.isletool.IsleDictDoesNotExist"><code class="flex name class">
+<span>class <span class="ident">IsleDictDoesNotExist</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Common base class for all non-exit exceptions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IsleDictDoesNotExist(Exception):
+
+    def __str__(self):
+        return (&#34;The path to the ISLE dictionary file does not exist.\n&#34;
+                &#34;The ISLE dictionary is an external resource that must &#34;
+                &#34; be downloaded separately.  ISLEdict.txt can be found here:\n&#34;
+                + ISLE_DOWNLOAD_URL + &#34;\n&#34;
+                &#34;Please see the requirements section in the README file &#34;
+                &#34;for more details.&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 <dt id="pysle.isletool.LexicalTool"><code class="flex name class">
 <span>class <span class="ident">LexicalTool</span></span>
 <span>(</span><span>islePath)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>self.data: the pronunciation data {(word, pronunciationList),}
-self.dataExtra: pos and other info {(word, infoList),}</p></section>
+<section class="desc"><p>The interface for working with ISLEdict.txt</p>
+<p>Requires ISLEdict.txt in order to use.
+Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the
+README file for the download location.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class LexicalTool():
+    &#39;&#39;&#39;
+    The interface for working with ISLEdict.txt
+
+    Requires ISLEdict.txt in order to use.
+    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the 
+    README file for the download location.
+    &#39;&#39;&#39;
 
     def __init__(self, islePath):
-        &#39;&#39;&#39;
+        if not os.path.exists(islePath):
+            raise IsleDictDoesNotExist()
 
-
-        self.data: the pronunciation data {(word, pronunciationList),}
-        self.dataExtra: pos and other info {(word, infoList),}
-        &#39;&#39;&#39;
-        self.islePath = islePath
-        self.data = self._buildDict()
-
-    def _buildDict(self):
-        &#39;&#39;&#39;
-        Builds the isle textfile into a dictionary for fast searching
-        &#39;&#39;&#39;
-        lexDict = {}
-        with io.open(self.islePath, &#34;r&#34;, encoding=&#39;utf-8&#39;) as fd:
-            wordList = [line.rstrip(&#39;\n&#39;) for line in fd]
-
-        for row in wordList:
-            word, pronunciation = row.split(&#34; &#34;, 1)
-            word, extraInfo = word.split(&#34;(&#34;, 1)
-
-            extraInfo = extraInfo.replace(&#34;)&#34;, &#34;&#34;)
-            extraInfoList = [segment for segment in extraInfo.split(&#34;,&#34;)
-                             if (&#34;_&#34; not in segment and &#34;+&#34; not in segment and
-                                 &#39;:&#39; not in segment and segment != &#39;&#39;)]
-
-            lexDict.setdefault(word, [])
-            lexDict[word].append((pronunciation, extraInfoList))
-
-        return lexDict
+        self.data = _readIsleDict(islePath)
 
     def lookup(self, word):
         &#39;&#39;&#39;
@@ -1060,6 +1083,9 @@ self.dataExtra: pos and other info {(word, infoList),}</p></section>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="pysle.isletool.IsleDictDoesNotExist" href="#pysle.isletool.IsleDictDoesNotExist">IsleDictDoesNotExist</a></code></h4>
+</li>
 <li>
 <h4><code><a title="pysle.isletool.LexicalTool" href="#pysle.isletool.LexicalTool">LexicalTool</a></code></h4>
 <ul class="">
