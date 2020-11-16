@@ -9,7 +9,7 @@ import io
 from setuptools import setup
 
 setup(name='pysle',
-      version='2.2.0',
+      version='2.1.2',
       author='Tim Mahrt',
       author_email='timmahrt@gmail.com',
       url='https://github.com/timmahrt/pysle',

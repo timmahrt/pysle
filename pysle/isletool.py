@@ -84,35 +84,11 @@ class LexicalTool():
     README file for the download location.
     '''
 
-    def __init__(self, islePath, isCachedFile=False):
-        '''
-        Create a LexicalTool instance
-
-        islePath: path to ISLEdict.txt or the cached ISLEdict
-        isCachedFile: true|false; cached files can be read faster;
-                                  see LexicalTool.cacheData
-
-        The data format for cached files is different than for the raw
-        file, so be careful.  You'll get an error on loading if
-        isCachedFile doesn't match the file being loaded.
-        '''
+    def __init__(self, islePath):
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
-        if isCachedFile:
-            with io.open(islePath, "r", encoding="utf-8") as fd:
-                self.data = json.load(fd)
-        else:
-            self.data = _readIsleDict(islePath)
-
-    def cacheData(self, outputFN):
-        '''
-        Cache the ISLEDict.txt for faster loading times (~25% faster)
-
-        see isletool_examples.py for an example usage
-        '''
-        with io.open(outputFN, "w", encoding="utf-8") as fd:
-            json.dump(self.data, fd)
+        self.data = _readIsleDict(islePath)
 
     def lookup(self, word):
         '''
@@ -156,19 +132,18 @@ def _readIsleDict(islePath):
     '''
     lexDict = {}
     with io.open(islePath, "r", encoding='utf-8') as fd:
-        wordList = [line.rstrip('\n') for line in fd]
+        for line in fd:
+            line = line .rstrip('\n')
+            word, pronunciation = line.split(" ", 1)
+            word, extraInfo = word.split("(", 1)
 
-    for row in wordList:
-        word, pronunciation = row.split(" ", 1)
-        word, extraInfo = word.split("(", 1)
+            extraInfo = extraInfo.replace(")", "")
+            extraInfoList = [segment for segment in extraInfo.split(",")
+                             if ("_" not in segment and "+" not in segment and
+                                 ':' not in segment and segment != '')]
 
-        extraInfo = extraInfo.replace(")", "")
-        extraInfoList = [segment for segment in extraInfo.split(",")
-                         if ("_" not in segment and "+" not in segment and
-                             ':' not in segment and segment != '')]
-
-        lexDict.setdefault(word, [])
-        lexDict[word].append((pronunciation, extraInfoList))
+            lexDict.setdefault(word, [])
+            lexDict[word].append((pronunciation, extraInfoList))
 
     return lexDict
 
