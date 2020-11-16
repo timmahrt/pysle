@@ -49,6 +49,8 @@ import io
 import re
 import os
 
+import json
+
 charList = [u&#39;#&#39;, u&#39;.&#39;, u&#39;aʊ&#39;, u&#39;b&#39;, u&#39;d&#39;, u&#39;dʒ&#39;, u&#39;ei&#39;, u&#39;f&#39;, u&#39;g&#39;,
             u&#39;h&#39;, u&#39;i&#39;, u&#39;j&#39;, u&#39;k&#39;, u&#39;l&#39;, u&#39;m&#39;, u&#39;n&#39;, u&#39;oʊ&#39;, u&#39;p&#39;,
             u&#39;r&#39;, u&#39;s&#39;, u&#39;t&#39;, u&#39;tʃ&#39;, u&#39;u&#39;, u&#39;v&#39;, u&#39;w&#39;, u&#39;z&#39;, u&#39;æ&#39;,
@@ -115,11 +117,35 @@ class LexicalTool():
     README file for the download location.
     &#39;&#39;&#39;
 
-    def __init__(self, islePath):
+    def __init__(self, islePath, isCachedFile=False):
+        &#39;&#39;&#39;
+        Create a LexicalTool instance
+
+        islePath: path to ISLEdict.txt or the cached ISLEdict
+        isCachedFile: true|false; cached files can be read faster;
+                                  see LexicalTool.cacheData
+
+        The data format for cached files is different than for the raw
+        file, so be careful.  You&#39;ll get an error on loading if
+        isCachedFile doesn&#39;t match the file being loaded.
+        &#39;&#39;&#39;
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
-        self.data = _readIsleDict(islePath)
+        if isCachedFile:
+            with io.open(islePath, &#34;r&#34;, encoding=&#34;utf-8&#34;) as fd:
+                self.data = json.load(fd)
+        else:
+            self.data = _readIsleDict(islePath)
+
+    def cacheData(self, outputFN):
+        &#39;&#39;&#39;
+        Cache the ISLEDict.txt for faster loading times (~25% faster)
+
+        see isletool_examples.py for an example usage
+        &#39;&#39;&#39;
+        with io.open(outputFN, &#34;w&#34;, encoding=&#34;utf-8&#34;) as fd:
+            json.dump(self.data, fd)
 
     def lookup(self, word):
         &#39;&#39;&#39;
@@ -312,8 +338,13 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
 
     Internally, uses regular expressions
 
-    wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
-    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;.
+    wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
+    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;. For example,
+    if spanSyllable is 1) &#39;ok&#39; then searches will include matches that
+    span or do not span syllables.  if 2) &#39;only&#39;, then matches that do
+    span syllables are included but matches within syllables are not
+    included. if 3) &#39;no&#39; then matches that span syllables are not
+    included but matches within are.
 
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
@@ -694,8 +725,14 @@ average length.</p></section>
 <dd>
 <section class="desc"><p>Searches for words in searchList that match the pronunciation 'matchStr'</p>
 <p>Internally, uses regular expressions</p>
-<p>wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
-can take three different values: 'ok', 'only', or 'no'.</p>
+<p>wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
+can take three different values: 'ok', 'only', or 'no'. For example,
+if spanSyllable is 1) 'ok' then searches will include matches that
+span or do not span syllables.
+if 2) 'only', then matches that do
+span syllables are included but matches within syllables are not
+included. if 3) 'no' then matches that span syllables are not
+included but matches within are.</p>
 <p>pos: a tag in the Penn Part of Speech tagset
 see isletool.posList for the full list of possible tags</p>
 <p>Special search characters:
@@ -721,8 +758,13 @@ set of data than the entire ISLEdict dictionary.</p></section>
 
     Internally, uses regular expressions
 
-    wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
-    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;.
+    wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
+    can take three different values: &#39;ok&#39;, &#39;only&#39;, or &#39;no&#39;. For example,
+    if spanSyllable is 1) &#39;ok&#39; then searches will include matches that
+    span or do not span syllables.  if 2) &#39;only&#39;, then matches that do
+    span syllables are included but matches within syllables are not
+    included. if 3) &#39;no&#39; then matches that span syllables are not
+    included but matches within are.
 
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
@@ -905,13 +947,21 @@ pronunciation and 'longest' a more formal one.</p></section>
 </dd>
 <dt id="pysle.isletool.LexicalTool"><code class="flex name class">
 <span>class <span class="ident">LexicalTool</span></span>
-<span>(</span><span>islePath)</span>
+<span>(</span><span>islePath, isCachedFile=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>The interface for working with ISLEdict.txt</p>
 <p>Requires ISLEdict.txt in order to use.
 Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the
-README file for the download location.</p></section>
+README file for the download location.</p>
+<p>Create a LexicalTool instance</p>
+<p>islePath: path to ISLEdict.txt or the cached ISLEdict
+isCachedFile: true|false; cached files can be read faster;
+see LexicalTool.cacheData</p>
+<p>The data format for cached files is different than for the raw
+file, so be careful.
+You'll get an error on loading if
+isCachedFile doesn't match the file being loaded.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -925,11 +975,35 @@ README file for the download location.</p></section>
     README file for the download location.
     &#39;&#39;&#39;
 
-    def __init__(self, islePath):
+    def __init__(self, islePath, isCachedFile=False):
+        &#39;&#39;&#39;
+        Create a LexicalTool instance
+
+        islePath: path to ISLEdict.txt or the cached ISLEdict
+        isCachedFile: true|false; cached files can be read faster;
+                                  see LexicalTool.cacheData
+
+        The data format for cached files is different than for the raw
+        file, so be careful.  You&#39;ll get an error on loading if
+        isCachedFile doesn&#39;t match the file being loaded.
+        &#39;&#39;&#39;
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
-        self.data = _readIsleDict(islePath)
+        if isCachedFile:
+            with io.open(islePath, &#34;r&#34;, encoding=&#34;utf-8&#34;) as fd:
+                self.data = json.load(fd)
+        else:
+            self.data = _readIsleDict(islePath)
+
+    def cacheData(self, outputFN):
+        &#39;&#39;&#39;
+        Cache the ISLEDict.txt for faster loading times (~25% faster)
+
+        see isletool_examples.py for an example usage
+        &#39;&#39;&#39;
+        with io.open(outputFN, &#34;w&#34;, encoding=&#34;utf-8&#34;) as fd:
+            json.dump(self.data, fd)
 
     def lookup(self, word):
         &#39;&#39;&#39;
@@ -969,6 +1043,26 @@ README file for the download location.</p></section>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="pysle.isletool.LexicalTool.cacheData"><code class="name flex">
+<span>def <span class="ident">cacheData</span></span>(<span>self, outputFN)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Cache the ISLEDict.txt for faster loading times (~25% faster)</p>
+<p>see isletool_examples.py for an example usage</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cacheData(self, outputFN):
+    &#39;&#39;&#39;
+    Cache the ISLEDict.txt for faster loading times (~25% faster)
+
+    see isletool_examples.py for an example usage
+    &#39;&#39;&#39;
+    with io.open(outputFN, &#34;w&#34;, encoding=&#34;utf-8&#34;) as fd:
+        json.dump(self.data, fd)</code></pre>
+</details>
+</dd>
 <dt id="pysle.isletool.LexicalTool.lookup"><code class="name flex">
 <span>def <span class="ident">lookup</span></span>(<span>self, word)</span>
 </code></dt>
@@ -1089,6 +1183,7 @@ README file for the download location.</p></section>
 <li>
 <h4><code><a title="pysle.isletool.LexicalTool" href="#pysle.isletool.LexicalTool">LexicalTool</a></code></h4>
 <ul class="">
+<li><code><a title="pysle.isletool.LexicalTool.cacheData" href="#pysle.isletool.LexicalTool.cacheData">cacheData</a></code></li>
 <li><code><a title="pysle.isletool.LexicalTool.lookup" href="#pysle.isletool.LexicalTool.lookup">lookup</a></code></li>
 <li><code><a title="pysle.isletool.LexicalTool.search" href="#pysle.isletool.LexicalTool.search">search</a></code></li>
 </ul>

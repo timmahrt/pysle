@@ -13,6 +13,10 @@ from pysle import isletool
 root = join(".", "files")
 isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
 
+# The ISLEdict can be cached for faster loading later
+cachedFn = join(root, "cached_ISLEdict_sample.txt")
+isleDict.cacheData(cachedFn)
+anotherIsleDict = isletool.LexicalTool(cachedFn, isCachedFile=True)
 
 # In this first example we look up the syllabification of a word and
 # get it's stress information.

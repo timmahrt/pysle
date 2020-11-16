@@ -16,6 +16,8 @@ import io
 import re
 import os
 
+import json
+
 charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
             u'h', u'i', u'j', u'k', u'l', u'm', u'n', u'oʊ', u'p',
             u'r', u's', u't', u'tʃ', u'u', u'v', u'w', u'z', u'æ',
@@ -82,11 +84,35 @@ class LexicalTool():
     README file for the download location.
     '''
 
-    def __init__(self, islePath):
+    def __init__(self, islePath, isCachedFile=False):
+        '''
+        Create a LexicalTool instance
+
+        islePath: path to ISLEdict.txt or the cached ISLEdict
+        isCachedFile: true|false; cached files can be read faster;
+                                  see LexicalTool.cacheData
+
+        The data format for cached files is different than for the raw
+        file, so be careful.  You'll get an error on loading if
+        isCachedFile doesn't match the file being loaded.
+        '''
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
-        self.data = _readIsleDict(islePath)
+        if isCachedFile:
+            with io.open(islePath, "r", encoding="utf-8") as fd:
+                self.data = json.load(fd)
+        else:
+            self.data = _readIsleDict(islePath)
+
+    def cacheData(self, outputFN):
+        '''
+        Cache the ISLEDict.txt for faster loading times (~25% faster)
+
+        see isletool_examples.py for an example usage
+        '''
+        with io.open(outputFN, "w", encoding="utf-8") as fd:
+            json.dump(self.data, fd)
 
     def lookup(self, word):
         '''
@@ -279,8 +305,13 @@ def search(searchList, matchStr, numSyllables=None, wordInitial='ok',
 
     Internally, uses regular expressions
 
-    wordInitial, wordFinal, spanSyllable, stressSyllable, and multiword
-    can take three different values: 'ok', 'only', or 'no'.
+    wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
+    can take three different values: 'ok', 'only', or 'no'. For example,
+    if spanSyllable is 1) 'ok' then searches will include matches that
+    span or do not span syllables.  if 2) 'only', then matches that do
+    span syllables are included but matches within syllables are not
+    included. if 3) 'no' then matches that span syllables are not
+    included but matches within are.
 
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
