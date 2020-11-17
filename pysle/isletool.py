@@ -15,8 +15,8 @@ see
 import io
 import re
 import os
-
 import json
+from pkg_resources import resource_filename
 
 charList = [u'#', u'.', u'aʊ', u'b', u'd', u'dʒ', u'ei', u'f', u'g',
             u'h', u'i', u'j', u'k', u'l', u'm', u'n', u'oʊ', u'p',
@@ -43,6 +43,8 @@ vowelList = monophthongList + diphthongList + syllabicConsonantList
 
 ISLE_DOWNLOAD_URL = 'https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt'
 
+DEFAULT_ISLE_DICT_PATH = resource_filename("pysle", "data/ISLEdict.txt")
+
 def isVowel(char):
     '''Is this character a vowel?'''
     return any([vowel in char for vowel in vowelList])
@@ -67,12 +69,10 @@ class WordNotInISLE(Exception):
 class IsleDictDoesNotExist(Exception):
 
     def __str__(self):
-        return ("The path to the ISLE dictionary file does not exist.\n"
-                "The ISLE dictionary is an external resource that must "
-                " be downloaded separately.  ISLEdict.txt can be found here:\n"
-                + ISLE_DOWNLOAD_URL + "\n"
-                "Please see the requirements section in the README file "
-                "for more details.")
+        return ("You are trying to load a custom ISLE dictionary file that does not exist.\n"
+                "By default, the original ISLE dictionary file will be loaded.\n"
+                "If you want to use a custom ISLE dictionary, make sure the file exists "
+                "and try again with the full path.")
 
 
 class LexicalTool():
@@ -84,7 +84,9 @@ class LexicalTool():
     README file for the download location.
     '''
 
-    def __init__(self, islePath):
+    def __init__(self, islePath=None):
+        if not islePath:
+            islePath = DEFAULT_ISLE_DICT_PATH
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 

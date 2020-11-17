@@ -74,6 +74,17 @@ What can you do with this library?
 Version History
 ================
 
+Ver 2.2
+
+- the ISLEdict is now bundled with pysle--no need to download it separately!
+
+- loading the isleDict is ~10% faster
+
+Ver 2.1 (May 31, 2020)
+
+- add transcribe function, given a word or series of words, get a possible pronunciation;
+  see examples/isletool_examples.py
+
 Ver 2.0 (May 27, 2020)
 
 - cleaned up the api a little, including some functions that weren't usable
@@ -114,23 +125,30 @@ Ver 1.0 (October 23, 2014)
 Requirements
 ================
 
-- Before you use this library (before or after installing it) you will need
-  to download the ILSEX dictionary.  It can be downloaded here under the
-  section 'English'
-  (with a file name of ISLEdict.txt):
+- ``Python 2.7.*`` or above
+
+- ``Python 3.7.*`` or above (or below, probably)
+
+- The `praatIO <https://github.com/timmahrt/praatIO>`_ library is required IF 
+  you want to use the textgrid functionality.  It is not required 
+  for normal use.
+
+
+Optional resources
+================
+
+pysle requires the ISLEdict pronunciation dictionary.  This is bundled with psyle.
+However, you may want to use a subset of the pronunciations or you may want to
+add your own pronunciations.
+
+In that case, please get the original file.
 
   `ISLEX github page <https://github.com/uiuc-sst/g2ps>`_
 
   `Direct link to the ISLEX file used in this project
   <https://raw.githubusercontent.com/uiuc-sst/g2ps/master/English/ISLEdict.txt>`_ (ISLEdict.txt)
 
-- ``Python 2.7.*`` or above
-
-- ``Python 3.3.*`` or above (or below, probably)
-
-- The `praatIO <https://github.com/timmahrt/praatIO>`_ library is required IF 
-  you want to use the textgrid functionality.  It is not required 
-  for normal use.
+See examples/isletool_examples.py for an example of how to load a custom ISLEdict file.
 
 
 Installation

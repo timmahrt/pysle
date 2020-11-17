@@ -9,12 +9,13 @@ import io
 from setuptools import setup
 
 setup(name='pysle',
-      version='2.1.2',
+      version='2.2.0',
       author='Tim Mahrt',
       author_email='timmahrt@gmail.com',
       url='https://github.com/timmahrt/pysle',
       package_dir={'pysle':'pysle'},
       packages=['pysle'],
+      package_data={'pysle': ['data/ISLEdict.txt', ]},
       license='LICENSE',
       description="An interface to ISLEX, an IPA pronunciation dictionary "
                   "for English with stress and syllable markings.",

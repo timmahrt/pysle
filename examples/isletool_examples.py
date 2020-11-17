@@ -10,8 +10,11 @@ from os.path import join
 
 from pysle import isletool
 
+# You can specify a custom dictionary to search through.
+# By default, the LexicalTool will load the original ISLEdict
 root = join(".", "files")
 isleDict = isletool.LexicalTool(join(root, 'ISLEdict_sample.txt'))
+#isleDict = isletool.LexicalTool()
 
 # In this first example we look up the syllabification of a word and
 # get it's stress information.

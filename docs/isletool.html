@@ -48,8 +48,8 @@ see
 import io
 import re
 import os
-
 import json
+from pkg_resources import resource_filename
 
 charList = [u&#39;#&#39;, u&#39;.&#39;, u&#39;aʊ&#39;, u&#39;b&#39;, u&#39;d&#39;, u&#39;dʒ&#39;, u&#39;ei&#39;, u&#39;f&#39;, u&#39;g&#39;,
             u&#39;h&#39;, u&#39;i&#39;, u&#39;j&#39;, u&#39;k&#39;, u&#39;l&#39;, u&#39;m&#39;, u&#39;n&#39;, u&#39;oʊ&#39;, u&#39;p&#39;,
@@ -76,6 +76,8 @@ vowelList = monophthongList + diphthongList + syllabicConsonantList
 
 ISLE_DOWNLOAD_URL = &#39;https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt&#39;
 
+DEFAULT_ISLE_DICT_PATH = resource_filename(&#34;pysle&#34;, &#34;data/ISLEdict.txt&#34;)
+
 def isVowel(char):
     &#39;&#39;&#39;Is this character a vowel?&#39;&#39;&#39;
     return any([vowel in char for vowel in vowelList])
@@ -100,12 +102,10 @@ class WordNotInISLE(Exception):
 class IsleDictDoesNotExist(Exception):
 
     def __str__(self):
-        return (&#34;The path to the ISLE dictionary file does not exist.\n&#34;
-                &#34;The ISLE dictionary is an external resource that must &#34;
-                &#34; be downloaded separately.  ISLEdict.txt can be found here:\n&#34;
-                + ISLE_DOWNLOAD_URL + &#34;\n&#34;
-                &#34;Please see the requirements section in the README file &#34;
-                &#34;for more details.&#34;)
+        return (&#34;You are trying to load a custom ISLE dictionary file that does not exist.\n&#34;
+                &#34;By default, the original ISLE dictionary file will be loaded.\n&#34;
+                &#34;If you want to use a custom ISLE dictionary, make sure the file exists &#34;
+                &#34;and try again with the full path.&#34;)
 
 
 class LexicalTool():
@@ -117,7 +117,9 @@ class LexicalTool():
     README file for the download location.
     &#39;&#39;&#39;
 
-    def __init__(self, islePath):
+    def __init__(self, islePath=None):
+        if not islePath:
+            islePath = DEFAULT_ISLE_DICT_PATH
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
@@ -302,12 +304,18 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     for char, replStr in replDict.items():
         matchStr = matchStr.replace(char, replStr)
 
+    # if onlyWordInitial:
+    #     matchStr = &#34;^&#34; + matchStr
+
+    # if onlyWordFinal:
+    #     matchStr = matchStr + &#34;$&#34;
+
     return matchStr
 
 
 def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
            wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-           multiword=&#39;ok&#39;, pos=None):
+           multiword=&#39;ok&#39;, pos=None, onlyWordInitial=False, onlyWordFinal=False):
     &#39;&#39;&#39;
     Searches for words in searchList that match the pronunciation &#39;matchStr&#39;
 
@@ -323,6 +331,8 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
 
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
+
+    onlyWordInitial:
 
     Special search characters:
     &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
@@ -373,7 +383,12 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
                     continue
 
             matchList = compiledRE.findall(searchPron)
+            # print([matchStr, searchPron])
+            # if not matchList:
+            #     continue
+
             if len(matchList) &gt; 0:
+                print(matchList)
                 if stressedSyllable == &#39;only&#39;:
                     if all([u&#34;ˈ&#34; not in match for match in matchList]):
                         continue
@@ -695,7 +710,7 @@ average length.</p></section>
 </details>
 </dd>
 <dt id="pysle.isletool.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>searchList, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None)</span>
+<span>def <span class="ident">search</span></span>(<span>searchList, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None, onlyWordInitial=False, onlyWordFinal=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Searches for words in searchList that match the pronunciation 'matchStr'</p>
@@ -710,6 +725,7 @@ included. if 3) 'no' then matches that span syllables are not
 included but matches within are.</p>
 <p>pos: a tag in the Penn Part of Speech tagset
 see isletool.posList for the full list of possible tags</p>
+<p>onlyWordInitial:</p>
 <p>Special search characters:
 'D' - any dental; 'F' - any fricative; 'S' - any stop
 'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
@@ -727,7 +743,7 @@ set of data than the entire ISLEdict dictionary.</p></section>
 </summary>
 <pre><code class="python">def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
            wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-           multiword=&#39;ok&#39;, pos=None):
+           multiword=&#39;ok&#39;, pos=None, onlyWordInitial=False, onlyWordFinal=False):
     &#39;&#39;&#39;
     Searches for words in searchList that match the pronunciation &#39;matchStr&#39;
 
@@ -743,6 +759,8 @@ set of data than the entire ISLEdict dictionary.</p></section>
 
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
+
+    onlyWordInitial:
 
     Special search characters:
     &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
@@ -793,7 +811,12 @@ set of data than the entire ISLEdict dictionary.</p></section>
                     continue
 
             matchList = compiledRE.findall(searchPron)
+            # print([matchStr, searchPron])
+            # if not matchList:
+            #     continue
+
             if len(matchList) &gt; 0:
+                print(matchList)
                 if stressedSyllable == &#39;only&#39;:
                     if all([u&#34;ˈ&#34; not in match for match in matchList]):
                         continue
@@ -907,12 +930,10 @@ pronunciation and 'longest' a more formal one.</p></section>
 <pre><code class="python">class IsleDictDoesNotExist(Exception):
 
     def __str__(self):
-        return (&#34;The path to the ISLE dictionary file does not exist.\n&#34;
-                &#34;The ISLE dictionary is an external resource that must &#34;
-                &#34; be downloaded separately.  ISLEdict.txt can be found here:\n&#34;
-                + ISLE_DOWNLOAD_URL + &#34;\n&#34;
-                &#34;Please see the requirements section in the README file &#34;
-                &#34;for more details.&#34;)</code></pre>
+        return (&#34;You are trying to load a custom ISLE dictionary file that does not exist.\n&#34;
+                &#34;By default, the original ISLE dictionary file will be loaded.\n&#34;
+                &#34;If you want to use a custom ISLE dictionary, make sure the file exists &#34;
+                &#34;and try again with the full path.&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -922,7 +943,7 @@ pronunciation and 'longest' a more formal one.</p></section>
 </dd>
 <dt id="pysle.isletool.LexicalTool"><code class="flex name class">
 <span>class <span class="ident">LexicalTool</span></span>
-<span>(</span><span>islePath)</span>
+<span>(</span><span>islePath=None)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>The interface for working with ISLEdict.txt</p>
@@ -942,7 +963,9 @@ README file for the download location.</p></section>
     README file for the download location.
     &#39;&#39;&#39;
 
-    def __init__(self, islePath):
+    def __init__(self, islePath=None):
+        if not islePath:
+            islePath = DEFAULT_ISLE_DICT_PATH
         if not os.path.exists(islePath):
             raise IsleDictDoesNotExist()
 
