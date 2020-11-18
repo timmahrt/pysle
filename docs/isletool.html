@@ -151,7 +151,7 @@ class LexicalTool():
 
     def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
                wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-               multiword=&#39;ok&#39;, pos=None):
+               multiword=&#39;ok&#39;, pos=None, exactMatch=False):
         &#39;&#39;&#39;
         for help on isletool.LexicalTool.search(), see see isletool.search()
         &#39;&#39;&#39;
@@ -159,7 +159,7 @@ class LexicalTool():
                       wordInitial=wordInitial, wordFinal=wordFinal,
                       spanSyllable=spanSyllable,
                       stressedSyllable=stressedSyllable,
-                      multiword=multiword, pos=pos)
+                      multiword=multiword, pos=pos, exactMatch=exactMatch)
 
 def _readIsleDict(islePath):
     &#39;&#39;&#39;
@@ -183,7 +183,7 @@ def _readIsleDict(islePath):
     return lexDict
 
 def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
-                     spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;):
+                     spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;, exactMatch=False):
     &#39;&#39;&#39;
     Prepares a user&#39;s RE string for a search
     &#39;&#39;&#39;
@@ -232,7 +232,7 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     # Setting search boundaries
     # We search on &#39;[^\.#]&#39; and not &#39;.&#39; so that the search doesn&#39;t span
     # multiple syllables or words
-    if wordInitial == &#39;only&#39;:
+    if wordInitial == &#39;only&#39; or exactMatch:
         matchStr = u&#39;#&#39; + matchStr
     elif wordInitial == &#39;no&#39;:
         # Match the closest preceeding syllable.  If there is none, look
@@ -241,7 +241,7 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     else:
         matchStr = u&#39;[#\\.][^\\.#]*?&#39; + matchStr
 
-    if wordFinal == &#39;only&#39;:
+    if wordFinal == &#39;only&#39; or exactMatch:
         matchStr = matchStr + u&#39;#&#39;
     elif wordFinal == &#39;no&#39;:
         matchStr = matchStr + u&#34;(?:[^\\.#]*?\\.|[^\\.#]+?#)&#34;
@@ -304,18 +304,15 @@ def _prepRESearchStr(matchStr, wordInitial=&#39;ok&#39;, wordFinal=&#39;ok&#39;,
     for char, replStr in replDict.items():
         matchStr = matchStr.replace(char, replStr)
 
-    # if onlyWordInitial:
-    #     matchStr = &#34;^&#34; + matchStr
-
-    # if onlyWordFinal:
-    #     matchStr = matchStr + &#34;$&#34;
+    if exactMatch:
+        matchStr = &#34;^&#34; + matchStr + &#34;$&#34;
 
     return matchStr
 
 
 def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
            wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-           multiword=&#39;ok&#39;, pos=None, onlyWordInitial=False, onlyWordFinal=False):
+           multiword=&#39;ok&#39;, pos=None, exactMatch=False):
     &#39;&#39;&#39;
     Searches for words in searchList that match the pronunciation &#39;matchStr&#39;
 
@@ -332,7 +329,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
 
-    onlyWordInitial:
+    exactMatch: match only the exact pronunciation (ignoring stress, syllable markers, etc)
 
     Special search characters:
     &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
@@ -351,7 +348,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
     # Run search for words
 
     matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
-                                spanSyllable, stressedSyllable)
+                                spanSyllable, stressedSyllable, exactMatch)
 
     compiledRE = re.compile(matchStr)
     retList = []
@@ -383,12 +380,7 @@ def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
                     continue
 
             matchList = compiledRE.findall(searchPron)
-            # print([matchStr, searchPron])
-            # if not matchList:
-            #     continue
-
             if len(matchList) &gt; 0:
-                print(matchList)
                 if stressedSyllable == &#39;only&#39;:
                     if all([u&#34;ˈ&#34; not in match for match in matchList]):
                         continue
@@ -710,7 +702,7 @@ average length.</p></section>
 </details>
 </dd>
 <dt id="pysle.isletool.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>searchList, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None, onlyWordInitial=False, onlyWordFinal=False)</span>
+<span>def <span class="ident">search</span></span>(<span>searchList, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None, exactMatch=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Searches for words in searchList that match the pronunciation 'matchStr'</p>
@@ -725,7 +717,7 @@ included. if 3) 'no' then matches that span syllables are not
 included but matches within are.</p>
 <p>pos: a tag in the Penn Part of Speech tagset
 see isletool.posList for the full list of possible tags</p>
-<p>onlyWordInitial:</p>
+<p>exactMatch: match only the exact pronunciation (ignoring stress, syllable markers, etc)</p>
 <p>Special search characters:
 'D' - any dental; 'F' - any fricative; 'S' - any stop
 'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
@@ -743,7 +735,7 @@ set of data than the entire ISLEdict dictionary.</p></section>
 </summary>
 <pre><code class="python">def search(searchList, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
            wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-           multiword=&#39;ok&#39;, pos=None, onlyWordInitial=False, onlyWordFinal=False):
+           multiword=&#39;ok&#39;, pos=None, exactMatch=False):
     &#39;&#39;&#39;
     Searches for words in searchList that match the pronunciation &#39;matchStr&#39;
 
@@ -760,7 +752,7 @@ set of data than the entire ISLEdict dictionary.</p></section>
     pos: a tag in the Penn Part of Speech tagset
         see isletool.posList for the full list of possible tags
 
-    onlyWordInitial:
+    exactMatch: match only the exact pronunciation (ignoring stress, syllable markers, etc)
 
     Special search characters:
     &#39;D&#39; - any dental; &#39;F&#39; - any fricative; &#39;S&#39; - any stop
@@ -779,7 +771,7 @@ set of data than the entire ISLEdict dictionary.</p></section>
     # Run search for words
 
     matchStr = _prepRESearchStr(matchStr, wordInitial, wordFinal,
-                                spanSyllable, stressedSyllable)
+                                spanSyllable, stressedSyllable, exactMatch)
 
     compiledRE = re.compile(matchStr)
     retList = []
@@ -811,12 +803,7 @@ set of data than the entire ISLEdict dictionary.</p></section>
                     continue
 
             matchList = compiledRE.findall(searchPron)
-            # print([matchStr, searchPron])
-            # if not matchList:
-            #     continue
-
             if len(matchList) &gt; 0:
-                print(matchList)
                 if stressedSyllable == &#39;only&#39;:
                     if all([u&#34;ˈ&#34; not in match for match in matchList]):
                         continue
@@ -997,7 +984,7 @@ README file for the download location.</p></section>
 
     def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
                wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-               multiword=&#39;ok&#39;, pos=None):
+               multiword=&#39;ok&#39;, pos=None, exactMatch=False):
         &#39;&#39;&#39;
         for help on isletool.LexicalTool.search(), see see isletool.search()
         &#39;&#39;&#39;
@@ -1005,7 +992,7 @@ README file for the download location.</p></section>
                       wordInitial=wordInitial, wordFinal=wordFinal,
                       spanSyllable=spanSyllable,
                       stressedSyllable=stressedSyllable,
-                      multiword=multiword, pos=pos)</code></pre>
+                      multiword=multiword, pos=pos, exactMatch=exactMatch)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1047,7 +1034,7 @@ README file for the download location.</p></section>
 </details>
 </dd>
 <dt id="pysle.isletool.LexicalTool.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>self, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None)</span>
+<span>def <span class="ident">search</span></span>(<span>self, matchStr, numSyllables=None, wordInitial='ok', wordFinal='ok', spanSyllable='ok', stressedSyllable='ok', multiword='ok', pos=None, exactMatch=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>for help on isletool.LexicalTool.search(), see see isletool.search()</p></section>
@@ -1057,7 +1044,7 @@ README file for the download location.</p></section>
 </summary>
 <pre><code class="python">def search(self, matchStr, numSyllables=None, wordInitial=&#39;ok&#39;,
            wordFinal=&#39;ok&#39;, spanSyllable=&#39;ok&#39;, stressedSyllable=&#39;ok&#39;,
-           multiword=&#39;ok&#39;, pos=None):
+           multiword=&#39;ok&#39;, pos=None, exactMatch=False):
     &#39;&#39;&#39;
     for help on isletool.LexicalTool.search(), see see isletool.search()
     &#39;&#39;&#39;
@@ -1065,7 +1052,7 @@ README file for the download location.</p></section>
                   wordInitial=wordInitial, wordFinal=wordFinal,
                   spanSyllable=spanSyllable,
                   stressedSyllable=stressedSyllable,
-                  multiword=multiword, pos=pos)</code></pre>
+                  multiword=multiword, pos=pos, exactMatch=exactMatch)</code></pre>
 </details>
 </dd>
 </dl>

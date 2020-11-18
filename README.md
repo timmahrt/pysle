@@ -73,6 +73,11 @@ What can you do with this library?
 
 *Pysle uses semantic versioning (Major.Minor.Patch)*
 
+Ver 2.3 (Nov 18, 2020)
+- add exactMatch to isletool.search()
+    - when True, will return exact phonetic matches, ignoring stress, syllable, and word markers
+    - see examples/dictionary_search.py
+
 Ver 2.2 (Nov 17, 2020)
 - the ISLEdict is now bundled with pysle--no need to download it separately!
 - loading the isleDict is ~10% faster
