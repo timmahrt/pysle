@@ -161,7 +161,7 @@ Here is a typical common usage
     from pysle import isletool
     isleDict = isletool.LexicalTool('C:\islev2.dict')
     print(isleDict.lookup('catatonic')[0]) # Get the first pronunciation
-    >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
+    # >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
     ```
 
 and another
@@ -177,7 +177,7 @@ and another
     returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, phoneList)
     syllableList = returnList[2]
     print(syllableList)
-    >> [["''"], ['n', '@'], ['th', 'r']]
+    # >> [["''"], ['n', '@'], ['th', 'r']]
     ```
 
 Please see \\examples for example usage
