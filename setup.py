@@ -19,5 +19,6 @@ setup(name='pysle',
       license='LICENSE',
       description="An interface to ISLEX, an IPA pronunciation dictionary "
                   "for English with stress and syllable markings.",
-      long_description=io.open('README.rst', 'r', encoding="utf-8").read()
+      long_description=io.open('README.md', 'r', encoding="utf-8").read(),
+      long_description_content_type="text/markdown"
       )
