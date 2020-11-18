@@ -156,29 +156,31 @@ If python is not in your path, you'll need to enter the full path e.g.
 ## Example usage
 
 
-Here is a typical common usage
-    ```python
-    from pysle import isletool
-    isleDict = isletool.LexicalTool('C:\islev2.dict')
-    print(isleDict.lookup('catatonic')[0]) # Get the first pronunciation
-    # >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
-    ```
+Here is a typical usage
+
+```python
+from pysle import isletool
+isleDict = isletool.LexicalTool('C:\islev2.dict')
+print(isleDict.lookup('catatonic')[0]) # Get the first pronunciation
+# >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
+```
 
 and another
-    ```python
-    from pysle import isletool
-    from pysle import pronunciationtools
-    
-    isleDict = isletool.LexicalTool('C:\islev2.dict')
 
-    searchWord = 'another'
-    phoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
+```python
+from pysle import isletool
+from pysle import pronunciationtools
 
-    returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, phoneList)
-    syllableList = returnList[2]
-    print(syllableList)
-    # >> [["''"], ['n', '@'], ['th', 'r']]
-    ```
+isleDict = isletool.LexicalTool('C:\islev2.dict')
+
+searchWord = 'another'
+phoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
+
+returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, phoneList)
+syllableList = returnList[2]
+print(syllableList)
+# >> [["''"], ['n', '@'], ['th', 'r']]
+```
 
 Please see \\examples for example usage
 
