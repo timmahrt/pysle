@@ -60,7 +60,7 @@ printOutMatches("s", wordInitial="only", numMatches=10,
                 matchList=_matchList, multiword="no")
 
 # words pronounced exactly as "kæt˺"
-printOutMatches("kæt˺", exactMatch=True)
+printOutMatches(u"kæt˺", exactMatch=True)
 
 # all words containing "kæt˺"
-printOutMatches("kæt˺")
+printOutMatches(u"kæt˺")
