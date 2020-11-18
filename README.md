@@ -156,7 +156,7 @@ If python is not in your path, you'll need to enter the full path e.g.
 ## Example usage
 
 
-Here is a typical common usage
+Here is a typical usage
 
 ```python
 from pysle import isletool
