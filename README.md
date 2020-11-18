@@ -157,7 +157,6 @@ If python is not in your path, you'll need to enter the full path e.g.
 
 
 Here is a typical common usage
-
     ```python
     from pysle import isletool
     isleDict = isletool.LexicalTool('C:\islev2.dict')
@@ -166,7 +165,6 @@ Here is a typical common usage
     ```
 
 and another
-
     ```python
     from pysle import isletool
     from pysle import pronunciationtools
