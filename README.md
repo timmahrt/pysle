@@ -34,6 +34,8 @@ Automatically generated pdocs can be found here:
 
 http://timmahrt.github.io/pysle/
 
+The documentation is generated with the following command:
+`pdoc ./pysle -d google -o docs`
 
 ## Common Use Cases
 
