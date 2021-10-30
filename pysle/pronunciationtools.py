@@ -27,6 +27,18 @@ class TooManyVowelsInSyllable(Exception):
         return errStr % (syllableStr, syllableCVStr)
 
 
+class ImpossibleSyllabificationError(Exception):
+
+    def __init__(self, estimatedActualSyllabificationList, isleSyllabificationList):
+        self.estimatedList = estimatedActualSyllabificationList
+        self.isleSyllabificationList = isleSyllabificationList
+
+    def __str__(self):
+        return (f"Impossible syllabification; "
+            f"Estimated: {self.estimatedList}; "
+            f"ISLE's: {self.isleSyllabificationList}"
+            )
+
 class NumWordsMismatchError(Exception):
 
     def __init__(self, word, numMatches):
@@ -284,8 +296,8 @@ def alignPronunciations(phoneListA, phoneListB):
     '''
 
     # Remove any elements not in the other list (but maintain order)
-    pronATmp = phoneListA
-    pronBTmp = phoneListB
+    pronATmp = copy.deepcopy(phoneListA)
+    pronBTmp = copy.deepcopy(phoneListB)
 
     # Find the longest sequence
     sequence = _lcs(pronBTmp, pronATmp)
@@ -297,16 +309,16 @@ def alignPronunciations(phoneListA, phoneListB):
     sequenceIndexListA = []
     sequenceIndexListB = []
     for phone in sequence:
-        startA = phoneListA.index(phone, startA)
-        startB = phoneListB.index(phone, startB)
+        startA = pronATmp.index(phone, startA)
+        startB = pronBTmp.index(phone, startB)
 
         sequenceIndexListA.append(startA)
         sequenceIndexListB.append(startB)
 
     # An index on the tail of both will be used to create output strings
     # of the same length
-    sequenceIndexListA.append(len(phoneListA))
-    sequenceIndexListB.append(len(phoneListB))
+    sequenceIndexListA.append(len(pronATmp))
+    sequenceIndexListB.append(len(pronBTmp))
 
     # Fill in any blanks such that the sequential items have the same
     # index and the two strings are the same length
@@ -315,16 +327,16 @@ def alignPronunciations(phoneListA, phoneListB):
         indexB = sequenceIndexListB[i]
         if indexA < indexB:
             for _ in range(indexB - indexA):
-                phoneListA.insert(indexA, "''")
+                pronATmp.insert(indexA, "''")
             sequenceIndexListA = [val + indexB - indexA
                                   for val in sequenceIndexListA]
         elif indexA > indexB:
             for _ in range(indexA - indexB):
-                phoneListB.insert(indexB, "''")
+                pronBTmp.insert(indexB, "''")
             sequenceIndexListB = [val + indexA - indexB
                                   for val in sequenceIndexListB]
 
-    return phoneListA, phoneListB
+    return pronATmp, pronBTmp
 
 
 def findBestSyllabification(isleDict, wordText, phoneList):
@@ -372,7 +384,10 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
         stressedSyllableI = None
         stressedVowelI = None
     else:
-        stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
+        try:
+            stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
+        except TooManyVowelsInSyllable as err:
+            raise ImpossibleSyllabificationError(syllableList, alignedSyllables) from err
 
     # Count the index of the stressed phones, if the stress list has
     # become flattened (no syllable information)

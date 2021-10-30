@@ -8,20 +8,20 @@ praatio library.
 
 from os.path import join
 
-from praatio import tgio
+from praatio import textgrid
 from pysle import isletool
 from pysle import praattools
 
 root = join('.', 'files')
 isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
 
-tg = tgio.openTextgrid(join(root, "pumpkins.TextGrid"))
+tg = textgrid.openTextgrid(join(root, "problematicdx.TextGrid"), includeEmptyIntervals=False)
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(isleDict, tg, "word", "phone",
-                                          skipLabelList=["", ])
+                                          skipLabelList=["", ], stressedSyllableDetectionErrors="WARN", syllabificationError="WARN")
 tg.addTier(syllableTG.tierDict["syllable"])
 tg.addTier(syllableTG.tierDict["tonicSyllable"])
 tg.addTier(syllableTG.tierDict["tonicVowel"])
 
-tg.save(join(root, "pumpkins_with_syllables.TextGrid"))
+tg.save(join(root, "problematicdx_with_syllables.TextGrid"), format="short_textgrid", includeBlankSpaces=True)

@@ -40,6 +40,15 @@
 
             </li>
             <li>
+                    <a class="class" href="#ImpossibleSyllabificationError">ImpossibleSyllabificationError</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#ImpossibleSyllabificationError.__init__">ImpossibleSyllabificationError</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
                     <a class="class" href="#NumWordsMismatchError">NumWordsMismatchError</a>
                             <ul class="memberlist">
                         <li>
@@ -134,6 +143,18 @@
 
         <span class="k">return</span> <span class="n">errStr</span> <span class="o">%</span> <span class="p">(</span><span class="n">syllableStr</span><span class="p">,</span> <span class="n">syllableCVStr</span><span class="p">)</span>
 
+
+<span class="k">class</span> <span class="nc">ImpossibleSyllabificationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimatedActualSyllabificationList</span><span class="p">,</span> <span class="n">isleSyllabificationList</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span> <span class="o">=</span> <span class="n">estimatedActualSyllabificationList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span> <span class="o">=</span> <span class="n">isleSyllabificationList</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Estimated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span><span class="si">}</span><span class="s2">; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;ISLE&#39;s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">NumWordsMismatchError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
@@ -392,8 +413,8 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="c1"># Remove any elements not in the other list (but maintain order)</span>
-    <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">phoneListA</span>
-    <span class="n">pronBTmp</span> <span class="o">=</span> <span class="n">phoneListB</span>
+    <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">)</span>
+    <span class="n">pronBTmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListB</span><span class="p">)</span>
 
     <span class="c1"># Find the longest sequence</span>
     <span class="n">sequence</span> <span class="o">=</span> <span class="n">_lcs</span><span class="p">(</span><span class="n">pronBTmp</span><span class="p">,</span> <span class="n">pronATmp</span><span class="p">)</span>
@@ -405,16 +426,16 @@
     <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
-        <span class="n">startA</span> <span class="o">=</span> <span class="n">phoneListA</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startA</span><span class="p">)</span>
-        <span class="n">startB</span> <span class="o">=</span> <span class="n">phoneListB</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startB</span><span class="p">)</span>
+        <span class="n">startA</span> <span class="o">=</span> <span class="n">pronATmp</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startA</span><span class="p">)</span>
+        <span class="n">startB</span> <span class="o">=</span> <span class="n">pronBTmp</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startB</span><span class="p">)</span>
 
         <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">startA</span><span class="p">)</span>
         <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">startB</span><span class="p">)</span>
 
     <span class="c1"># An index on the tail of both will be used to create output strings</span>
     <span class="c1"># of the same length</span>
-    <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">))</span>
-    <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneListB</span><span class="p">))</span>
+    <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pronATmp</span><span class="p">))</span>
+    <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pronBTmp</span><span class="p">))</span>
 
     <span class="c1"># Fill in any blanks such that the sequential items have the same</span>
     <span class="c1"># index and the two strings are the same length</span>
@@ -423,16 +444,16 @@
         <span class="n">indexB</span> <span class="o">=</span> <span class="n">sequenceIndexListB</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">indexA</span> <span class="o">&lt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span><span class="p">):</span>
-                <span class="n">phoneListA</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+                <span class="n">pronATmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
             <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span>
                                   <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">indexA</span> <span class="o">&gt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span><span class="p">):</span>
-                <span class="n">phoneListB</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+                <span class="n">pronBTmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
             <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span>
                                   <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">phoneListA</span><span class="p">,</span> <span class="n">phoneListB</span>
+    <span class="k">return</span> <span class="n">pronATmp</span><span class="p">,</span> <span class="n">pronBTmp</span>
 
 
 <span class="k">def</span> <span class="nf">findBestSyllabification</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordText</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">):</span>
@@ -480,7 +501,10 @@
         <span class="n">stressedSyllableI</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">stressedVowelI</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">stressedVowelI</span> <span class="o">=</span> <span class="n">_getSyllableNucleus</span><span class="p">(</span><span class="n">syllableList</span><span class="p">[</span><span class="n">stressedSyllableI</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stressedVowelI</span> <span class="o">=</span> <span class="n">_getSyllableNucleus</span><span class="p">(</span><span class="n">syllableList</span><span class="p">[</span><span class="n">stressedSyllableI</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">TooManyVowelsInSyllable</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImpossibleSyllabificationError</span><span class="p">(</span><span class="n">syllableList</span><span class="p">,</span> <span class="n">alignedSyllables</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="c1"># Count the index of the stressed phones, if the stress list has</span>
     <span class="c1"># become flattened (no syllable information)</span>
@@ -589,6 +613,66 @@
                                     <div><dt>builtins.BaseException</dt>
                                 <dd id="TooManyVowelsInSyllable.with_traceback" class="function">with_traceback</dd>
                 <dd id="TooManyVowelsInSyllable.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="ImpossibleSyllabificationError">
+                                <div class="attr class">
+        <a class="headerlink" href="#ImpossibleSyllabificationError">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">ImpossibleSyllabificationError</span><wbr>(<span class="base">builtins.Exception</span>):
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ImpossibleSyllabificationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimatedActualSyllabificationList</span><span class="p">,</span> <span class="n">isleSyllabificationList</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span> <span class="o">=</span> <span class="n">estimatedActualSyllabificationList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span> <span class="o">=</span> <span class="n">isleSyllabificationList</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Estimated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span><span class="si">}</span><span class="s2">; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;ISLE&#39;s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>Common base class for all non-exit exceptions.</p>
+</div>
+
+
+                            <div id="ImpossibleSyllabificationError.__init__" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#ImpossibleSyllabificationError.__init__">#&nbsp;&nbsp</a>
+
+        
+            <span class="name">ImpossibleSyllabificationError</span><span class="signature">(estimatedActualSyllabificationList, isleSyllabificationList)</span>
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimatedActualSyllabificationList</span><span class="p">,</span> <span class="n">isleSyllabificationList</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span> <span class="o">=</span> <span class="n">estimatedActualSyllabificationList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span> <span class="o">=</span> <span class="n">isleSyllabificationList</span>
+</pre></div>
+
+        </details>
+
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>builtins.BaseException</dt>
+                                <dd id="ImpossibleSyllabificationError.with_traceback" class="function">with_traceback</dd>
+                <dd id="ImpossibleSyllabificationError.args" class="variable">args</dd>
 
             </div>
                                 </dl>
@@ -895,8 +979,8 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="c1"># Remove any elements not in the other list (but maintain order)</span>
-    <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">phoneListA</span>
-    <span class="n">pronBTmp</span> <span class="o">=</span> <span class="n">phoneListB</span>
+    <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">)</span>
+    <span class="n">pronBTmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListB</span><span class="p">)</span>
 
     <span class="c1"># Find the longest sequence</span>
     <span class="n">sequence</span> <span class="o">=</span> <span class="n">_lcs</span><span class="p">(</span><span class="n">pronBTmp</span><span class="p">,</span> <span class="n">pronATmp</span><span class="p">)</span>
@@ -908,16 +992,16 @@
     <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
-        <span class="n">startA</span> <span class="o">=</span> <span class="n">phoneListA</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startA</span><span class="p">)</span>
-        <span class="n">startB</span> <span class="o">=</span> <span class="n">phoneListB</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startB</span><span class="p">)</span>
+        <span class="n">startA</span> <span class="o">=</span> <span class="n">pronATmp</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startA</span><span class="p">)</span>
+        <span class="n">startB</span> <span class="o">=</span> <span class="n">pronBTmp</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">startB</span><span class="p">)</span>
 
         <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">startA</span><span class="p">)</span>
         <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">startB</span><span class="p">)</span>
 
     <span class="c1"># An index on the tail of both will be used to create output strings</span>
     <span class="c1"># of the same length</span>
-    <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">))</span>
-    <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneListB</span><span class="p">))</span>
+    <span class="n">sequenceIndexListA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pronATmp</span><span class="p">))</span>
+    <span class="n">sequenceIndexListB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pronBTmp</span><span class="p">))</span>
 
     <span class="c1"># Fill in any blanks such that the sequential items have the same</span>
     <span class="c1"># index and the two strings are the same length</span>
@@ -926,16 +1010,16 @@
         <span class="n">indexB</span> <span class="o">=</span> <span class="n">sequenceIndexListB</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">indexA</span> <span class="o">&lt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span><span class="p">):</span>
-                <span class="n">phoneListA</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+                <span class="n">pronATmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
             <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span>
                                   <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">indexA</span> <span class="o">&gt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span><span class="p">):</span>
-                <span class="n">phoneListB</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+                <span class="n">pronBTmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
             <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span>
                                   <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">phoneListA</span><span class="p">,</span> <span class="n">phoneListB</span>
+    <span class="k">return</span> <span class="n">pronATmp</span><span class="p">,</span> <span class="n">pronBTmp</span>
 </pre></div>
 
         </details>
