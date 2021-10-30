@@ -27,6 +27,18 @@ class TooManyVowelsInSyllable(Exception):
         return errStr % (syllableStr, syllableCVStr)
 
 
+class ImpossibleSyllabificationError(Exception):
+
+    def __init__(self, estimatedActualSyllabificationList, isleSyllabificationList):
+        self.estimatedList = estimatedActualSyllabificationList
+        self.isleSyllabificationList = isleSyllabificationList
+
+    def __str__(self):
+        return (f"Impossible syllabification; "
+            f"Estimated: {self.estimatedList}; "
+            f"ISLE's: {self.isleSyllabificationList}"
+            )
+
 class NumWordsMismatchError(Exception):
 
     def __init__(self, word, numMatches):
@@ -372,7 +384,10 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
         stressedSyllableI = None
         stressedVowelI = None
     else:
-        stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
+        try:
+            stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
+        except TooManyVowelsInSyllable as err:
+            raise ImpossibleSyllabificationError(syllableList, alignedSyllables) from err
 
     # Count the index of the stressed phones, if the stress list has
     # become flattened (no syllable information)
