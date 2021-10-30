@@ -89,7 +89,7 @@ Please view [CHANGELOG.md](https://github.com/timmahrt/pysle/blob/main/CHANGELOG
   for normal use.
 
 
-## Optional resources
+## ISLE Dictionary
 
 
 pysle requires the ISLEdict pronunciation dictionary
