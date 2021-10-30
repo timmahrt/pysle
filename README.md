@@ -117,8 +117,6 @@ Ver 1.0 (October 23, 2014)
 
 ## Requirements
 
-- ``Python 2.7.*`` or above
-
 - ``Python 3.7.*`` or above (or below, probably)
 
 [Click here to visit travis-ci and see the specific versions of python that pysle is currently tested under](<https://travis-ci.org/timmahrt/pysle>)
