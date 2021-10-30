@@ -19,7 +19,7 @@ class OptionalFeatureError(ImportError):
 
 
 try:
-    from praatio import tgio
+    from praatio import textgrid
     from praatio import praatio_scripts
 except ImportError:
     raise OptionalFeatureError()
@@ -128,10 +128,10 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
         phoneEntryList.extend(subPhoneEntryList)
 
     # Replace or add the word tier
-    newWordTier = tgio.IntervalTier(wordTierName,
-                                    wordEntryList,
-                                    tg.minTimestamp,
-                                    tg.maxTimestamp)
+    newWordTier = textgrid.IntervalTier(wordTierName,
+                                        wordEntryList,
+                                        tg.minTimestamp,
+                                        tg.maxTimestamp)
     if wordTier is not None:
         tg.replaceTier(wordTierName, newWordTier)
     else:
@@ -141,10 +141,10 @@ def naiveWordAlignment(tg, utteranceTierName, wordTierName, isleDict,
     # Add the phone tier
     # This is mainly used as an annotation tier
     if phoneHelperTierName is not None and len(phoneEntryList) > 0:
-        newPhoneTier = tgio.IntervalTier(phoneHelperTierName,
-                                         phoneEntryList,
-                                         tg.minTimestamp,
-                                         tg.minTimestamp)
+        newPhoneTier = textgrid.IntervalTier(phoneHelperTierName,
+                                             phoneEntryList,
+                                             tg.minTimestamp,
+                                             tg.maxTimestamp)
         if phoneHelperTierName in tg.tierNameList:
             tg.replaceTier(phoneHelperTierName, newPhoneTier)
         else:
@@ -213,10 +213,10 @@ def naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict,
         phoneEntryList.extend(subPhoneEntryList)
 
     # Replace or add the phone tier
-    newPhoneTier = tgio.IntervalTier(phoneTierName,
-                                     phoneEntryList,
-                                     tg.minTimestamp,
-                                     tg.maxTimestamp)
+    newPhoneTier = textgrid.IntervalTier(phoneTierName,
+                                        phoneEntryList,
+                                        tg.minTimestamp,
+                                        tg.maxTimestamp)
     if phoneTier is not None:
         tg.replaceTier(phoneTierName, newPhoneTier)
     else:
@@ -337,14 +337,14 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 tonicPEntryList.append((phoneStart, phoneEnd, 'T'))
 
     # Create a textgrid with the two syllable-level tiers
-    syllableTier = tgio.IntervalTier('syllable', syllableEntryList,
-                                     minT, maxT)
-    tonicSTier = tgio.IntervalTier('tonicSyllable', tonicSEntryList,
-                                   minT, maxT)
-    tonicPTier = tgio.IntervalTier('tonicVowel', tonicPEntryList,
-                                   minT, maxT)
+    syllableTier = textgrid.IntervalTier('syllable', syllableEntryList,
+                                         minT, maxT)
+    tonicSTier = textgrid.IntervalTier('tonicSyllable', tonicSEntryList,
+                                       minT, maxT)
+    tonicPTier = textgrid.IntervalTier('tonicVowel', tonicPEntryList,
+                                       minT, maxT)
 
-    syllableTG = tgio.Textgrid()
+    syllableTG = textgrid.Textgrid()
     syllableTG.addTier(syllableTier)
     syllableTG.addTier(tonicSTier)
     syllableTG.addTier(tonicPTier)

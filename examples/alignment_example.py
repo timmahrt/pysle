@@ -19,7 +19,7 @@ of emotion or inflection (e.g. read speech).
 
 from os.path import join
 
-from praatio import tgio
+from praatio import textgrid
 
 from pysle import isletool
 from pysle import praattools
@@ -36,7 +36,7 @@ wordTierName = "word"
 phoneListTierName = "phoneList"
 phoneTierName = "phone"
 
-tg = tgio.openTextgrid(inputFN)
+tg = textgrid.openTextgrid(inputFN, includeEmptyIntervals=False)
 
 for tierName in tg.tierNameList[:]:
     if tierName == utteranceTierName:
@@ -46,4 +46,4 @@ tg = praattools.naiveWordAlignment(tg, utteranceTierName, wordTierName,
                                    isleDict, phoneListTierName)
 tg = praattools.naivePhoneAlignment(tg, wordTierName, phoneTierName,
                                     isleDict)
-tg.save(outputFN)
+tg.save(outputFN, format="short_textgrid", includeBlankSpaces=True)
