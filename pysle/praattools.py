@@ -325,6 +325,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 justPhones = [phone for _, _, phone in phoneList]
                 cvList = pronunciationtools.simplifyPronunciation(justPhones)
 
+                tmpStressJ = None
                 try:
                     tmpStressJ = cvList.index('V')
                 except ValueError:
