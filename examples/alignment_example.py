@@ -1,5 +1,5 @@
-#encoding: utf-8
-'''
+# encoding: utf-8
+"""
 An example of using the naive alignment code.  There are two functions
 for naive alignment.  naiveWordAlignment and naivePhoneAlignment.  They
 operate at the word and phone levels respectively.
@@ -15,7 +15,7 @@ In general, for best performance, one should run 'naiveWordAlignment',
 correct the output and then run 'naivePhoneAlignment' and correct the
 output, unless the speech segments are very short and without a lot
 of emotion or inflection (e.g. read speech).
-'''
+"""
 
 from os.path import join
 
@@ -25,7 +25,7 @@ from pysle import isletool
 from pysle import praattools
 
 
-root = join('.', 'files')
+root = join(".", "files")
 isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
 
 inputFN = join(root, "pumpkins_with_syllables.TextGrid")
@@ -42,8 +42,8 @@ for tierName in tg.tierNameList[:]:
     if tierName == utteranceTierName:
         continue
     tg.removeTier(tierName)
-tg = praattools.naiveWordAlignment(tg, utteranceTierName, wordTierName,
-                                   isleDict, phoneListTierName)
-tg = praattools.naivePhoneAlignment(tg, wordTierName, phoneTierName,
-                                    isleDict)
+tg = praattools.naiveWordAlignment(
+    tg, utteranceTierName, wordTierName, isleDict, phoneListTierName
+)
+tg = praattools.naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict)
 tg.save(outputFN, format="short_textgrid", includeBlankSpaces=True)

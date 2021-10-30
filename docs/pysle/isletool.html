@@ -110,8 +110,8 @@ pronunciation ('cat' vs [kat]).</p>
 
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="c1">#encoding: utf-8</span>
-<span class="sd">&#39;&#39;&#39;</span>
+            <div class="codehilite"><pre><span></span><span class="c1"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The main interface for working with the ISLE dictionary.</span>
 
 <span class="sd">Can be used to run searches based on written form or</span>
@@ -122,7 +122,7 @@ pronunciation ('cat' vs [kat]).</p>
 <span class="sd">see</span>
 <span class="sd">**examples/isletool_examples.py**</span>
 <span class="sd">**examples/dictionary_search.py**</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -130,71 +130,168 @@ pronunciation ('cat' vs [kat]).</p>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
-<span class="n">charList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;aʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;dʒ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ei&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;g&#39;</span><span class="p">,</span>
-            <span class="sa">u</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;j&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;oʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;p&#39;</span><span class="p">,</span>
-            <span class="sa">u</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;tʃ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;æ&#39;</span><span class="p">,</span>
-            <span class="sa">u</span><span class="s1">&#39;ð&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ŋ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɑ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɑɪ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɔ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɔi&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ə&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɚ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɛ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɝ&#39;</span><span class="p">,</span>
-            <span class="sa">u</span><span class="s1">&#39;ɪ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɵ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɹ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʃ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʒ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;æ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʌ&#39;</span><span class="p">,</span> <span class="p">]</span>
+<span class="n">charList</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">u</span><span class="s2">&quot;#&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;aʊ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;b&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;d&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;dʒ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ei&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;f&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;g&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;h&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;i&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;j&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;l&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;n&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;oʊ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;p&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;t&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;tʃ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;u&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;z&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;æ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ð&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ŋ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɑ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɑɪ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɔ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɔi&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ə&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɚ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɛ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɝ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɪ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɵ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɹ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʃ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʊ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʒ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;æ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʌ&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-<span class="n">diacriticList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;˺&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ˌ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;̩&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;̃&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ˈ&#39;</span><span class="p">,</span> <span class="p">]</span>
+<span class="n">diacriticList</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">u</span><span class="s2">&quot;˺&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ˌ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;̩&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;̃&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-<span class="n">monophthongList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;æ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɑ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɔ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ə&#39;</span><span class="p">,</span>
-                   <span class="sa">u</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɛ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɪ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʌ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="p">]</span>
+<span class="n">monophthongList</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">u</span><span class="s2">&quot;u&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;æ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɑ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɔ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ə&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;i&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɛ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ɪ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʊ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;ʌ&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;a&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;e&quot;</span><span class="p">,</span>
+    <span class="sa">u</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-<span class="n">diphthongList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;ɑɪ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;aʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ei&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɔi&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;oʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ae&#39;</span><span class="p">]</span>
+<span class="n">diphthongList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;ɑɪ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;aʊ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ei&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ɔi&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;oʊ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ae&quot;</span><span class="p">]</span>
 
-<span class="n">syllabicConsonantList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;l̩&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;n̩&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɚ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɝ&#39;</span><span class="p">]</span>
+<span class="n">syllabicConsonantList</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;l̩&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;n̩&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ɚ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ɝ&quot;</span><span class="p">]</span>
 
 <span class="c1"># ISLE words are part of speech tagged using the Penn Part of Speech Tagset</span>
-<span class="n">posList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cc&#39;</span><span class="p">,</span> <span class="s1">&#39;cd&#39;</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;fw&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;jj&#39;</span><span class="p">,</span> <span class="s1">&#39;jjr&#39;</span><span class="p">,</span> <span class="s1">&#39;jjs&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;nn&#39;</span><span class="p">,</span> <span class="s1">&#39;nnd&#39;</span><span class="p">,</span> <span class="s1">&#39;nnp&#39;</span><span class="p">,</span> <span class="s1">&#39;nnps&#39;</span><span class="p">,</span> <span class="s1">&#39;nns&#39;</span><span class="p">,</span> <span class="s1">&#39;pdt&#39;</span><span class="p">,</span> <span class="s1">&#39;prp&#39;</span><span class="p">,</span> <span class="s1">&#39;punc&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;rbr&#39;</span><span class="p">,</span> <span class="s1">&#39;rbs&#39;</span><span class="p">,</span> <span class="s1">&#39;rp&#39;</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;uh&#39;</span><span class="p">,</span> <span class="s1">&#39;vb&#39;</span><span class="p">,</span> <span class="s1">&#39;vbd&#39;</span><span class="p">,</span> <span class="s1">&#39;vbg&#39;</span><span class="p">,</span> <span class="s1">&#39;vbn&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;vbp&#39;</span><span class="p">,</span> <span class="s1">&#39;vbz&#39;</span><span class="p">,</span> <span class="s1">&#39;vpb&#39;</span><span class="p">,</span> <span class="s1">&#39;wdt&#39;</span><span class="p">,</span> <span class="s1">&#39;wp&#39;</span><span class="p">,</span> <span class="s1">&#39;wrb&#39;</span><span class="p">]</span>
+<span class="n">posList</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;cc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jj&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jjr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jjs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ls&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;md&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nnd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nnp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nnps&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nns&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pdt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;punc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rbr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rbs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vbd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vbg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vbn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vbp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vbz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vpb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wdt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wrb&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">vowelList</span> <span class="o">=</span> <span class="n">monophthongList</span> <span class="o">+</span> <span class="n">diphthongList</span> <span class="o">+</span> <span class="n">syllabicConsonantList</span>
 
-<span class="n">ISLE_DOWNLOAD_URL</span> <span class="o">=</span> <span class="s1">&#39;https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt&#39;</span>
+<span class="n">ISLE_DOWNLOAD_URL</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt&quot;</span>
 
 <span class="n">DEFAULT_ISLE_DICT_PATH</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;pysle&quot;</span><span class="p">,</span> <span class="s2">&quot;data/ISLEdict.txt&quot;</span><span class="p">)</span>
 
+
 <span class="k">def</span> <span class="nf">isVowel</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Is this character a vowel?&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Is this character a vowel?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">vowel</span> <span class="ow">in</span> <span class="n">char</span> <span class="k">for</span> <span class="n">vowel</span> <span class="ow">in</span> <span class="n">vowelList</span><span class="p">])</span>
 
 
 <span class="k">def</span> <span class="nf">sequenceMatch</span><span class="p">(</span><span class="n">matchChar</span><span class="p">,</span> <span class="n">searchStr</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Does marchChar appear in searchStr?&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Does marchChar appear in searchStr?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">matchChar</span> <span class="ow">in</span> <span class="n">searchStr</span>
 
 
 <span class="k">class</span> <span class="nc">WordNotInISLE</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WordNotInISLE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;Word &#39;</span><span class="si">%s</span><span class="s2">&#39; not in ISLE dictionary.  &quot;</span>
-                <span class="s2">&quot;Please add it to continue.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;Word &#39;</span><span class="si">%s</span><span class="s2">&#39; not in ISLE dictionary.  &quot;</span>
+            <span class="s2">&quot;Please add it to continue.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span>
+        <span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">IsleDictDoesNotExist</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;You are trying to load a custom ISLE dictionary file that does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;By default, the original ISLE dictionary file will be loaded.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;If you want to use a custom ISLE dictionary, make sure the file exists &quot;</span>
-                <span class="s2">&quot;and try again with the full path.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;You are trying to load a custom ISLE dictionary file that does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;By default, the original ISLE dictionary file will be loaded.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;If you want to use a custom ISLE dictionary, make sure the file exists &quot;</span>
+            <span class="s2">&quot;and try again with the full path.&quot;</span>
+        <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">LexicalTool</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="k">class</span> <span class="nc">LexicalTool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The interface for working with ISLEdict.txt</span>
 
 <span class="sd">    Requires ISLEdict.txt in order to use.</span>
-<span class="sd">    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the </span>
+<span class="sd">    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the</span>
 <span class="sd">    README file for the download location.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">islePath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">islePath</span><span class="p">:</span>
@@ -205,13 +302,13 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">_readIsleDict</span><span class="p">(</span><span class="n">islePath</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup a word and receive a list of syllables and stressInfo</span>
 
 <span class="sd">        Output example for the word &#39;another&#39; which has two pronunciations</span>
 <span class="sd">        [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),</span>
 <span class="sd">          ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># All words must be lowercase with no extraneous whitespace</span>
         <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -222,62 +319,100 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="k">if</span> <span class="n">pronList</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WordNotInISLE</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
-        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span><span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span><span class="p">]</span>
+        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span> <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span>
+        <span class="p">]</span>
         <span class="n">pronList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pronList</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">pronList</span>
 
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">multiword</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">matchStr</span><span class="p">,</span>
+        <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">multiword</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        for help on isletool.LexicalTool.search(), see see isletool.search()</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
-                      <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
-                      <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
-                      <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
-                      <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+            <span class="n">matchStr</span><span class="p">,</span>
+            <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
+            <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span>
+            <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
+            <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
+            <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
+            <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+            <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">,</span>
+        <span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">_readIsleDict</span><span class="p">(</span><span class="n">islePath</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads into memory and builds the isle textfile into a dictionary for fast searching</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">lexDict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">islePath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">islePath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span> <span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">word</span><span class="p">,</span> <span class="n">pronunciation</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">word</span><span class="p">,</span> <span class="n">extraInfo</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
             <span class="n">extraInfo</span> <span class="o">=</span> <span class="n">extraInfo</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">extraInfoList</span> <span class="o">=</span> <span class="p">[</span><span class="n">segment</span> <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">extraInfo</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-                             <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span> <span class="ow">and</span> <span class="s2">&quot;+&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span> <span class="ow">and</span>
-                                 <span class="s1">&#39;:&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span> <span class="ow">and</span> <span class="n">segment</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)]</span>
+            <span class="n">extraInfoList</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">segment</span>
+                <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">extraInfo</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="s2">&quot;_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span>
+                    <span class="ow">and</span> <span class="s2">&quot;+&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span>
+                    <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segment</span>
+                    <span class="ow">and</span> <span class="n">segment</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
 
             <span class="n">lexDict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="p">[])</span>
             <span class="n">lexDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pronunciation</span><span class="p">,</span> <span class="n">extraInfoList</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">lexDict</span>
 
-<span class="k">def</span> <span class="nf">_prepRESearchStr</span><span class="p">(</span><span class="n">matchStr</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-                     <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="k">def</span> <span class="nf">_prepRESearchStr</span><span class="p">(</span>
+    <span class="n">matchStr</span><span class="p">,</span>
+    <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prepares a user&#39;s RE string for a search</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Protect sounds that are two characters</span>
     <span class="c1"># After this we can assume that each character represents a sound</span>
     <span class="c1"># (We&#39;ll revert back when we&#39;re done processing the RE)</span>
-    <span class="n">replList</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">u</span><span class="s1">&#39;ei&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;9&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;tʃ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;=&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;oʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;~&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;dʒ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;@&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;aʊ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;%&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;ɑɪ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;&amp;&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;ɔi&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;$&#39;</span><span class="p">)]</span>
+    <span class="n">replList</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ei&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;9&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;tʃ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;=&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;oʊ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;~&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;dʒ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;@&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;aʊ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;%&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ɑɪ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;&amp;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ɔi&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;$&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
 
     <span class="c1"># Add to the replList</span>
     <span class="n">currentReplNum</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">startI</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="s1">&#39;]&#39;</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">)):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="n">matchStr</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">startI</span><span class="p">)</span>
@@ -295,7 +430,7 @@ pronunciation ('cat' vs [kat]).</p>
     <span class="c1"># Don&#39;t check between all other characters if the character is already</span>
     <span class="c1"># in the search string or</span>
     <span class="n">interleaveStr</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">acceptList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="s1">&#39;only&#39;</span><span class="p">]</span>
+    <span class="n">acceptList</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;only&quot;</span><span class="p">]</span>
     <span class="n">stressOpt</span> <span class="o">=</span> <span class="n">stressedSyllable</span> <span class="ow">in</span> <span class="n">acceptList</span>
     <span class="n">spanOpt</span> <span class="o">=</span> <span class="n">spanSyllable</span> <span class="ow">in</span> <span class="n">acceptList</span>
     <span class="k">if</span> <span class="n">stressOpt</span> <span class="ow">and</span> <span class="n">spanOpt</span><span class="p">:</span>
@@ -311,21 +446,21 @@ pronunciation ('cat' vs [kat]).</p>
     <span class="c1"># Setting search boundaries</span>
     <span class="c1"># We search on &#39;[^\.#]&#39; and not &#39;.&#39; so that the search doesn&#39;t span</span>
     <span class="c1"># multiple syllables or words</span>
-    <span class="k">if</span> <span class="n">wordInitial</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span> <span class="ow">or</span> <span class="n">exactMatch</span><span class="p">:</span>
-        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">matchStr</span>
-    <span class="k">elif</span> <span class="n">wordInitial</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">wordInitial</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span> <span class="ow">or</span> <span class="n">exactMatch</span><span class="p">:</span>
+        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">matchStr</span>
+    <span class="k">elif</span> <span class="n">wordInitial</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
         <span class="c1"># Match the closest preceeding syllable.  If there is none, look</span>
         <span class="c1"># for word boundary plus at least one other character</span>
-        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;(?:</span><span class="se">\\</span><span class="s1">.[^</span><span class="se">\\</span><span class="s1">.#]*?|#[^</span><span class="se">\\</span><span class="s1">.#]+?)&#39;</span> <span class="o">+</span> <span class="n">matchStr</span>
+        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;(?:</span><span class="se">\\</span><span class="s2">.[^</span><span class="se">\\</span><span class="s2">.#]*?|#[^</span><span class="se">\\</span><span class="s2">.#]+?)&quot;</span> <span class="o">+</span> <span class="n">matchStr</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;[#</span><span class="se">\\</span><span class="s1">.][^</span><span class="se">\\</span><span class="s1">.#]*?&#39;</span> <span class="o">+</span> <span class="n">matchStr</span>
+        <span class="n">matchStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;[#</span><span class="se">\\</span><span class="s2">.][^</span><span class="se">\\</span><span class="s2">.#]*?&quot;</span> <span class="o">+</span> <span class="n">matchStr</span>
 
-    <span class="k">if</span> <span class="n">wordFinal</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span> <span class="ow">or</span> <span class="n">exactMatch</span><span class="p">:</span>
-        <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span> <span class="o">+</span> <span class="sa">u</span><span class="s1">&#39;#&#39;</span>
-    <span class="k">elif</span> <span class="n">wordFinal</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">wordFinal</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span> <span class="ow">or</span> <span class="n">exactMatch</span><span class="p">:</span>
+        <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span> <span class="o">+</span> <span class="sa">u</span><span class="s2">&quot;#&quot;</span>
+    <span class="k">elif</span> <span class="n">wordFinal</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
         <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span> <span class="o">+</span> <span class="sa">u</span><span class="s2">&quot;(?:[^</span><span class="se">\\</span><span class="s2">.#]*?</span><span class="se">\\</span><span class="s2">.|[^</span><span class="se">\\</span><span class="s2">.#]+?#)&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span> <span class="o">+</span> <span class="sa">u</span><span class="s1">&#39;[^</span><span class="se">\\</span><span class="s1">.#]*?[#</span><span class="se">\\</span><span class="s1">.]&#39;</span>
+        <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span> <span class="o">+</span> <span class="sa">u</span><span class="s2">&quot;[^</span><span class="se">\\</span><span class="s2">.#]*?[#</span><span class="se">\\</span><span class="s2">.]&quot;</span>
 
     <span class="c1"># For sounds that are designated two characters, prevent</span>
     <span class="c1"># detecting those sounds if the user wanted a sound</span>
@@ -333,8 +468,14 @@ pronunciation ('cat' vs [kat]).</p>
 
     <span class="c1"># Forward search (&#39;a&#39; and not &#39;ab&#39;)</span>
     <span class="n">insertList</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">charA</span><span class="p">,</span> <span class="n">charB</span> <span class="ow">in</span> <span class="p">[(</span><span class="sa">u</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʃ&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʒ&#39;</span><span class="p">),</span>
-                         <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʊ&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʊ|ɪ&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;ɔ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="p">]:</span>
+    <span class="k">for</span> <span class="n">charA</span><span class="p">,</span> <span class="n">charB</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;i&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʃ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʒ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʊ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʊ|ɪ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ɔ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;i&quot;</span><span class="p">),</span>
+    <span class="p">]:</span>
         <span class="n">startI</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -342,14 +483,19 @@ pronunciation ('cat' vs [kat]).</p>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="k">if</span> <span class="n">matchStr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">charB</span><span class="p">:</span>
-                <span class="n">forwardStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;(?!</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">charB</span>
-<span class="c1">#                 matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]</span>
+                <span class="n">forwardStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;(?!</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">charB</span>
+                <span class="c1">#                 matchStr = matchStr[:i + 1] + forwardStr + matchStr[i + 1:]</span>
                 <span class="n">startI</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">forwardStr</span><span class="p">)</span>
                 <span class="n">insertList</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">forwardStr</span><span class="p">))</span>
 
     <span class="c1"># Backward search (&#39;b&#39; and not &#39;ab&#39;)</span>
-    <span class="k">for</span> <span class="n">charA</span><span class="p">,</span> <span class="n">charB</span> <span class="ow">in</span> <span class="p">[(</span><span class="sa">u</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʃ&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʒ&#39;</span><span class="p">),</span>
-                         <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;a|o&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ʊ&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;e|ɔ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;ɑ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ɪ&#39;</span><span class="p">),</span> <span class="p">]:</span>
+    <span class="k">for</span> <span class="n">charA</span><span class="p">,</span> <span class="n">charB</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʃ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʒ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;a|o&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ʊ&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;e|ɔ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;i&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">u</span><span class="s2">&quot;ɑ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ɪ&quot;</span><span class="p">),</span>
+    <span class="p">]:</span>
         <span class="n">startI</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -357,8 +503,8 @@ pronunciation ('cat' vs [kat]).</p>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="k">if</span> <span class="n">matchStr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">charA</span><span class="p">:</span>
-                <span class="n">backStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;(?&lt;!</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">charA</span>
-<span class="c1">#                 matchStr = matchStr[:i] + backStr + matchStr[i:]</span>
+                <span class="n">backStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;(?&lt;!</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">charA</span>
+                <span class="c1">#                 matchStr = matchStr[:i] + backStr + matchStr[i:]</span>
                 <span class="n">startI</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">backStr</span><span class="p">)</span>
                 <span class="n">insertList</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">backStr</span><span class="p">))</span>
 
@@ -371,14 +517,15 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">charB</span><span class="p">,</span> <span class="n">charA</span><span class="p">)</span>
 
     <span class="c1"># Replace special characters</span>
-    <span class="n">replDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:t(?!ʃ)|d(?!ʒ)|[sz])&quot;</span><span class="p">,</span>  <span class="c1"># dentals</span>
-                <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[ʃʒfvszɵðh]&quot;</span><span class="p">,</span>  <span class="c1"># fricatives</span>
-                <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:t(?!ʃ)|d(?!ʒ)|[pbkg])&quot;</span><span class="p">,</span>  <span class="c1"># stops</span>
-                <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[nmŋ]&quot;</span><span class="p">,</span>  <span class="c1"># nasals</span>
-                <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[rɝɚ]&quot;</span><span class="p">,</span>  <span class="c1"># rhotics</span>
-                <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?&quot;</span><span class="p">,</span>  <span class="c1"># vowels</span>
-                <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">.&quot;</span><span class="p">,</span>  <span class="c1"># syllable boundary</span>
-                <span class="p">}</span>
+    <span class="n">replDict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:t(?!ʃ)|d(?!ʒ)|[sz])&quot;</span><span class="p">,</span>  <span class="c1"># dentals</span>
+        <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[ʃʒfvszɵðh]&quot;</span><span class="p">,</span>  <span class="c1"># fricatives</span>
+        <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:t(?!ʃ)|d(?!ʒ)|[pbkg])&quot;</span><span class="p">,</span>  <span class="c1"># stops</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[nmŋ]&quot;</span><span class="p">,</span>  <span class="c1"># nasals</span>
+        <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;[rɝɚ]&quot;</span><span class="p">,</span>  <span class="c1"># rhotics</span>
+        <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;(?:aʊ|ei|oʊ|ɑɪ|ɔi|[iuæɑɔəɛɪʊʌ]):?&quot;</span><span class="p">,</span>  <span class="c1"># vowels</span>
+        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">.&quot;</span><span class="p">,</span>  <span class="c1"># syllable boundary</span>
+    <span class="p">}</span>
 
     <span class="k">for</span> <span class="n">char</span><span class="p">,</span> <span class="n">replStr</span> <span class="ow">in</span> <span class="n">replDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">matchStr</span> <span class="o">=</span> <span class="n">matchStr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">replStr</span><span class="p">)</span>
@@ -389,10 +536,19 @@ pronunciation ('cat' vs [kat]).</p>
     <span class="k">return</span> <span class="n">matchStr</span>
 
 
-<span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">searchList</span><span class="p">,</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-           <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-           <span class="n">multiword</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+    <span class="n">searchList</span><span class="p">,</span>
+    <span class="n">matchStr</span><span class="p">,</span>
+    <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">multiword</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Searches for words in searchList that match the pronunciation &#39;matchStr&#39;</span>
 
 <span class="sd">    Internally, uses regular expressions</span>
@@ -423,11 +579,12 @@ pronunciation ('cat' vs [kat]).</p>
 
 <span class="sd">    Compared with LexicalTool().search(), this function can be used to search through a smaller</span>
 <span class="sd">    set of data than the entire ISLEdict dictionary.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Run search for words</span>
 
-    <span class="n">matchStr</span> <span class="o">=</span> <span class="n">_prepRESearchStr</span><span class="p">(</span><span class="n">matchStr</span><span class="p">,</span> <span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="p">,</span>
-                                <span class="n">spanSyllable</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="p">,</span> <span class="n">exactMatch</span><span class="p">)</span>
+    <span class="n">matchStr</span> <span class="o">=</span> <span class="n">_prepRESearchStr</span><span class="p">(</span>
+        <span class="n">matchStr</span><span class="p">,</span> <span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="p">,</span> <span class="n">exactMatch</span>
+    <span class="p">)</span>
 
     <span class="n">compiledRE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">matchStr</span><span class="p">)</span>
     <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
@@ -447,32 +604,32 @@ pronunciation ('cat' vs [kat]).</p>
                     <span class="n">searchPron</span> <span class="o">=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">numSyllables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">numSyllables</span> <span class="o">!=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numSyllables</span> <span class="o">!=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">continue</span>
 
             <span class="c1"># Is this a compound word?</span>
-            <span class="k">if</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">continue</span>
-            <span class="k">elif</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">continue</span>
 
             <span class="n">matchList</span> <span class="o">=</span> <span class="n">compiledRE</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">searchPron</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchList</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span> <span class="ow">in</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
 
                 <span class="c1"># For syllable spanning, we check if there is a syllable</span>
                 <span class="c1"># marker inside (not at the border) of the match.</span>
-                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
                 <span class="n">newPronList</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pron</span><span class="p">,</span> <span class="n">tmpPosList</span><span class="p">))</span>
@@ -485,17 +642,17 @@ pronunciation ('cat' vs [kat]).</p>
 
 
 <span class="k">def</span> <span class="nf">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses the pronunciation string</span>
 
 <span class="sd">    Returns the list of syllables and a list of primary and</span>
 <span class="sd">    secondary stress locations</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">syllableTxt</span> <span class="ow">in</span> <span class="n">pronunciationStr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">syllableTxt</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="n">syllableList</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">syllableTxt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; . &#39;</span><span class="p">)]</span>
+        <span class="n">syllableList</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">syllableTxt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; . &quot;</span><span class="p">)]</span>
 
         <span class="c1"># Find stress</span>
         <span class="n">stressedSyllableList</span> <span class="o">=</span> <span class="p">[]</span>
@@ -507,7 +664,7 @@ pronunciation ('cat' vs [kat]).</p>
                     <span class="n">stressedPhoneList</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
                     <span class="k">break</span>
 
-                <span class="k">if</span> <span class="sa">u</span><span class="s1">&#39;ˌ&#39;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
+                <span class="k">if</span> <span class="sa">u</span><span class="s2">&quot;ˌ&quot;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
                     <span class="n">stressedSyllableList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                     <span class="n">stressedPhoneList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
 
@@ -517,12 +674,12 @@ pronunciation ('cat' vs [kat]).</p>
 
 
 <span class="k">def</span> <span class="nf">getNumPhones</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">maxFlag</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the number of syllables and phones in this word</span>
 
 <span class="sd">    If maxFlag=True, use the longest pronunciation.  Otherwise, take the</span>
 <span class="sd">    average length.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phoneCount</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">syllableCount</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -538,8 +695,9 @@ pronunciation ('cat' vs [kat]).</p>
             <span class="n">syllableList</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">wordSyllableList</span><span class="p">)</span>
 
         <span class="n">syllableCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableList</span><span class="p">))</span>
-        <span class="n">phoneCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">phon</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">syllableList</span> <span class="k">for</span>
-                                   <span class="n">phon</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]))</span>
+        <span class="n">phoneCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">([</span><span class="n">phon</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">syllableList</span> <span class="k">for</span> <span class="n">phon</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">])</span>
+        <span class="p">)</span>
 
     <span class="c1"># The average number of phones for all possible pronunciations</span>
     <span class="c1">#    of this word</span>
@@ -547,17 +705,16 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="n">syllableCount</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span>
         <span class="n">phoneCount</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">syllableCount</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span> <span class="o">/</span>
-                          <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)))</span>
+        <span class="n">syllableCount</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">))</span>
         <span class="n">phoneCount</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">syllableCount</span><span class="p">,</span> <span class="n">phoneCount</span>
 
 
 <span class="k">def</span> <span class="nf">findOODWords</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns all of the out-of-dictionary words found in a list of utterances</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">oodList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordList</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -572,7 +729,7 @@ pronunciation ('cat' vs [kat]).</p>
 
 
 <span class="k">def</span> <span class="nf">transcribe</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">sentenceTxt</span><span class="p">,</span> <span class="n">preference</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Can be used to generate a hypothetical pronunciation for a sequence of words</span>
 
 <span class="sd">    sentenceTxt is a string with words separated by space e.g. &#39;Hello world&#39;</span>
@@ -582,27 +739,29 @@ pronunciation ('cat' vs [kat]).</p>
 <span class="sd">    unless preference is set.  If preference is set to &#39;longest&#39; or &#39;shortest&#39; it</span>
 <span class="sd">    will choose an appropriate pronunciation.  &#39;shortest&#39; is likely a casual</span>
 <span class="sd">    pronunciation and &#39;longest&#39; a more formal one.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">transcribedWordsList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">wordList</span> <span class="o">=</span> <span class="n">sentenceTxt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordList</span><span class="p">:</span>
         <span class="n">pronList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
-        <span class="n">phoneListOfLists</span> <span class="o">=</span> <span class="p">[[</span><span class="n">phone</span> <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">pron</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">]</span>
-                            <span class="k">for</span> <span class="n">pron</span> <span class="ow">in</span> <span class="n">pronList</span><span class="p">]</span>
+        <span class="n">phoneListOfLists</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">phone</span> <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">pron</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">pron</span> <span class="ow">in</span> <span class="n">pronList</span>
+        <span class="p">]</span>
         <span class="n">numPhones</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneList</span><span class="p">)</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">phoneListOfLists</span><span class="p">]</span>
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">preference</span> <span class="o">==</span> <span class="s1">&#39;shortest&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">preference</span> <span class="o">==</span> <span class="s2">&quot;shortest&quot;</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">numPhones</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">numPhones</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">preference</span> <span class="o">==</span> <span class="s1">&#39;longest&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">preference</span> <span class="o">==</span> <span class="s2">&quot;longest&quot;</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">numPhones</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">numPhones</span><span class="p">))</span>
 
         <span class="n">transcribedWordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phoneListOfLists</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">cleanPron</span><span class="p">(</span><span class="n">pron</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;ˈ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ˌ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39; &#39;</span><span class="p">]:</span>
-            <span class="n">pron</span> <span class="o">=</span> <span class="n">pron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ˌ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot; &quot;</span><span class="p">]:</span>
+            <span class="n">pron</span> <span class="o">=</span> <span class="n">pron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pron</span>
 
     <span class="n">phoneList</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phoneList</span><span class="p">)</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">transcribedWordsList</span><span class="p">]</span>
@@ -612,7 +771,7 @@ pronunciation ('cat' vs [kat]).</p>
 
 
 <span class="k">def</span> <span class="nf">autopair</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests whether adjacent words are OOD or not</span>
 
 <span class="sd">    It returns complete wordLists with the matching words replaced.</span>
@@ -624,16 +783,24 @@ pronunciation ('cat' vs [kat]).</p>
 <span class="sd">    [[red_ball chaser], [red ball_chaser]], [0, 1]</span>
 
 <span class="sd">    if &#39;red_ball&#39; and &#39;ball_chaser&#39; were both in the dictionary</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">newWordList</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wordList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">i</span><span class="p">)</span>
-                   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">wordList</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">newWordList</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wordList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">wordList</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="n">sentenceList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">indexList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">newWordList</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
-            <span class="n">sentenceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wordList</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">word</span><span class="p">,</span> <span class="p">]</span> <span class="o">+</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+            <span class="n">sentenceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">wordList</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span>
+                    <span class="n">word</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="o">+</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="p">)</span>
             <span class="n">indexList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sentenceList</span><span class="p">,</span> <span class="n">indexList</span>
@@ -653,7 +820,7 @@ pronunciation ('cat' vs [kat]).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">isVowel</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Is this character a vowel?&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Is this character a vowel?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">vowel</span> <span class="ow">in</span> <span class="n">char</span> <span class="k">for</span> <span class="n">vowel</span> <span class="ow">in</span> <span class="n">vowelList</span><span class="p">])</span>
 </pre></div>
 
@@ -675,7 +842,7 @@ pronunciation ('cat' vs [kat]).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">sequenceMatch</span><span class="p">(</span><span class="n">matchChar</span><span class="p">,</span> <span class="n">searchStr</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Does marchChar appear in searchStr?&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Does marchChar appear in searchStr?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">matchChar</span> <span class="ow">in</span> <span class="n">searchStr</span>
 </pre></div>
 
@@ -698,14 +865,15 @@ pronunciation ('cat' vs [kat]).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WordNotInISLE</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WordNotInISLE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;Word &#39;</span><span class="si">%s</span><span class="s2">&#39; not in ISLE dictionary.  &quot;</span>
-                <span class="s2">&quot;Please add it to continue.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;Word &#39;</span><span class="si">%s</span><span class="s2">&#39; not in ISLE dictionary.  &quot;</span>
+            <span class="s2">&quot;Please add it to continue.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span>
+        <span class="p">)</span>
 </pre></div>
 
         </details>
@@ -756,12 +924,13 @@ pronunciation ('cat' vs [kat]).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">IsleDictDoesNotExist</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;You are trying to load a custom ISLE dictionary file that does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;By default, the original ISLE dictionary file will be loaded.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;If you want to use a custom ISLE dictionary, make sure the file exists &quot;</span>
-                <span class="s2">&quot;and try again with the full path.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;You are trying to load a custom ISLE dictionary file that does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;By default, the original ISLE dictionary file will be loaded.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;If you want to use a custom ISLE dictionary, make sure the file exists &quot;</span>
+            <span class="s2">&quot;and try again with the full path.&quot;</span>
+        <span class="p">)</span>
 </pre></div>
 
         </details>
@@ -796,14 +965,14 @@ pronunciation ('cat' vs [kat]).</p>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">LexicalTool</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">LexicalTool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The interface for working with ISLEdict.txt</span>
 
 <span class="sd">    Requires ISLEdict.txt in order to use.</span>
-<span class="sd">    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the </span>
+<span class="sd">    Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the</span>
 <span class="sd">    README file for the download location.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">islePath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">islePath</span><span class="p">:</span>
@@ -814,13 +983,13 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">_readIsleDict</span><span class="p">(</span><span class="n">islePath</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup a word and receive a list of syllables and stressInfo</span>
 
 <span class="sd">        Output example for the word &#39;another&#39; which has two pronunciations</span>
 <span class="sd">        [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),</span>
 <span class="sd">          ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># All words must be lowercase with no extraneous whitespace</span>
         <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -831,23 +1000,40 @@ pronunciation ('cat' vs [kat]).</p>
         <span class="k">if</span> <span class="n">pronList</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WordNotInISLE</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
-        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span><span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span><span class="p">]</span>
+        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span> <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span>
+        <span class="p">]</span>
         <span class="n">pronList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pronList</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">pronList</span>
 
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">multiword</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">matchStr</span><span class="p">,</span>
+        <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">multiword</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        for help on isletool.LexicalTool.search(), see see isletool.search()</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
-                      <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
-                      <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
-                      <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
-                      <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+            <span class="n">matchStr</span><span class="p">,</span>
+            <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
+            <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span>
+            <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
+            <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
+            <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
+            <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+            <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">,</span>
+        <span class="p">)</span>
 </pre></div>
 
         </details>
@@ -855,7 +1041,7 @@ pronunciation ('cat' vs [kat]).</p>
             <div class="docstring"><p>The interface for working with ISLEdict.txt</p>
 
 <p>Requires ISLEdict.txt in order to use.
-Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the 
+Please check isletool.ISLE_DOWNLOAD_URL or the requirements section of the
 README file for the download location.</p>
 </div>
 
@@ -894,13 +1080,13 @@ README file for the download location.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup a word and receive a list of syllables and stressInfo</span>
 
 <span class="sd">        Output example for the word &#39;another&#39; which has two pronunciations</span>
 <span class="sd">        [(([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ɚ&#39;]], [1], [1]),</span>
 <span class="sd">          ([[u&#39;ə&#39;], [u&#39;n&#39;, u&#39;ˈʌ&#39;], [u&#39;ð&#39;, u&#39;ə&#39;, u&#39;ɹ&#39;]], [1], [1]))]</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># All words must be lowercase with no extraneous whitespace</span>
         <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -911,8 +1097,9 @@ README file for the download location.</p>
         <span class="k">if</span> <span class="n">pronList</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">WordNotInISLE</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
-        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span><span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span><span class="p">]</span>
+        <span class="n">pronList</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_parsePronunciation</span><span class="p">(</span><span class="n">pronunciationStr</span><span class="p">)</span> <span class="k">for</span> <span class="n">pronunciationStr</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pronList</span>
+        <span class="p">]</span>
         <span class="n">pronList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pronList</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">pronList</span>
@@ -950,17 +1137,33 @@ README file for the download location.</p>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-               <span class="n">multiword</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">matchStr</span><span class="p">,</span>
+        <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">multiword</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        for help on isletool.LexicalTool.search(), see see isletool.search()</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
-                      <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
-                      <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
-                      <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
-                      <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+            <span class="n">matchStr</span><span class="p">,</span>
+            <span class="n">numSyllables</span><span class="o">=</span><span class="n">numSyllables</span><span class="p">,</span>
+            <span class="n">wordInitial</span><span class="o">=</span><span class="n">wordInitial</span><span class="p">,</span>
+            <span class="n">wordFinal</span><span class="o">=</span><span class="n">wordFinal</span><span class="p">,</span>
+            <span class="n">spanSyllable</span><span class="o">=</span><span class="n">spanSyllable</span><span class="p">,</span>
+            <span class="n">stressedSyllable</span><span class="o">=</span><span class="n">stressedSyllable</span><span class="p">,</span>
+            <span class="n">multiword</span><span class="o">=</span><span class="n">multiword</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+            <span class="n">exactMatch</span><span class="o">=</span><span class="n">exactMatch</span><span class="p">,</span>
+        <span class="p">)</span>
 </pre></div>
 
         </details>
@@ -992,10 +1195,19 @@ README file for the download location.</p>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">searchList</span><span class="p">,</span> <span class="n">matchStr</span><span class="p">,</span> <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wordInitial</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-           <span class="n">wordFinal</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span>
-           <span class="n">multiword</span><span class="o">=</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+    <span class="n">searchList</span><span class="p">,</span>
+    <span class="n">matchStr</span><span class="p">,</span>
+    <span class="n">numSyllables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">wordInitial</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">wordFinal</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">spanSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">stressedSyllable</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">multiword</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+    <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">exactMatch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Searches for words in searchList that match the pronunciation &#39;matchStr&#39;</span>
 
 <span class="sd">    Internally, uses regular expressions</span>
@@ -1026,11 +1238,12 @@ README file for the download location.</p>
 
 <span class="sd">    Compared with LexicalTool().search(), this function can be used to search through a smaller</span>
 <span class="sd">    set of data than the entire ISLEdict dictionary.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Run search for words</span>
 
-    <span class="n">matchStr</span> <span class="o">=</span> <span class="n">_prepRESearchStr</span><span class="p">(</span><span class="n">matchStr</span><span class="p">,</span> <span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="p">,</span>
-                                <span class="n">spanSyllable</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="p">,</span> <span class="n">exactMatch</span><span class="p">)</span>
+    <span class="n">matchStr</span> <span class="o">=</span> <span class="n">_prepRESearchStr</span><span class="p">(</span>
+        <span class="n">matchStr</span><span class="p">,</span> <span class="n">wordInitial</span><span class="p">,</span> <span class="n">wordFinal</span><span class="p">,</span> <span class="n">spanSyllable</span><span class="p">,</span> <span class="n">stressedSyllable</span><span class="p">,</span> <span class="n">exactMatch</span>
+    <span class="p">)</span>
 
     <span class="n">compiledRE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">matchStr</span><span class="p">)</span>
     <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1050,32 +1263,32 @@ README file for the download location.</p>
                     <span class="n">searchPron</span> <span class="o">=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">numSyllables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">numSyllables</span> <span class="o">!=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numSyllables</span> <span class="o">!=</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">continue</span>
 
             <span class="c1"># Is this a compound word?</span>
-            <span class="k">if</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">continue</span>
-            <span class="k">elif</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">multiword</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">searchPron</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">continue</span>
 
             <span class="n">matchList</span> <span class="o">=</span> <span class="n">compiledRE</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">searchPron</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchList</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">stressedSyllable</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span> <span class="ow">in</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
 
                 <span class="c1"># For syllable spanning, we check if there is a syllable</span>
                 <span class="c1"># marker inside (not at the border) of the match.</span>
-                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s1">&#39;only&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spanSyllable</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">matchList</span><span class="p">]):</span>
                         <span class="k">continue</span>
                 <span class="n">newPronList</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pron</span><span class="p">,</span> <span class="n">tmpPosList</span><span class="p">))</span>
@@ -1134,12 +1347,12 @@ set of data than the entire ISLEdict dictionary.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getNumPhones</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">maxFlag</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the number of syllables and phones in this word</span>
 
 <span class="sd">    If maxFlag=True, use the longest pronunciation.  Otherwise, take the</span>
 <span class="sd">    average length.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phoneCount</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">syllableCount</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -1155,8 +1368,9 @@ set of data than the entire ISLEdict dictionary.</p>
             <span class="n">syllableList</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">wordSyllableList</span><span class="p">)</span>
 
         <span class="n">syllableCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableList</span><span class="p">))</span>
-        <span class="n">phoneCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">phon</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">syllableList</span> <span class="k">for</span>
-                                   <span class="n">phon</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]))</span>
+        <span class="n">phoneCountList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">([</span><span class="n">phon</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">syllableList</span> <span class="k">for</span> <span class="n">phon</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">])</span>
+        <span class="p">)</span>
 
     <span class="c1"># The average number of phones for all possible pronunciations</span>
     <span class="c1">#    of this word</span>
@@ -1164,8 +1378,7 @@ set of data than the entire ISLEdict dictionary.</p>
         <span class="n">syllableCount</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span>
         <span class="n">phoneCount</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">syllableCount</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span> <span class="o">/</span>
-                          <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)))</span>
+        <span class="n">syllableCount</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syllableCountList</span><span class="p">))</span>
         <span class="n">phoneCount</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneCountList</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">syllableCount</span><span class="p">,</span> <span class="n">phoneCount</span>
@@ -1192,9 +1405,9 @@ average length.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">findOODWords</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns all of the out-of-dictionary words found in a list of utterances</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">oodList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordList</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1226,7 +1439,7 @@ average length.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">transcribe</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">sentenceTxt</span><span class="p">,</span> <span class="n">preference</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Can be used to generate a hypothetical pronunciation for a sequence of words</span>
 
 <span class="sd">    sentenceTxt is a string with words separated by space e.g. &#39;Hello world&#39;</span>
@@ -1236,27 +1449,29 @@ average length.</p>
 <span class="sd">    unless preference is set.  If preference is set to &#39;longest&#39; or &#39;shortest&#39; it</span>
 <span class="sd">    will choose an appropriate pronunciation.  &#39;shortest&#39; is likely a casual</span>
 <span class="sd">    pronunciation and &#39;longest&#39; a more formal one.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">transcribedWordsList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">wordList</span> <span class="o">=</span> <span class="n">sentenceTxt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordList</span><span class="p">:</span>
         <span class="n">pronList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
-        <span class="n">phoneListOfLists</span> <span class="o">=</span> <span class="p">[[</span><span class="n">phone</span> <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">pron</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">]</span>
-                            <span class="k">for</span> <span class="n">pron</span> <span class="ow">in</span> <span class="n">pronList</span><span class="p">]</span>
+        <span class="n">phoneListOfLists</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">phone</span> <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">pron</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">pron</span> <span class="ow">in</span> <span class="n">pronList</span>
+        <span class="p">]</span>
         <span class="n">numPhones</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">phoneList</span><span class="p">)</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">phoneListOfLists</span><span class="p">]</span>
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">preference</span> <span class="o">==</span> <span class="s1">&#39;shortest&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">preference</span> <span class="o">==</span> <span class="s2">&quot;shortest&quot;</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">numPhones</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">numPhones</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">preference</span> <span class="o">==</span> <span class="s1">&#39;longest&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">preference</span> <span class="o">==</span> <span class="s2">&quot;longest&quot;</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">numPhones</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">numPhones</span><span class="p">))</span>
 
         <span class="n">transcribedWordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phoneListOfLists</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">cleanPron</span><span class="p">(</span><span class="n">pron</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;ˈ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;ˌ&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39; &#39;</span><span class="p">]:</span>
-            <span class="n">pron</span> <span class="o">=</span> <span class="n">pron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;ˌ&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot; &quot;</span><span class="p">]:</span>
+            <span class="n">pron</span> <span class="o">=</span> <span class="n">pron</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pron</span>
 
     <span class="n">phoneList</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phoneList</span><span class="p">)</span> <span class="k">for</span> <span class="n">phoneList</span> <span class="ow">in</span> <span class="n">transcribedWordsList</span><span class="p">]</span>
@@ -1291,7 +1506,7 @@ pronunciation and 'longest' a more formal one.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">autopair</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests whether adjacent words are OOD or not</span>
 
 <span class="sd">    It returns complete wordLists with the matching words replaced.</span>
@@ -1303,16 +1518,24 @@ pronunciation and 'longest' a more formal one.</p>
 <span class="sd">    [[red_ball chaser], [red ball_chaser]], [0, 1]</span>
 
 <span class="sd">    if &#39;red_ball&#39; and &#39;ball_chaser&#39; were both in the dictionary</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">newWordList</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wordList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">i</span><span class="p">)</span>
-                   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">wordList</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">newWordList</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wordList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">wordList</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="n">sentenceList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">indexList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">newWordList</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
-            <span class="n">sentenceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wordList</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">word</span><span class="p">,</span> <span class="p">]</span> <span class="o">+</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+            <span class="n">sentenceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">wordList</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span>
+                    <span class="n">word</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="o">+</span> <span class="n">wordList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="p">)</span>
             <span class="n">indexList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sentenceList</span><span class="p">,</span> <span class="n">indexList</span>

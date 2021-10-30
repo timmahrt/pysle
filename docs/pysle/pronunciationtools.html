@@ -115,12 +115,12 @@
 
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="c1">#encoding: utf-8</span>
-<span class="sd">&#39;&#39;&#39;</span>
+            <div class="codehilite"><pre><span></span><span class="c1"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary.</span>
 
 <span class="sd">see **examples/pronunciationtools_examples.py**</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">copy</span>
@@ -129,49 +129,51 @@
 
 
 <span class="k">class</span> <span class="nc">TooManyVowelsInSyllable</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">syllableCVMapped</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TooManyVowelsInSyllable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">syllable</span> <span class="o">=</span> <span class="n">syllable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span> <span class="o">=</span> <span class="n">syllableCVMapped</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error: syllable &#39;</span><span class="si">%s</span><span class="s2">&#39; found to have more than &quot;</span>
-                  <span class="s2">&quot;one vowel.</span><span class="se">\n</span><span class="s2"> This was the CV mapping: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="n">syllableStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllable</span><span class="p">)</span>
-        <span class="n">syllableCVStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span><span class="p">)</span>
+        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Error: syllable &#39;</span><span class="si">%s</span><span class="s2">&#39; found to have more than &quot;</span>
+            <span class="s2">&quot;one vowel.</span><span class="se">\n</span><span class="s2"> This was the CV mapping: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">syllableStr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllable</span><span class="p">)</span>
+        <span class="n">syllableCVStr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">errStr</span> <span class="o">%</span> <span class="p">(</span><span class="n">syllableStr</span><span class="p">,</span> <span class="n">syllableCVStr</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">ImpossibleSyllabificationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimatedActualSyllabificationList</span><span class="p">,</span> <span class="n">isleSyllabificationList</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span> <span class="o">=</span> <span class="n">estimatedActualSyllabificationList</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span> <span class="o">=</span> <span class="n">isleSyllabificationList</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Estimated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span><span class="si">}</span><span class="s2">; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;ISLE&#39;s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">NumWordsMismatchError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">numMatches</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NumWordsMismatchError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numMatches</span> <span class="o">=</span> <span class="n">numMatches</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%d</span><span class="s2"> matches found in isleDict for &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;Only 1 match allowed--likely you need to break&quot;</span>
-                  <span class="s2">&quot;up your query text into separate words.&quot;</span><span class="p">)</span>
+        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Error: </span><span class="si">%d</span><span class="s2"> matches found in isleDict for &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Only 1 match allowed--likely you need to break&quot;</span>
+            <span class="s2">&quot;up your query text into separate words.&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">errStr</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numMatches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">WrongTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errMsg</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WrongTypeError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="n">errMsg</span>
@@ -181,7 +183,6 @@
 
 
 <span class="k">class</span> <span class="nc">NullPronunciationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NullPronunciationError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
@@ -191,7 +192,6 @@
 
 
 <span class="k">class</span> <span class="nc">NullPhoneError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Received an empty phone in the pronunciation list&quot;</span>
 
@@ -220,34 +220,33 @@
     <span class="n">xb</span><span class="p">,</span> <span class="n">xe</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
     <span class="n">ll_b</span> <span class="o">=</span> <span class="n">_lcs_lens</span><span class="p">(</span><span class="n">xb</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
     <span class="n">ll_e</span> <span class="o">=</span> <span class="n">_lcs_lens</span><span class="p">(</span><span class="n">xe</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">ll_b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">ll_e</span><span class="p">[</span><span class="n">ny</span> <span class="o">-</span> <span class="n">j</span><span class="p">],</span> <span class="n">j</span><span class="p">)</span>
-               <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">ll_b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">ll_e</span><span class="p">[</span><span class="n">ny</span> <span class="o">-</span> <span class="n">j</span><span class="p">],</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">yb</span><span class="p">,</span> <span class="n">ye</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">ys</span><span class="p">[</span><span class="n">k</span><span class="p">:]</span>
     <span class="k">return</span> <span class="n">_lcs</span><span class="p">(</span><span class="n">xb</span><span class="p">,</span> <span class="n">yb</span><span class="p">)</span> <span class="o">+</span> <span class="n">_lcs</span><span class="p">(</span><span class="n">xe</span><span class="p">,</span> <span class="n">ye</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">simplifyPronunciation</span><span class="p">(</span><span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simplifies pronunciation</span>
 
 <span class="sd">    Removes diacritics and unifies vowels and rhotics</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">:</span>
 
         <span class="c1"># Remove diacritics</span>
         <span class="k">for</span> <span class="n">diacritic</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">diacriticList</span><span class="p">:</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># Unify rhotics</span>
-        <span class="k">if</span> <span class="s1">&#39;r&#39;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span>
 
         <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="c1"># Unify vowels</span>
         <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">):</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;V&#39;</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;V&quot;</span>
 
         <span class="c1"># Only represent the string by its first letter</span>
         <span class="k">try</span><span class="p">:</span>
@@ -257,7 +256,7 @@
 
         <span class="c1"># Unify vowels (reducing the vowel to one char)</span>
         <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">):</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;V&#39;</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;V&quot;</span>
 
         <span class="n">retList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phone</span><span class="p">)</span>
 
@@ -265,33 +264,33 @@
 
 
 <span class="k">def</span> <span class="nf">_adjustSyllabification</span><span class="p">(</span><span class="n">adjustedPhoneList</span><span class="p">,</span> <span class="n">syllableList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inserts spaces into a syllable if needed</span>
 
 <span class="sd">    Originally the phone list and syllable list contained the same number</span>
 <span class="sd">    of phones.  But the adjustedPhoneList may have some insertions which are</span>
 <span class="sd">    not accounted for in the syllableList.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">retSyllableList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">syllableNum</span><span class="p">,</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">syllableList</span><span class="p">):</span>
         <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">syllable</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">syllableNum</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">syllableList</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adjustedPhoneList</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span>
-        <span class="n">tmpPhoneList</span> <span class="o">=</span> <span class="n">adjustedPhoneList</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">tmpPhoneList</span> <span class="o">=</span> <span class="n">adjustedPhoneList</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>
         <span class="n">numBlanks</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">phoneList</span> <span class="o">=</span> <span class="n">tmpPhoneList</span><span class="p">[:]</span>
         <span class="k">while</span> <span class="n">numBlanks</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
 
-            <span class="n">numBlanks</span> <span class="o">=</span> <span class="n">tmpPhoneList</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+            <span class="n">numBlanks</span> <span class="o">=</span> <span class="n">tmpPhoneList</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">numBlanks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">tmpPhoneList</span> <span class="o">=</span> <span class="n">adjustedPhoneList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">numBlanks</span><span class="p">]</span>
+                <span class="n">tmpPhoneList</span> <span class="o">=</span> <span class="n">adjustedPhoneList</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">numBlanks</span><span class="p">]</span>
                 <span class="n">phoneList</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tmpPhoneList</span><span class="p">)</span>
                 <span class="n">j</span> <span class="o">+=</span> <span class="n">numBlanks</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">phone</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phoneList</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">phone</span> <span class="o">==</span> <span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">:</span>
-                <span class="n">syllable</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">phone</span> <span class="o">==</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">:</span>
+                <span class="n">syllable</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
 
         <span class="n">i</span> <span class="o">+=</span> <span class="n">j</span>
 
@@ -301,9 +300,9 @@
 
 
 <span class="k">def</span> <span class="nf">_findBestPronunciation</span><span class="p">(</span><span class="n">isleWordList</span><span class="p">,</span> <span class="n">aPron</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Words may have multiple candidates in ISLE; returns the &#39;optimal&#39; one.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">aP</span> <span class="o">=</span> <span class="n">simplifyPronunciation</span><span class="p">(</span><span class="n">aPron</span><span class="p">)</span>  <span class="c1"># Mapping to simplified phone inventory</span>
 
@@ -322,26 +321,24 @@
         <span class="n">alignedIP</span><span class="p">,</span> <span class="n">alignedAP</span> <span class="o">=</span> <span class="n">alignPronunciations</span><span class="p">(</span><span class="n">iP</span><span class="p">,</span> <span class="n">aP</span><span class="p">)</span>
 
         <span class="c1"># Remapping to actual phones</span>
-<span class="c1">#         alignedAP = [origPronDict.get(phon, u&quot;&#39;&#39;&quot;) for phon in alignedAP]</span>
-        <span class="n">alignedAP</span> <span class="o">=</span> <span class="p">[</span><span class="n">aPronMap</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">phon</span> <span class="o">!=</span> <span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span> <span class="k">else</span> <span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span>
-                     <span class="k">for</span> <span class="n">phon</span> <span class="ow">in</span> <span class="n">alignedAP</span><span class="p">]</span>
+        <span class="c1">#         alignedAP = [origPronDict.get(phon, u&quot;&#39;&#39;&quot;) for phon in alignedAP]</span>
+        <span class="n">alignedAP</span> <span class="o">=</span> <span class="p">[</span><span class="n">aPronMap</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">phon</span> <span class="o">!=</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="k">else</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="k">for</span> <span class="n">phon</span> <span class="ow">in</span> <span class="n">alignedAP</span><span class="p">]</span>
         <span class="n">alignedActualPronunciationList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alignedAP</span><span class="p">)</span>
 
         <span class="c1"># Adjusting the syllabification for differences between the dictionary</span>
         <span class="c1"># pronunciation and the actual pronunciation</span>
-        <span class="n">alignedSyllabification</span> <span class="o">=</span> <span class="n">_adjustSyllabification</span><span class="p">(</span><span class="n">alignedIP</span><span class="p">,</span>
-                                                        <span class="n">syllableList</span><span class="p">)</span>
+        <span class="n">alignedSyllabification</span> <span class="o">=</span> <span class="n">_adjustSyllabification</span><span class="p">(</span><span class="n">alignedIP</span><span class="p">,</span> <span class="n">syllableList</span><span class="p">)</span>
         <span class="n">alignedSyllabificationList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alignedSyllabification</span><span class="p">)</span>
 
         <span class="c1"># Count the number of misalignments between the two</span>
-        <span class="n">numDiff</span> <span class="o">=</span> <span class="n">alignedIP</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">alignedAP</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+        <span class="n">numDiff</span> <span class="o">=</span> <span class="n">alignedIP</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">alignedAP</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
         <span class="n">numDiffList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numDiff</span><span class="p">)</span>
 
         <span class="c1"># Is there stress in this word</span>
         <span class="n">hasStress</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">syllableList</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">:</span>
-                <span class="n">hasStress</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;ˈ&quot;</span> <span class="ow">in</span> <span class="n">phone</span> <span class="ow">or</span> <span class="n">hasStress</span>
+                <span class="n">hasStress</span> <span class="o">=</span> <span class="s2">&quot;ˈ&quot;</span> <span class="ow">in</span> <span class="n">phone</span> <span class="ow">or</span> <span class="n">hasStress</span>
 
         <span class="k">if</span> <span class="n">hasStress</span><span class="p">:</span>
             <span class="n">withStress</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -366,18 +363,22 @@
                 <span class="n">bestIndex</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">bestIsStressed</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">isleWordList</span><span class="p">,</span> <span class="n">alignedActualPronunciationList</span><span class="p">,</span>
-            <span class="n">alignedSyllabificationList</span><span class="p">,</span> <span class="n">bestIndex</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">isleWordList</span><span class="p">,</span>
+        <span class="n">alignedActualPronunciationList</span><span class="p">,</span>
+        <span class="n">alignedSyllabificationList</span><span class="p">,</span>
+        <span class="n">bestIndex</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_syllabifyPhones</span><span class="p">(</span><span class="n">phoneList</span><span class="p">,</span> <span class="n">syllableList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a phone list and a syllable list, syllabify the phones</span>
 
 <span class="sd">    Typically used by findBestSyllabification which first aligns the phoneList</span>
 <span class="sd">    with a dictionary phoneList and then uses the dictionary syllabification</span>
 <span class="sd">    to syllabify the input phoneList.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">numPhoneList</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">syllable</span><span class="p">)</span> <span class="k">for</span> <span class="n">syllable</span> <span class="ow">in</span> <span class="n">syllableList</span><span class="p">]</span>
 
@@ -385,7 +386,7 @@
     <span class="n">syllabifiedList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">numPhoneList</span><span class="p">:</span>
 
-        <span class="n">syllable</span> <span class="o">=</span> <span class="n">phoneList</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">]</span>
+        <span class="n">syllable</span> <span class="o">=</span> <span class="n">phoneList</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">]</span>
         <span class="n">syllabifiedList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syllable</span><span class="p">)</span>
 
         <span class="n">start</span> <span class="o">+=</span> <span class="n">end</span>
@@ -394,7 +395,7 @@
 
 
 <span class="k">def</span> <span class="nf">alignPronunciations</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">,</span> <span class="n">phoneListB</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Align the phones in two pronunciations</span>
 
 <span class="sd">    This will find the longest (non-continuous) common sequence and fill in the gaps</span>
@@ -410,7 +411,7 @@
 <span class="sd">    print(a) &gt; [&quot;&#39;&#39;&quot;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]</span>
 <span class="sd">    print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &quot;&#39;&#39;&quot;, &#39;d&#39;, &#39;u&#39;, &quot;&#39;&#39;&quot;]</span>
 <span class="sd">    ```</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Remove any elements not in the other list (but maintain order)</span>
     <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">)</span>
@@ -445,25 +446,23 @@
         <span class="k">if</span> <span class="n">indexA</span> <span class="o">&lt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span><span class="p">):</span>
                 <span class="n">pronATmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
-            <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span>
-                                  <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
+            <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">indexA</span> <span class="o">&gt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span><span class="p">):</span>
                 <span class="n">pronBTmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
-            <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span>
-                                  <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
+            <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">pronATmp</span><span class="p">,</span> <span class="n">pronBTmp</span>
 
 
 <span class="k">def</span> <span class="nf">findBestSyllabification</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordText</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the best syllabification for a word</span>
 
 <span class="sd">    First find the closest pronunciation to a given pronunciation. Then take</span>
 <span class="sd">    the syllabification for that pronunciation and map it onto the</span>
 <span class="sd">    input pronunciation.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">phoneList</span> <span class="o">=</span> <span class="p">[</span><span class="n">unicode</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
@@ -475,15 +474,14 @@
 
 
 <span class="k">def</span> <span class="nf">_findBestSyllabification</span><span class="p">(</span><span class="n">inputIsleWordList</span><span class="p">,</span> <span class="n">actualPronunciationList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the best syllabification for a word</span>
 
 <span class="sd">    First find the closest pronunciation to a given pronunciation. Then take</span>
 <span class="sd">    the syllabification for that pronunciation and map it onto the</span>
 <span class="sd">    input pronunciation.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">retList</span> <span class="o">=</span> <span class="n">_findBestPronunciation</span><span class="p">(</span><span class="n">inputIsleWordList</span><span class="p">,</span>
-                                     <span class="n">actualPronunciationList</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retList</span> <span class="o">=</span> <span class="n">_findBestPronunciation</span><span class="p">(</span><span class="n">inputIsleWordList</span><span class="p">,</span> <span class="n">actualPronunciationList</span><span class="p">)</span>
     <span class="n">isleWordList</span><span class="p">,</span> <span class="n">alignedAPronList</span><span class="p">,</span> <span class="n">alignedSyllableList</span><span class="p">,</span> <span class="n">bestIndex</span> <span class="o">=</span> <span class="n">retList</span>
 
     <span class="n">alignedPhoneList</span> <span class="o">=</span> <span class="n">alignedAPronList</span><span class="p">[</span><span class="n">bestIndex</span><span class="p">]</span>
@@ -504,7 +502,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">stressedVowelI</span> <span class="o">=</span> <span class="n">_getSyllableNucleus</span><span class="p">(</span><span class="n">syllableList</span><span class="p">[</span><span class="n">stressedSyllableI</span><span class="p">])</span>
         <span class="k">except</span> <span class="n">TooManyVowelsInSyllable</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ImpossibleSyllabificationError</span><span class="p">(</span><span class="n">syllableList</span><span class="p">,</span> <span class="n">alignedSyllables</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+            <span class="k">raise</span> <span class="n">ImpossibleSyllabificationError</span><span class="p">(</span>
+                <span class="n">syllableList</span><span class="p">,</span> <span class="n">alignedSyllables</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="c1"># Count the index of the stressed phones, if the stress list has</span>
     <span class="c1"># become flattened (no syllable information)</span>
@@ -515,23 +515,29 @@
             <span class="n">k</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">syllableList</span><span class="p">[</span><span class="n">l</span><span class="p">])</span>
         <span class="n">flattenedStressIndexList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">stressedSyllableI</span><span class="p">,</span> <span class="n">stressedVowelI</span><span class="p">,</span> <span class="n">syllableList</span><span class="p">,</span> <span class="n">syllabification</span><span class="p">,</span>
-            <span class="n">stressedSyllableIndexList</span><span class="p">,</span> <span class="n">stressedPhoneIndexList</span><span class="p">,</span>
-            <span class="n">flattenedStressIndexList</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">stressedSyllableI</span><span class="p">,</span>
+        <span class="n">stressedVowelI</span><span class="p">,</span>
+        <span class="n">syllableList</span><span class="p">,</span>
+        <span class="n">syllabification</span><span class="p">,</span>
+        <span class="n">stressedSyllableIndexList</span><span class="p">,</span>
+        <span class="n">stressedPhoneIndexList</span><span class="p">,</span>
+        <span class="n">flattenedStressIndexList</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_getSyllableNucleus</span><span class="p">(</span><span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given the phones in a syllable, retrieves the vowel index</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">cvList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;V&#39;</span> <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;C&#39;</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cvList</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;V&quot;</span> <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;C&quot;</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]</span>
 
-    <span class="n">vowelCount</span> <span class="o">=</span> <span class="n">cvList</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)</span>
+    <span class="n">vowelCount</span> <span class="o">=</span> <span class="n">cvList</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">vowelCount</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">TooManyVowelsInSyllable</span><span class="p">(</span><span class="n">phoneList</span><span class="p">,</span> <span class="n">cvList</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">vowelCount</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">stressI</span> <span class="o">=</span> <span class="n">cvList</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)</span>
+        <span class="n">stressI</span> <span class="o">=</span> <span class="n">cvList</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">stressI</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -539,9 +545,9 @@
 
 
 <span class="k">def</span> <span class="nf">findClosestPronunciation</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the closest dictionary pronunciation to a provided pronunciation</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
     <span class="n">retList</span> <span class="o">=</span> <span class="n">_findBestPronunciation</span><span class="p">(</span><span class="n">isleWordList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phoneList</span><span class="p">)</span>
@@ -566,17 +572,18 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">TooManyVowelsInSyllable</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">syllableCVMapped</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TooManyVowelsInSyllable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">syllable</span> <span class="o">=</span> <span class="n">syllable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span> <span class="o">=</span> <span class="n">syllableCVMapped</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error: syllable &#39;</span><span class="si">%s</span><span class="s2">&#39; found to have more than &quot;</span>
-                  <span class="s2">&quot;one vowel.</span><span class="se">\n</span><span class="s2"> This was the CV mapping: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="n">syllableStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllable</span><span class="p">)</span>
-        <span class="n">syllableCVStr</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span><span class="p">)</span>
+        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Error: syllable &#39;</span><span class="si">%s</span><span class="s2">&#39; found to have more than &quot;</span>
+            <span class="s2">&quot;one vowel.</span><span class="se">\n</span><span class="s2"> This was the CV mapping: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">syllableStr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllable</span><span class="p">)</span>
+        <span class="n">syllableCVStr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllableCVMapped</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">errStr</span> <span class="o">%</span> <span class="p">(</span><span class="n">syllableStr</span><span class="p">,</span> <span class="n">syllableCVStr</span><span class="p">)</span>
 </pre></div>
@@ -630,16 +637,16 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ImpossibleSyllabificationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimatedActualSyllabificationList</span><span class="p">,</span> <span class="n">isleSyllabificationList</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span> <span class="o">=</span> <span class="n">estimatedActualSyllabificationList</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span> <span class="o">=</span> <span class="n">isleSyllabificationList</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Impossible syllabification; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Estimated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">estimatedList</span><span class="si">}</span><span class="s2">; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;ISLE&#39;s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">isleSyllabificationList</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="p">)</span>
 </pre></div>
 
         </details>
@@ -690,16 +697,17 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">NumWordsMismatchError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">numMatches</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NumWordsMismatchError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numMatches</span> <span class="o">=</span> <span class="n">numMatches</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%d</span><span class="s2"> matches found in isleDict for &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;Only 1 match allowed--likely you need to break&quot;</span>
-                  <span class="s2">&quot;up your query text into separate words.&quot;</span><span class="p">)</span>
+        <span class="n">errStr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Error: </span><span class="si">%d</span><span class="s2"> matches found in isleDict for &#39;</span><span class="si">%s</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Only 1 match allowed--likely you need to break&quot;</span>
+            <span class="s2">&quot;up your query text into separate words.&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">errStr</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numMatches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">word</span><span class="p">)</span>
 </pre></div>
 
@@ -752,7 +760,6 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WrongTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errMsg</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WrongTypeError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="n">errMsg</span>
@@ -809,7 +816,6 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">NullPronunciationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NullPronunciationError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">word</span> <span class="o">=</span> <span class="n">word</span>
@@ -866,7 +872,6 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">NullPhoneError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Received an empty phone in the pronunciation list&quot;</span>
 </pre></div>
@@ -903,27 +908,27 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">simplifyPronunciation</span><span class="p">(</span><span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simplifies pronunciation</span>
 
 <span class="sd">    Removes diacritics and unifies vowels and rhotics</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">:</span>
 
         <span class="c1"># Remove diacritics</span>
         <span class="k">for</span> <span class="n">diacritic</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">diacriticList</span><span class="p">:</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">diacritic</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># Unify rhotics</span>
-        <span class="k">if</span> <span class="s1">&#39;r&#39;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="n">phone</span><span class="p">:</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span>
 
         <span class="n">phone</span> <span class="o">=</span> <span class="n">phone</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="c1"># Unify vowels</span>
         <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">):</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;V&#39;</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;V&quot;</span>
 
         <span class="c1"># Only represent the string by its first letter</span>
         <span class="k">try</span><span class="p">:</span>
@@ -933,7 +938,7 @@
 
         <span class="c1"># Unify vowels (reducing the vowel to one char)</span>
         <span class="k">if</span> <span class="n">isletool</span><span class="o">.</span><span class="n">isVowel</span><span class="p">(</span><span class="n">phone</span><span class="p">):</span>
-            <span class="n">phone</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;V&#39;</span>
+            <span class="n">phone</span> <span class="o">=</span> <span class="s2">&quot;V&quot;</span>
 
         <span class="n">retList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phone</span><span class="p">)</span>
 
@@ -960,7 +965,7 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">alignPronunciations</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">,</span> <span class="n">phoneListB</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Align the phones in two pronunciations</span>
 
 <span class="sd">    This will find the longest (non-continuous) common sequence and fill in the gaps</span>
@@ -976,7 +981,7 @@
 <span class="sd">    print(a) &gt; [&quot;&#39;&#39;&quot;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]</span>
 <span class="sd">    print(b) &gt; [&#39;l&#39;, &#39;a&#39;, &#39;z&#39;, &quot;&#39;&#39;&quot;, &#39;d&#39;, &#39;u&#39;, &quot;&#39;&#39;&quot;]</span>
 <span class="sd">    ```</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Remove any elements not in the other list (but maintain order)</span>
     <span class="n">pronATmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">phoneListA</span><span class="p">)</span>
@@ -1011,13 +1016,11 @@
         <span class="k">if</span> <span class="n">indexA</span> <span class="o">&lt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span><span class="p">):</span>
                 <span class="n">pronATmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexA</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
-            <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span>
-                                  <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
+            <span class="n">sequenceIndexListA</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexB</span> <span class="o">-</span> <span class="n">indexA</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListA</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">indexA</span> <span class="o">&gt;</span> <span class="n">indexB</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span><span class="p">):</span>
                 <span class="n">pronBTmp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">indexB</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
-            <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span>
-                                  <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
+            <span class="n">sequenceIndexListB</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="o">+</span> <span class="n">indexA</span> <span class="o">-</span> <span class="n">indexB</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sequenceIndexListB</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">pronATmp</span><span class="p">,</span> <span class="n">pronBTmp</span>
 </pre></div>
@@ -1053,13 +1056,13 @@ occur at the same points and the character strings are the same length</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">findBestSyllabification</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">wordText</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the best syllabification for a word</span>
 
 <span class="sd">    First find the closest pronunciation to a given pronunciation. Then take</span>
 <span class="sd">    the syllabification for that pronunciation and map it onto the</span>
 <span class="sd">    input pronunciation.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">phoneList</span> <span class="o">=</span> <span class="p">[</span><span class="n">unicode</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="n">phoneList</span><span class="p">]</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
@@ -1092,9 +1095,9 @@ input pronunciation.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">findClosestPronunciation</span><span class="p">(</span><span class="n">isleDict</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the closest dictionary pronunciation to a provided pronunciation</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
     <span class="n">retList</span> <span class="o">=</span> <span class="n">_findBestPronunciation</span><span class="p">(</span><span class="n">isleWordList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phoneList</span><span class="p">)</span>

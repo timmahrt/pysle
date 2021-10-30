@@ -1,5 +1,5 @@
-#encoding: utf-8
-'''
+# encoding: utf-8
+"""
 Runs integration tests
 
 The examples were all written as scripts.  They weren't meant to be
@@ -9,7 +9,7 @@ with no errors, then the code is at least able to complete.
 
 Testing whether or not the code actually did what it is supposed to is
 another issue and will require some refactoring.
-'''
+"""
 
 import unittest
 import os
@@ -58,7 +58,7 @@ class IntegrationTests(unittest.TestCase):
         self.startingDir = os.getcwd()
 
     def tearDown(self):
-        '''Remove any files generated during the test'''
+        """Remove any files generated during the test"""
         # unittest.TestCase.tearDown(self)
 
         root = os.path.join(".", "files")
@@ -76,5 +76,5 @@ class IntegrationTests(unittest.TestCase):
         os.chdir(self.oldRoot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
