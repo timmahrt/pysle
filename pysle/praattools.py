@@ -329,7 +329,7 @@ def syllabifyTextgrid(isleDict, tg, wordTierName, phoneTierName,
                 try:
                     tmpStressJ = cvList.index('V')
                 except ValueError:
-                    for char in [u'r', u'n', u'l']:
+                    for char in [u'r', u'm', u'n', u'l']:
                         if char in cvList:
                             tmpStressJ = cvList.index(char)
                             break
