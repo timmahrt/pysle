@@ -234,8 +234,8 @@ def syllabifyTextgrid(
     skipLabelList=None,
     startT=None,
     stopT=None,
-    stressedSyllableDetectionErrors="ERROR",
-    syllabificationError="ERROR",
+    stressedSyllableDetectionErrors="error",
+    syllabificationError="error",
 ):
     """
     Given a textgrid, syllabifies the phones in the textgrid
@@ -249,10 +249,10 @@ def syllabifyTextgrid(
     (syllabification of the phone tier and a tier marking word-stress).
     """
 
-    if stressedSyllableDetectionErrors not in ["IGNORE", "WARN", "ERROR"]:
-        raise "Function argument 'stressedSyllableDetectionErrors' must be one of 'IGNORE', 'WARN', or 'ERROR'"
-    if syllabificationError not in ["IGNORE", "WARN", "ERROR"]:
-        raise "Function argument 'syllabificationError' must be one of 'IGNORE', 'WARN', or 'ERROR'"
+    if stressedSyllableDetectionErrors not in ["ignore", "warn", "error"]:
+        raise "Function argument 'stressedSyllableDetectionErrors' must be one of 'ignore', 'warn', or 'error'"
+    if syllabificationError not in ["ignore", "warn", "error"]:
+        raise "Function argument 'syllabificationError' must be one of 'ignore', 'warn', or 'error'"
 
     minT = tg.minTimestamp
     maxT = tg.maxTimestamp
@@ -297,10 +297,10 @@ def syllabifyTextgrid(
             print(f"No provided pronunciation; Word '{word}' at {start}")
             continue
         except pronunciationtools.ImpossibleSyllabificationError as e:
-            if syllabificationError == "SKIP":
+            if syllabificationError == "ignore":
                 continue
 
-            if syllabificationError == "WARN":
+            if syllabificationError == "warn":
                 print(f"Syllabification error; Word '{word}' at {start}; " + str(e))
                 continue
 
@@ -358,10 +358,10 @@ def syllabifyTextgrid(
                             break
 
                 if tmpStressJ is None:
-                    if stressedSyllableDetectionErrors == "SKIP":
+                    if stressedSyllableDetectionErrors == "ignore":
                         continue
 
-                    if stressedSyllableDetectionErrors == "WARN":
+                    if stressedSyllableDetectionErrors == "warn":
                         print(
                             f"No stressed syllable; word: '{word}', actual mapped pronunciation: {syllableList}, ISLE's mapped pronunciation: {islesAdjustedSyllableList}"
                         )
@@ -406,5 +406,5 @@ class StressedSyllableDetectionError(Exception):
             "This commonly happens due to speech errors--when the speaker adds or removes an entire syllable."
             "You can get around this by \n"
             "    1) adding an entry to the ISLEdict (in alphabetical order) with the same structure as the actual pronunciation.\n"
-            "    2) silencing errors by setting 'stressedSyllableDetectionErrors' to 'SKIP' or 'WARN'"
+            "    2) silencing errors by setting 'stressedSyllableDetectionErrors' to 'ignore' or 'warn'"
         )
