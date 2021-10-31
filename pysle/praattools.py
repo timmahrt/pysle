@@ -250,9 +250,17 @@ def syllabifyTextgrid(
     """
 
     if stressedSyllableDetectionErrors not in ["ignore", "warn", "error"]:
-        raise "Function argument 'stressedSyllableDetectionErrors' must be one of 'ignore', 'warn', or 'error'"
+        raise WrongOption(
+            "stressedSyllableDetectionErrors",
+            stressedSyllableDetectionErrors,
+            ["ignore", "warn", "error"],
+        )
     if syllabificationError not in ["ignore", "warn", "error"]:
-        raise "Function argument 'syllabificationError' must be one of 'ignore', 'warn', or 'error'"
+        raise WrongOption(
+            "syllabificationError",
+            syllabificationError,
+            ["ignore", "warn", "error"],
+        )
 
     minT = tg.minTimestamp
     maxT = tg.maxTimestamp
@@ -407,4 +415,17 @@ class StressedSyllableDetectionError(Exception):
             "You can get around this by \n"
             "    1) adding an entry to the ISLEdict (in alphabetical order) with the same structure as the actual pronunciation.\n"
             "    2) silencing errors by setting 'stressedSyllableDetectionErrors' to 'ignore' or 'warn'"
+        )
+
+
+class WrongOption(Exception):
+    def __init__(self, argumentName, givenValue, availableOptions):
+        self.argumentName = argumentName
+        self.givenValue = givenValue
+        self.availableOptions = availableOptions
+
+    def __str__(self):
+        return (
+            f"For argument '{self.argumentName}' was given the value '{self.givenValue}'. "
+            f"However, expected one of [{', '.join(self.availableOptions)}]"
         )

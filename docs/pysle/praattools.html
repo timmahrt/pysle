@@ -57,6 +57,15 @@
                 </ul>
 
             </li>
+            <li>
+                    <a class="class" href="#WrongOption">WrongOption</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#WrongOption.__init__">WrongOption</a>
+                        </li>
+                </ul>
+
+            </li>
     </ul>
 
 
@@ -333,9 +342,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">stressedSyllableDetectionErrors</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="s2">&quot;Function argument &#39;stressedSyllableDetectionErrors&#39; must be one of &#39;ignore&#39;, &#39;warn&#39;, or &#39;error&#39;&quot;</span>
+        <span class="k">raise</span> <span class="n">WrongOption</span><span class="p">(</span>
+            <span class="s2">&quot;stressedSyllableDetectionErrors&quot;</span><span class="p">,</span>
+            <span class="n">stressedSyllableDetectionErrors</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">syllabificationError</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="s2">&quot;Function argument &#39;syllabificationError&#39; must be one of &#39;ignore&#39;, &#39;warn&#39;, or &#39;error&#39;&quot;</span>
+        <span class="k">raise</span> <span class="n">WrongOption</span><span class="p">(</span>
+            <span class="s2">&quot;syllabificationError&quot;</span><span class="p">,</span>
+            <span class="n">syllabificationError</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
 
     <span class="n">minT</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">minTimestamp</span>
     <span class="n">maxT</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">maxTimestamp</span>
@@ -490,6 +507,19 @@
             <span class="s2">&quot;You can get around this by </span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;    1) adding an entry to the ISLEdict (in alphabetical order) with the same structure as the actual pronunciation.</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;    2) silencing errors by setting &#39;stressedSyllableDetectionErrors&#39; to &#39;ignore&#39; or &#39;warn&#39;&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">WrongOption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argumentName</span><span class="p">,</span> <span class="n">givenValue</span><span class="p">,</span> <span class="n">availableOptions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argumentName</span> <span class="o">=</span> <span class="n">argumentName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">givenValue</span> <span class="o">=</span> <span class="n">givenValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">availableOptions</span> <span class="o">=</span> <span class="n">availableOptions</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;For argument &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">argumentName</span><span class="si">}</span><span class="s2">&#39; was given the value &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">givenValue</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;However, expected one of [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">availableOptions</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
         <span class="p">)</span>
 </pre></div>
 
@@ -869,9 +899,17 @@ and the number of phones.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">stressedSyllableDetectionErrors</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="s2">&quot;Function argument &#39;stressedSyllableDetectionErrors&#39; must be one of &#39;ignore&#39;, &#39;warn&#39;, or &#39;error&#39;&quot;</span>
+        <span class="k">raise</span> <span class="n">WrongOption</span><span class="p">(</span>
+            <span class="s2">&quot;stressedSyllableDetectionErrors&quot;</span><span class="p">,</span>
+            <span class="n">stressedSyllableDetectionErrors</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">syllabificationError</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="s2">&quot;Function argument &#39;syllabificationError&#39; must be one of &#39;ignore&#39;, &#39;warn&#39;, or &#39;error&#39;&quot;</span>
+        <span class="k">raise</span> <span class="n">WrongOption</span><span class="p">(</span>
+            <span class="s2">&quot;syllabificationError&quot;</span><span class="p">,</span>
+            <span class="n">syllabificationError</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
 
     <span class="n">minT</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">minTimestamp</span>
     <span class="n">maxT</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">maxTimestamp</span>
@@ -1089,6 +1127,67 @@ and the number of phones.</p>
                                     <div><dt>builtins.BaseException</dt>
                                 <dd id="StressedSyllableDetectionError.with_traceback" class="function">with_traceback</dd>
                 <dd id="StressedSyllableDetectionError.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="WrongOption">
+                                <div class="attr class">
+        <a class="headerlink" href="#WrongOption">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">WrongOption</span><wbr>(<span class="base">builtins.Exception</span>):
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">WrongOption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argumentName</span><span class="p">,</span> <span class="n">givenValue</span><span class="p">,</span> <span class="n">availableOptions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argumentName</span> <span class="o">=</span> <span class="n">argumentName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">givenValue</span> <span class="o">=</span> <span class="n">givenValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">availableOptions</span> <span class="o">=</span> <span class="n">availableOptions</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;For argument &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">argumentName</span><span class="si">}</span><span class="s2">&#39; was given the value &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">givenValue</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;However, expected one of [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">availableOptions</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>Common base class for all non-exit exceptions.</p>
+</div>
+
+
+                            <div id="WrongOption.__init__" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#WrongOption.__init__">#&nbsp;&nbsp</a>
+
+        
+            <span class="name">WrongOption</span><span class="signature">(argumentName, givenValue, availableOptions)</span>
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argumentName</span><span class="p">,</span> <span class="n">givenValue</span><span class="p">,</span> <span class="n">availableOptions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argumentName</span> <span class="o">=</span> <span class="n">argumentName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">givenValue</span> <span class="o">=</span> <span class="n">givenValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">availableOptions</span> <span class="o">=</span> <span class="n">availableOptions</span>
+</pre></div>
+
+        </details>
+
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>builtins.BaseException</dt>
+                                <dd id="WrongOption.with_traceback" class="function">with_traceback</dd>
+                <dd id="WrongOption.args" class="variable">args</dd>
 
             </div>
                                 </dl>
