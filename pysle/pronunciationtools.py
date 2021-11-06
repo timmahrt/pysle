@@ -7,79 +7,17 @@ see **examples/pronunciationtools_examples.py**
 
 import itertools
 import copy
+from pkg_resources import resource_filename
+from typing import List, Optional, Dict, Tuple
 
 from pysle import isletool
+from pysle import errors
 
 
-class TooManyVowelsInSyllable(Exception):
-    def __init__(self, syllable, syllableCVMapped):
-        super(TooManyVowelsInSyllable, self).__init__()
-        self.syllable = syllable
-        self.syllableCVMapped = syllableCVMapped
-
-    def __str__(self):
-        errStr = (
-            "Error: syllable '%s' found to have more than "
-            "one vowel.\n This was the CV mapping: '%s'"
-        )
-        syllableStr = "".join(self.syllable)
-        syllableCVStr = "".join(self.syllableCVMapped)
-
-        return errStr % (syllableStr, syllableCVStr)
-
-
-class ImpossibleSyllabificationError(Exception):
-    def __init__(self, estimatedActualSyllabificationList, isleSyllabificationList):
-        self.estimatedList = estimatedActualSyllabificationList
-        self.isleSyllabificationList = isleSyllabificationList
-
-    def __str__(self):
-        return (
-            f"Impossible syllabification; "
-            f"Estimated: {self.estimatedList}; "
-            f"ISLE's: {self.isleSyllabificationList}"
-        )
-
-
-class NumWordsMismatchError(Exception):
-    def __init__(self, word, numMatches):
-        super(NumWordsMismatchError, self).__init__()
-        self.word = word
-        self.numMatches = numMatches
-
-    def __str__(self):
-        errStr = (
-            "Error: %d matches found in isleDict for '%s'.\n"
-            "Only 1 match allowed--likely you need to break"
-            "up your query text into separate words."
-        )
-        return errStr % (self.numMatches, self.word)
-
-
-class WrongTypeError(Exception):
-    def __init__(self, errMsg):
-        super(WrongTypeError, self).__init__()
-        self.str = errMsg
-
-    def __str__(self):
-        return self.str
-
-
-class NullPronunciationError(Exception):
-    def __init__(self, word):
-        super(NullPronunciationError, self).__init__()
-        self.word = word
-
-    def __str__(self):
-        return "No pronunciation given for word '%s'" % self.word
-
-
-class NullPhoneError(Exception):
-    def __str__(self):
-        return "Received an empty phone in the pronunciation list"
-
-
-def _lcs_lens(xs, ys):
+# The LCS code doesn't look like the rest of the code
+# -- I'm guessing I copied or adapted the code from
+#    someplace online
+def _lcs_lens(xs: str, ys: str):
     curr = list(itertools.repeat(0, 1 + len(ys)))
     for x in xs:
         prev = list(curr)
@@ -91,7 +29,7 @@ def _lcs_lens(xs, ys):
     return curr
 
 
-def _lcs(xs, ys):
+def _lcs(xs: str, ys: str):
     nx, ny = len(xs), len(ys)
     if nx == 0:
         return []
@@ -108,7 +46,7 @@ def _lcs(xs, ys):
     return _lcs(xb, yb) + _lcs(xe, ye)
 
 
-def simplifyPronunciation(phoneList):
+def simplifyPronunciation(phoneList: List[str]):
     """
     Simplifies pronunciation
 
@@ -135,7 +73,7 @@ def simplifyPronunciation(phoneList):
         try:
             phone = phone[0]
         except IndexError:
-            raise NullPhoneError()
+            raise errors.NullPhoneError()
 
         # Unify vowels (reducing the vowel to one char)
         if isletool.isVowel(phone):
@@ -146,7 +84,7 @@ def simplifyPronunciation(phoneList):
     return retList
 
 
-def _adjustSyllabification(adjustedPhoneList, syllableList):
+def _adjustSyllabification(adjustedPhoneList: List[str], syllableList: List[List[str]]):
     """
     Inserts spaces into a syllable if needed
 
@@ -182,7 +120,7 @@ def _adjustSyllabification(adjustedPhoneList, syllableList):
     return retSyllableList
 
 
-def _findBestPronunciation(isleWordList, aPron):
+def _findBestPronunciation(isleWordList: List[List[str]], aPron: List[str]):
     """
     Words may have multiple candidates in ISLE; returns the 'optimal' one.
     """
@@ -254,7 +192,7 @@ def _findBestPronunciation(isleWordList, aPron):
     )
 
 
-def _syllabifyPhones(phoneList, syllableList):
+def _syllabifyPhones(phoneList: List[str], syllableList: List[List[str]]):
     """
     Given a phone list and a syllable list, syllabify the phones
 
@@ -277,7 +215,9 @@ def _syllabifyPhones(phoneList, syllableList):
     return syllabifiedList
 
 
-def alignPronunciations(phoneListA, phoneListB):
+def alignPronunciations(
+    phoneListA: List[str], phoneListB: List[str]
+) -> Tuple[List[str], List[str]]:
     """
     Align the phones in two pronunciations
 
@@ -338,7 +278,9 @@ def alignPronunciations(phoneListA, phoneListB):
     return pronATmp, pronBTmp
 
 
-def findBestSyllabification(isleDict, wordText, phoneList):
+def findBestSyllabification(
+    isleDict: isletool.LexicalTool, wordText: str, phoneList: List[str]
+):
     """
     Find the best syllabification for a word
 
@@ -346,11 +288,6 @@ def findBestSyllabification(isleDict, wordText, phoneList):
     the syllabification for that pronunciation and map it onto the
     input pronunciation.
     """
-    try:
-        phoneList = [unicode(char, "utf-8") for phone in phoneList]
-    except (NameError, TypeError):
-        pass
-
     isleWordList = isleDict.lookup(wordText)[0]
 
     return _findBestSyllabification(isleWordList, phoneList)
@@ -384,8 +321,8 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     else:
         try:
             stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
-        except TooManyVowelsInSyllable as err:
-            raise ImpossibleSyllabificationError(
+        except errors.TooManyVowelsInSyllable as err:
+            raise errors.ImpossibleSyllabificationError(
                 syllableList, alignedSyllables
             ) from err
 
@@ -409,7 +346,7 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     )
 
 
-def _getSyllableNucleus(phoneList):
+def _getSyllableNucleus(phoneList: List[str]) -> Optional[int]:
     """
     Given the phones in a syllable, retrieves the vowel index
     """
@@ -417,7 +354,7 @@ def _getSyllableNucleus(phoneList):
 
     vowelCount = cvList.count("V")
     if vowelCount > 1:
-        raise TooManyVowelsInSyllable(phoneList, cvList)
+        raise errors.TooManyVowelsInSyllable(phoneList, cvList)
 
     if vowelCount == 1:
         stressI = cvList.index("V")
@@ -427,7 +364,9 @@ def _getSyllableNucleus(phoneList):
     return stressI
 
 
-def findClosestPronunciation(isleDict, word, phoneList):
+def findClosestPronunciation(
+    isleDict: isletool.LexicalTool, word: str, phoneList: List[str]
+):
     """
     Find the closest dictionary pronunciation to a provided pronunciation
     """

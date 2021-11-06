@@ -26,8 +26,8 @@ syllableTG = praattools.syllabifyTextgrid(
     skipLabelList=[
         "",
     ],
-    stressedSyllableDetectionErrors="warn",
-    syllabificationError="warn",
+    stressDetectionErrorMode="warning",
+    syllabificationErrorMode="warning",
 )
 tg.addTier(syllableTG.tierDict["syllable"])
 tg.addTier(syllableTG.tierDict["tonicSyllable"])

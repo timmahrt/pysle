@@ -24,7 +24,7 @@ setup(
     license="LICENSE",
     description="An interface to ISLEX, an IPA pronunciation dictionary "
     "for English with stress and syllable markings.",
-    install_requires=["praatio >= 5.0"],
+    install_requires=["praatio >= 5.0", "typing_extensions"],
     long_description=io.open("README.md", "r", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
 )

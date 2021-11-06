@@ -15,8 +15,18 @@ see
 import io
 import re
 import os
-import json
 from pkg_resources import resource_filename
+from typing import (
+    List,
+    Optional,
+    Dict,
+    Tuple,
+)
+from typing_extensions import Literal
+
+from pysle import constants
+from pysle import errors
+from pysle import utils
 
 charList = [
     u"#",
@@ -140,36 +150,14 @@ ISLE_DOWNLOAD_URL = "https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdi
 DEFAULT_ISLE_DICT_PATH = resource_filename("pysle", "data/ISLEdict.txt")
 
 
-def isVowel(char):
+def isVowel(char: str) -> bool:
     """Is this character a vowel?"""
     return any([vowel in char for vowel in vowelList])
 
 
-def sequenceMatch(matchChar, searchStr):
+def sequenceMatch(matchChar: str, searchStr: str) -> bool:
     """Does marchChar appear in searchStr?"""
     return matchChar in searchStr
-
-
-class WordNotInISLE(Exception):
-    def __init__(self, word):
-        super(WordNotInISLE, self).__init__()
-        self.word = word
-
-    def __str__(self):
-        return (
-            "Word '%s' not in ISLE dictionary.  "
-            "Please add it to continue." % self.word
-        )
-
-
-class IsleDictDoesNotExist(Exception):
-    def __str__(self):
-        return (
-            "You are trying to load a custom ISLE dictionary file that does not exist.\n"
-            "By default, the original ISLE dictionary file will be loaded.\n"
-            "If you want to use a custom ISLE dictionary, make sure the file exists "
-            "and try again with the full path."
-        )
 
 
 class LexicalTool:
@@ -181,15 +169,17 @@ class LexicalTool:
     README file for the download location.
     """
 
-    def __init__(self, islePath=None):
+    def __init__(self, islePath: str = None):
         if not islePath:
             islePath = DEFAULT_ISLE_DICT_PATH
         if not os.path.exists(islePath):
-            raise IsleDictDoesNotExist()
+            raise errors.IsleDictDoesNotExist()
 
         self.data = _readIsleDict(islePath)
 
-    def lookup(self, word):
+    def lookup(
+        self, word: str
+    ) -> List[Tuple[List[str],]]:
         """
         Lookup a word and receive a list of syllables and stressInfo
 
@@ -205,7 +195,7 @@ class LexicalTool:
         pronList = self.data.get(word, None)
 
         if pronList is None:
-            raise WordNotInISLE(word)
+            raise errors.WordNotInISLE(word)
 
         pronList = [
             _parsePronunciation(pronunciationStr) for pronunciationStr, _ in pronList
@@ -216,19 +206,27 @@ class LexicalTool:
 
     def search(
         self,
-        matchStr,
-        numSyllables=None,
-        wordInitial="ok",
-        wordFinal="ok",
-        spanSyllable="ok",
-        stressedSyllable="ok",
-        multiword="ok",
-        pos=None,
-        exactMatch=False,
+        matchStr: str,
+        numSyllables: Optional[int] = None,
+        wordInitial: Literal["ok", "only", "no"] = "ok",
+        wordFinal: Literal["ok", "only", "no"] = "ok",
+        spanSyllable: Literal["ok", "only", "no"] = "ok",
+        stressedSyllable: Literal["ok", "only", "no"] = "ok",
+        multiword: Literal["ok", "only", "no"] = "ok",
+        pos: Optional[str] = None,
+        exactMatch: bool = False,
     ):
         """
         for help on isletool.LexicalTool.search(), see see isletool.search()
         """
+        utils.validateOption("wordInitial", wordInitial, constants.AcceptabilityMode)
+        utils.validateOption("wordFinal", wordFinal, constants.AcceptabilityMode)
+        utils.validateOption("spanSyllable", spanSyllable, constants.AcceptabilityMode)
+        utils.validateOption(
+            "stressedSyllable", stressedSyllable, constants.AcceptabilityMode
+        )
+        utils.validateOption("multiword", multiword, constants.AcceptabilityMode)
+
         return search(
             self.data.items(),
             matchStr,
@@ -243,7 +241,7 @@ class LexicalTool:
         )
 
 
-def _readIsleDict(islePath):
+def _readIsleDict(islePath: str) -> Dict[str, Tuple[List[str], List[str]]]:
     """
     Reads into memory and builds the isle textfile into a dictionary for fast searching
     """
@@ -273,13 +271,13 @@ def _readIsleDict(islePath):
 
 
 def _prepRESearchStr(
-    matchStr,
-    wordInitial="ok",
-    wordFinal="ok",
-    spanSyllable="ok",
-    stressedSyllable="ok",
-    exactMatch=False,
-):
+    matchStr: str,
+    wordInitial: Literal["ok", "only", "no"] = "ok",
+    wordFinal: Literal["ok", "only", "no"] = "ok",
+    spanSyllable: Literal["ok", "only", "no"] = "ok",
+    stressedSyllable: Literal["ok", "only", "no"] = "ok",
+    exactMatch: bool = False,
+) -> str:
     """
     Prepares a user's RE string for a search
     """
@@ -425,17 +423,17 @@ def _prepRESearchStr(
 
 
 def search(
-    searchList,
-    matchStr,
-    numSyllables=None,
-    wordInitial="ok",
-    wordFinal="ok",
-    spanSyllable="ok",
-    stressedSyllable="ok",
-    multiword="ok",
-    pos=None,
-    exactMatch=False,
-):
+    searchList: List[str],
+    matchStr: str,
+    numSyllables: Optional[int] = None,
+    wordInitial: Literal["ok", "only", "no"] = "ok",
+    wordFinal: Literal["ok", "only", "no"] = "ok",
+    spanSyllable: Literal["ok", "only", "no"] = "ok",
+    stressedSyllable: Literal["ok", "only", "no"] = "ok",
+    multiword: Literal["ok", "only", "no"] = "ok",
+    pos: Optional[str] = None,
+    exactMatch: bool = False,
+) -> List[Tuple[str, List[Tuple[List[str], List[int]]]]]:
     """
     Searches for words in searchList that match the pronunciation 'matchStr'
 
@@ -468,6 +466,14 @@ def search(
     Compared with LexicalTool().search(), this function can be used to search through a smaller
     set of data than the entire ISLEdict dictionary.
     """
+    utils.validateOption("wordInitial", wordInitial, constants.AcceptabilityMode)
+    utils.validateOption("wordFinal", wordFinal, constants.AcceptabilityMode)
+    utils.validateOption("spanSyllable", spanSyllable, constants.AcceptabilityMode)
+    utils.validateOption(
+        "stressedSyllable", stressedSyllable, constants.AcceptabilityMode
+    )
+    utils.validateOption("multiword", multiword, constants.AcceptabilityMode)
+
     # Run search for words
 
     matchStr = _prepRESearchStr(
@@ -529,7 +535,9 @@ def search(
     return retList
 
 
-def _parsePronunciation(pronunciationStr):
+def _parsePronunciation(
+    pronunciationStr: str,
+) -> List[constants.Syllabification]:
     """
     Parses the pronunciation string
 
@@ -537,39 +545,43 @@ def _parsePronunciation(pronunciationStr):
     secondary stress locations
     """
     retList = []
-    for syllableTxt in pronunciationStr.split("#"):
-        if syllableTxt == "":
+    for syllablesTxt in pronunciationStr.split("#"):
+        if syllablesTxt == "":
             continue
-        syllableList = [x.split() for x in syllableTxt.split(" . ")]
+        syllables = [syllableTxt.split() for syllableTxt in syllablesTxt.split(" . ")]
 
         # Find stress
-        stressedSyllableList = []
-        stressedPhoneList = []
-        for i, syllable in enumerate(syllableList):
-            for j, phone in enumerate(syllable):
+        stressedSyllables: List[int] = []
+        stressedPhones: List[int] = []
+        for syllableI, syllable in enumerate(syllables):
+            for phoneI, phone in enumerate(syllable):
                 if u"ˈ" in phone:
-                    stressedSyllableList.insert(0, i)
-                    stressedPhoneList.insert(0, j)
+                    stressedSyllables.insert(0, syllableI)
+                    stressedPhones.insert(0, phoneI)
                     break
 
                 if u"ˌ" in phone:
-                    stressedSyllableList.append(i)
-                    stressedPhoneList.append(j)
+                    stressedSyllables.append(syllableI)
+                    stressedPhones.append(phoneI)
 
-        retList.append((syllableList, stressedSyllableList, stressedPhoneList))
+        retList.append(
+            constants.Syllabification(syllables, stressedSyllables, stressedPhones)
+        )
 
     return retList
 
 
-def getNumPhones(isleDict, word, maxFlag):
+def getNumPhones(
+    isleDict: LexicalTool, word: str, maxFlag: bool
+) -> Tuple[float, float]:
     """
     Get the number of syllables and phones in this word
 
     If maxFlag=True, use the longest pronunciation.  Otherwise, take the
     average length.
     """
-    phoneCount = 0
-    syllableCount = 0
+    phoneCount = 0.0
+    syllableCount = 0.0
 
     syllableCountList = []
     phoneCountList = []
@@ -599,7 +611,7 @@ def getNumPhones(isleDict, word, maxFlag):
     return syllableCount, phoneCount
 
 
-def findOODWords(isleDict, wordList):
+def findOODWords(isleDict: LexicalTool, wordList: List[str]) -> List[str]:
     """
     Returns all of the out-of-dictionary words found in a list of utterances
     """
@@ -607,7 +619,7 @@ def findOODWords(isleDict, wordList):
     for word in wordList:
         try:
             isleDict.lookup(word)
-        except WordNotInISLE:
+        except errors.WordNotInISLE:
             oodList.append(word)
 
     oodList = list(set(oodList))
@@ -616,7 +628,11 @@ def findOODWords(isleDict, wordList):
     return oodList
 
 
-def transcribe(isleDict, sentenceTxt, preference=None):
+def transcribe(
+    isleDict: LexicalTool,
+    sentenceTxt: str,
+    preference: Optional[Literal["longest", "shortest"]] = None,
+) -> str:
     """
     Can be used to generate a hypothetical pronunciation for a sequence of words
 
@@ -628,6 +644,10 @@ def transcribe(isleDict, sentenceTxt, preference=None):
     will choose an appropriate pronunciation.  'shortest' is likely a casual
     pronunciation and 'longest' a more formal one.
     """
+
+    if preference:
+        utils.validateOption("preference", preference, constants.LengthOptions)
+
     transcribedWordsList = []
     wordList = sentenceTxt.split(" ")
     for word in wordList:
@@ -640,9 +660,9 @@ def transcribe(isleDict, sentenceTxt, preference=None):
         numPhones = [len(phoneList) for phoneList in phoneListOfLists]
 
         i = 0
-        if preference == "shortest":
+        if preference == constants.LengthOptions.SHORTEST:
             i = numPhones.index(min(numPhones))
-        elif preference == "longest":
+        elif preference == constants.LengthOptions.LONGEST:
             i = numPhones.index(max(numPhones))
 
         transcribedWordsList.append(phoneListOfLists[i])
@@ -658,7 +678,9 @@ def transcribe(isleDict, sentenceTxt, preference=None):
     return " ".join(phoneList)
 
 
-def autopair(isleDict, wordList):
+def autopair(
+    isleDict: LexicalTool, wordList: List[str]
+) -> Tuple[List[List[str]], List[int]]:
     """
     Tests whether adjacent words are OOD or not
 
