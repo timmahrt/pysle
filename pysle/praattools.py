@@ -45,7 +45,7 @@ def spellCheckTextgrid(
     def checkFunc(word: str):
         try:
             isleDict.lookup(word)
-        except isletool.WordNotInISLE:
+        except errors.WordNotInISLE:
             returnVal = False
         else:
             returnVal = True
@@ -112,7 +112,7 @@ def naiveWordAlignment(
             word = wordList[i]
             try:
                 firstSyllableList = isleDict.lookup(word)[0][0][0]
-            except isletool.WordNotInISLE:
+            except errors.WordNotInISLE:
                 wordList.pop(i)
                 continue
             phoneList = [phone for syllable in firstSyllableList for phone in syllable]
@@ -205,7 +205,7 @@ def naivePhoneAlignment(
         # Get the list of phones in this word
         try:
             firstSyllableList = isleDict.lookup(word)[0][0][0]
-        except isletool.WordNotInISLE:
+        except errors.WordNotInISLE:
             continue
 
         phoneList = [phone for syllable in firstSyllableList for phone in syllable]
@@ -317,7 +317,7 @@ def syllabifyTextgrid(
                 isleDict, word, phoneList
             )
 
-        except isletool.WordNotInISLE:
+        except errors.WordNotInISLE:
             print(f"Not is isle -- skipping syllabification; Word '{word}' at {start}")
             continue
         except errors.NullPronunciationError:

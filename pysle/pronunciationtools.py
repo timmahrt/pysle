@@ -8,7 +8,7 @@ see **examples/pronunciationtools_examples.py**
 import itertools
 import copy
 from pkg_resources import resource_filename
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Union
 
 from pysle import isletool
 from pysle import errors
@@ -17,7 +17,7 @@ from pysle import errors
 # The LCS code doesn't look like the rest of the code
 # -- I'm guessing I copied or adapted the code from
 #    someplace online
-def _lcs_lens(xs: str, ys: str):
+def _lcs_lens(xs: list, ys: list) -> list:
     curr = list(itertools.repeat(0, 1 + len(ys)))
     for x in xs:
         prev = list(curr)
@@ -29,7 +29,7 @@ def _lcs_lens(xs: str, ys: str):
     return curr
 
 
-def _lcs(xs: str, ys: str):
+def _lcs(xs: list, ys: list) -> list:
     nx, ny = len(xs), len(ys)
     if nx == 0:
         return []
