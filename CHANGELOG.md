@@ -3,6 +3,9 @@
 
 *Pysle uses semantic versioning (Major.Minor.Patch)*
 
+Ver 3.1 (Nov 8, 2021)
+- added a fallback method to findBestSyllabification for out-of-dictionary words ending in "'s"
+
 Ver 3.0 (Oct 30, 2021)
 - dropping support for python 2.7
 - some important bugfixes related to syllabification estimation

@@ -18,6 +18,23 @@ import os
 import json
 from pkg_resources import resource_filename
 
+unvoiced = [
+    u"f",
+    u"k",
+    u"p",
+    u"t",
+    u"s",
+    u"tʃ",
+    u"ɵ",
+]
+
+alveolars = [
+    u"s",
+    u"z",
+    u"tʃ",
+    u"dʒ",
+]
+
 charList = [
     u"#",
     u".",

@@ -351,7 +351,29 @@ def findBestSyllabification(isleDict, wordText, phoneList):
     except (NameError, TypeError):
         pass
 
-    isleWordList = isleDict.lookup(wordText)[0]
+    try:
+        isleWordList = isleDict.lookup(wordText)[0]
+    except isletool.WordNotInISLE:
+        # Many words are in the dictionary but not inflected forms
+        # like the possesive (eg bob's)
+        # If the word could not be found, try dropping the 's
+        # and try searching again.
+        if wordText[-2:] != "'s":
+            raise
+
+        isleWordList = isleDict.lookup(wordText[:-2])[0]
+
+        for wordTuple in isleWordList:
+            syllableList = wordTuple[0]  # syllableList, stressList
+            finalSyllable = syllableList[-1]
+            lastSound = finalSyllable[-1]
+
+            if lastSound in isletool.alveolars:
+                finalSyllable.append("ɪ")
+            if lastSound in isletool.unvoiced:
+                finalSyllable.append("s")
+            else:
+                finalSyllable.append("z")
 
     return _findBestSyllabification(isleWordList, phoneList)
 
