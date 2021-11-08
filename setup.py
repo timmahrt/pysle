@@ -10,7 +10,7 @@ from setuptools import setup
 
 setup(
     name="pysle",
-    version="3.0.2",
+    version="3.1.0",
     author="Tim Mahrt",
     author_email="timmahrt@gmail.com",
     url="https://github.com/timmahrt/pysle",

@@ -391,17 +391,19 @@
             <span class="p">)</span>
 
         <span class="k">except</span> <span class="n">isletool</span><span class="o">.</span><span class="n">WordNotInISLE</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not is isle -- skipping syllabification; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Not is isle -- skipping syllabification; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">except</span> <span class="n">pronunciationtools</span><span class="o">.</span><span class="n">NullPronunciationError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No provided pronunciation; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No provided pronunciation; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">except</span> <span class="n">pronunciationtools</span><span class="o">.</span><span class="n">ImpossibleSyllabificationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">syllabificationError</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">syllabificationError</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syllabification error; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syllabification error; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">continue</span>
 
             <span class="k">raise</span>
@@ -463,7 +465,7 @@
 
                     <span class="k">if</span> <span class="n">stressedSyllableDetectionErrors</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;No stressed syllable; word: &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39;, actual mapped pronunciation: </span><span class="si">{</span><span class="n">syllableList</span><span class="si">}</span><span class="s2">, ISLE&#39;s mapped pronunciation: </span><span class="si">{</span><span class="n">islesAdjustedSyllableList</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;No stressed syllable; word: &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">syllableStart</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, actual mapped pronunciation: </span><span class="si">{</span><span class="n">syllableList</span><span class="si">}</span><span class="s2">, ISLE&#39;s mapped pronunciation: </span><span class="si">{</span><span class="n">islesAdjustedSyllableList</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
 
@@ -948,17 +950,19 @@ and the number of phones.</p>
             <span class="p">)</span>
 
         <span class="k">except</span> <span class="n">isletool</span><span class="o">.</span><span class="n">WordNotInISLE</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not is isle -- skipping syllabification; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Not is isle -- skipping syllabification; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">except</span> <span class="n">pronunciationtools</span><span class="o">.</span><span class="n">NullPronunciationError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No provided pronunciation; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No provided pronunciation; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">except</span> <span class="n">pronunciationtools</span><span class="o">.</span><span class="n">ImpossibleSyllabificationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">syllabificationError</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">syllabificationError</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syllabification error; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syllabification error; Word &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">continue</span>
 
             <span class="k">raise</span>
@@ -1020,7 +1024,7 @@ and the number of phones.</p>
 
                     <span class="k">if</span> <span class="n">stressedSyllableDetectionErrors</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;No stressed syllable; word: &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39;, actual mapped pronunciation: </span><span class="si">{</span><span class="n">syllableList</span><span class="si">}</span><span class="s2">, ISLE&#39;s mapped pronunciation: </span><span class="si">{</span><span class="n">islesAdjustedSyllableList</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;No stressed syllable; word: &#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">syllableStart</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, actual mapped pronunciation: </span><span class="si">{</span><span class="n">syllableList</span><span class="si">}</span><span class="s2">, ISLE&#39;s mapped pronunciation: </span><span class="si">{</span><span class="n">islesAdjustedSyllableList</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
 

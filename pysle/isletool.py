@@ -28,6 +28,23 @@ from pysle import constants
 from pysle import errors
 from pysle import utils
 
+unvoiced = [
+    u"f",
+    u"k",
+    u"p",
+    u"t",
+    u"s",
+    u"tʃ",
+    u"ɵ",
+]
+
+alveolars = [
+    u"s",
+    u"z",
+    u"tʃ",
+    u"dʒ",
+]
+
 charList = [
     u"#",
     u".",

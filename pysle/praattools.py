@@ -316,19 +316,20 @@ def syllabifyTextgrid(
             sylTmp = pronunciationtools.findBestSyllabification(
                 isleDict, word, phoneList
             )
-
         except errors.WordNotInISLE:
-            print(f"Not is isle -- skipping syllabification; Word '{word}' at {start}")
+            print(
+                f"Not is isle -- skipping syllabification; Word '{word}' at {start:.2f}"
+            )
             continue
         except errors.NullPronunciationError:
-            print(f"No provided pronunciation; Word '{word}' at {start}")
+            print(f"No provided pronunciation; Word '{word}' at {start:.2f}")
             continue
         except errors.ImpossibleSyllabificationError as e:
             if syllabificationErrorMode == constants.ErrorReportingMode.SILENCE:
                 continue
 
             if syllabificationErrorMode == constants.ErrorReportingMode.WARNING:
-                print(f"Syllabification error; Word '{word}' at {start}; " + str(e))
+                print(f"Syllabification error; Word '{word}' at {start:.2f}; " + str(e))
                 continue
 
             raise
@@ -393,7 +394,7 @@ def syllabifyTextgrid(
 
                     if stressDetectionErrorMode == constants.ErrorReportingMode.WARNING:
                         print(
-                            f"No stressed syllable; word: '{word}', "
+                            f"No stressed syllable; word: '{word}' at {syllableStart:.2f}, "
                             f"actual mapped pronunciation: {syllableList}, "
                             f"ISLE's mapped pronunciation: {islesAdjustedSyllableList}"
                         )

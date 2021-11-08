@@ -468,7 +468,29 @@
     <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="n">isletool</span><span class="o">.</span><span class="n">WordNotInISLE</span><span class="p">:</span>
+        <span class="c1"># Many words are in the dictionary but not inflected forms</span>
+        <span class="c1"># like the possesive (eg bob&#39;s)</span>
+        <span class="c1"># If the word could not be found, try dropping the &#39;s</span>
+        <span class="c1"># and try searching again.</span>
+        <span class="k">if</span> <span class="n">wordText</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;&#39;s&quot;</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+        <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">wordTuple</span> <span class="ow">in</span> <span class="n">isleWordList</span><span class="p">:</span>
+            <span class="n">syllableList</span> <span class="o">=</span> <span class="n">wordTuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># syllableList, stressList</span>
+            <span class="n">finalSyllable</span> <span class="o">=</span> <span class="n">syllableList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">lastSound</span> <span class="o">=</span> <span class="n">finalSyllable</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">lastSound</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">alveolars</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ɪ&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lastSound</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">unvoiced</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_findBestSyllabification</span><span class="p">(</span><span class="n">isleWordList</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">)</span>
 
@@ -1068,7 +1090,29 @@ occur at the same points and the character strings are the same length</p>
     <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="n">isletool</span><span class="o">.</span><span class="n">WordNotInISLE</span><span class="p">:</span>
+        <span class="c1"># Many words are in the dictionary but not inflected forms</span>
+        <span class="c1"># like the possesive (eg bob&#39;s)</span>
+        <span class="c1"># If the word could not be found, try dropping the &#39;s</span>
+        <span class="c1"># and try searching again.</span>
+        <span class="k">if</span> <span class="n">wordText</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;&#39;s&quot;</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+        <span class="n">isleWordList</span> <span class="o">=</span> <span class="n">isleDict</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">wordText</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">wordTuple</span> <span class="ow">in</span> <span class="n">isleWordList</span><span class="p">:</span>
+            <span class="n">syllableList</span> <span class="o">=</span> <span class="n">wordTuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># syllableList, stressList</span>
+            <span class="n">finalSyllable</span> <span class="o">=</span> <span class="n">syllableList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">lastSound</span> <span class="o">=</span> <span class="n">finalSyllable</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">lastSound</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">alveolars</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ɪ&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lastSound</span> <span class="ow">in</span> <span class="n">isletool</span><span class="o">.</span><span class="n">unvoiced</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">finalSyllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_findBestSyllabification</span><span class="p">(</span><span class="n">isleWordList</span><span class="p">,</span> <span class="n">phoneList</span><span class="p">)</span>
 </pre></div>
