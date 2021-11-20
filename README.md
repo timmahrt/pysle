@@ -153,6 +153,13 @@ print(syllableList)
 Please see \\examples for example usage
 
 
+## Tests
+
+I run tests with the following command (this requires pytest and pytest-cov to be installed):
+
+`pytest --cov=praatio tests/`
+
+
 ## Citing pysle
 
 

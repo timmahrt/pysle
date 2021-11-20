@@ -6,7 +6,8 @@ python:
 install:
   - python setup.py install
   - pip install coveralls
+  - pip install pytest-cov
 script:
-  - nosetests --exe --with-coverage
+  - pytest --cov=pysle tests/
 after_success:
   - coveralls

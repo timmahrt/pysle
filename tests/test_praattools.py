@@ -6,7 +6,7 @@ from pysle import errors
 from praatio import textgrid
 
 
-class PraattoolsTests(unittest.TestCase):
+class TestPraattools(unittest.TestCase):
     def test_syllabify_textgrid_raises_error_with_invalid_preference(self):
         isleDict = isletool.LexicalTool()
         tg = textgrid.Textgrid()
