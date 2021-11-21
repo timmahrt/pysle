@@ -11,10 +11,10 @@ from typing import List, Optional
 from typing_extensions import Literal
 
 from pysle import pronunciationtools
-from pysle import isletool
-from pysle import errors
-from pysle import constants
-from pysle import utils
+from pysle import isle
+from pysle.utilities import errors
+from pysle.utilities import constants
+from pysle.utilities import utils
 
 try:
     from praatio import textgrid
@@ -32,9 +32,9 @@ def spellCheckTextgrid(
     tg: textgrid.Textgrid,
     targetTierName: str,
     newTierName: str,
-    isleDict: isletool.LexicalTool,
+    isleDict: isle.Isle,
     printEntries: bool = False,
-):
+) -> textgrid.Textgrid:
     """
     Spell check words by using the praatio spellcheck function
 
@@ -63,7 +63,7 @@ def naiveWordAlignment(
     tg: textgrid.Textgrid,
     utteranceTierName: str,
     wordTierName: str,
-    isleDict: isletool.LexicalTool,
+    isleDict: isle.Isle,
     phoneHelperTierName: Optional[str] = None,
     removeOverlappingSegments: bool = False,
 ):
@@ -170,7 +170,7 @@ def naivePhoneAlignment(
     tg: textgrid.Textgrid,
     wordTierName: str,
     phoneTierName: str,
-    isleDict: isletool.LexicalTool,
+    isleDict: isle.Isle,
     removeOverlappingSegments: bool = False,
 ):
     """
@@ -245,7 +245,7 @@ def naivePhoneAlignment(
 
 
 def syllabifyTextgrid(
-    isleDict: isletool.LexicalTool,
+    isleDict: isle.Isle,
     tg: textgrid.Textgrid,
     wordTierName: str,
     phoneTierName: str,

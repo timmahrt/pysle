@@ -10,8 +10,10 @@ import copy
 from pkg_resources import resource_filename
 from typing import List, Optional, Dict, Tuple, Union
 
-from pysle import isletool
-from pysle import errors
+from pysle import isle
+from pysle.utilities import errors
+from pysle.utilities import constants
+from pysle.utilities import phonetic_constants
 
 
 # The LCS code doesn't look like the rest of the code
@@ -46,42 +48,8 @@ def _lcs(xs: list, ys: list) -> list:
     return _lcs(xb, yb) + _lcs(xe, ye)
 
 
-def simplifyPronunciation(phoneList: List[str]):
-    """
-    Simplifies pronunciation
-
-    Removes diacritics and unifies vowels and rhotics
-    """
-    retList = []
-    for phone in phoneList:
-
-        # Remove diacritics
-        for diacritic in isletool.diacriticList:
-            phone = phone.replace(diacritic, "")
-
-        # Unify rhotics
-        if "r" in phone:
-            phone = "r"
-
-        phone = phone.lower()
-
-        # Unify vowels
-        if isletool.isVowel(phone):
-            phone = "V"
-
-        # Only represent the string by its first letter
-        try:
-            phone = phone[0]
-        except IndexError:
-            raise errors.NullPhoneError()
-
-        # Unify vowels (reducing the vowel to one char)
-        if isletool.isVowel(phone):
-            phone = "V"
-
-        retList.append(phone)
-
-    return retList
+def simplifyPronunciation(phoneList: List[str]) -> List[str]:
+    pass
 
 
 def _adjustSyllabification(adjustedPhoneList: List[str], syllableList: List[List[str]]):
@@ -278,9 +246,7 @@ def alignPronunciations(
     return pronATmp, pronBTmp
 
 
-def findBestSyllabification(
-    isleDict: isletool.LexicalTool, wordText: str, phoneList: List[str]
-):
+def findBestSyllabification(isleDict: isle.Isle, wordText: str, phoneList: List[str]):
     """
     Find the best syllabification for a word
 
@@ -288,11 +254,6 @@ def findBestSyllabification(
     the syllabification for that pronunciation and map it onto the
     input pronunciation.
     """
-    try:
-        phoneList = [unicode(char, "utf-8") for phone in phoneList]
-    except (NameError, TypeError):
-        pass
-
     try:
         isleWordList = isleDict.lookup(wordText)[0]
     except errors.WordNotInISLE:
@@ -310,9 +271,9 @@ def findBestSyllabification(
             finalSyllable = syllableList[-1]
             lastSound = finalSyllable[-1]
 
-            if lastSound in isletool.alveolars:
+            if lastSound in phonetic_constants.alveolars:
                 finalSyllable.append("ɪ")
-            if lastSound in isletool.unvoiced:
+            if lastSound in phonetic_constants.unvoiced:
                 finalSyllable.append("s")
             else:
                 finalSyllable.append("z")
@@ -358,8 +319,8 @@ def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
     flattenedStressIndexList = []
     for i, j in zip(stressedSyllableIndexList, stressedPhoneIndexList):
         k = j
-        for l in range(i):
-            k += len(syllableList[l])
+        for m in range(i):
+            k += len(syllableList[m])
         flattenedStressIndexList.append(k)
 
     return (
@@ -377,12 +338,13 @@ def _getSyllableNucleus(phoneList: List[str]) -> Optional[int]:
     """
     Given the phones in a syllable, retrieves the vowel index
     """
-    cvList = ["V" if isletool.isVowel(phone) else "C" for phone in phoneList]
+    cvList = ["V" if isle.isVowel(phone) else "C" for phone in phoneList]
 
     vowelCount = cvList.count("V")
     if vowelCount > 1:
         raise errors.TooManyVowelsInSyllable(phoneList, cvList)
 
+    stressI: Optional[int]
     if vowelCount == 1:
         stressI = cvList.index("V")
     else:
@@ -392,8 +354,8 @@ def _getSyllableNucleus(phoneList: List[str]) -> Optional[int]:
 
 
 def findClosestPronunciation(
-    isleDict: isletool.LexicalTool, word: str, phoneList: List[str]
-):
+    isleDict: isle.Isle, word: str, phoneList: List[str]
+) -> constants.Syllabification:
     """
     Find the closest dictionary pronunciation to a provided pronunciation
     """
