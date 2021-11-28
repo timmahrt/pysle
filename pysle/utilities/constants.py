@@ -12,18 +12,6 @@ ISLE_DOWNLOAD_URL = "https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdi
 
 DEFAULT_ISLE_DICT_PATH = resource_filename("pysle", "data/ISLEdict.txt")
 
-Pronunciation: Final[Tuple[str, List[str]]] = namedtuple(
-    "Pronunciation", ["pronunciation", "posLabels"]
-)
-
-Entry: Final[Tuple[str, List[Pronunciation]]] = namedtuple(
-    "Entry", ["word", "pronunciations"]
-)
-
-Syllabification: Final[Tuple[List[List[str]], List[int], List[int]]] = namedtuple(
-    "Syllabification", ["syllables", "stressedSyllables", "stressedPhones"]
-)
-
 
 class LengthOptions:
     SHORTEST: Final = "shortest"

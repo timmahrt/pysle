@@ -1,5 +1,9 @@
 # encoding: utf-8
 
+STRESS_BEARING_CONSONANTS = ["r", "m", "n", "l"]
+TONIC = "T"
+VOWEL = "V"
+
 unvoiced = [
     u"f",
     u"k",

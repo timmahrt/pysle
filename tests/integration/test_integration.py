@@ -74,7 +74,3 @@ class TestIntegration(unittest.TestCase):
                     os.remove(fnFullPath)
 
         os.chdir(self.oldRoot)
-
-
-if __name__ == "__main__":
-    unittest.main()

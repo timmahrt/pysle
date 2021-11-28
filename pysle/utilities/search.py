@@ -4,14 +4,10 @@ import io
 import re
 import os
 from pkg_resources import resource_filename
-from typing import (
-    List,
-    Optional,
-    Dict,
-    Tuple,
-)
+from typing import List, Optional, Dict, Tuple, Iterable
 from typing_extensions import Literal
 
+from pysle import phonetics
 from pysle.utilities import constants
 from pysle.utilities import errors
 from pysle.utilities import utils
@@ -19,7 +15,7 @@ from pysle.utilities import phonetic_constants
 
 
 def search(
-    searchList: List[constants.Entry],
+    searchList: Iterable[phonetics.Entry],
     matchStr: str,
     numSyllables: Optional[int] = None,
     wordInitial: Literal["ok", "only", "no"] = "ok",
@@ -29,7 +25,7 @@ def search(
     multiword: Literal["ok", "only", "no"] = "ok",
     pos: Optional[str] = None,
     exactMatch: bool = False,
-) -> List[constants.Entry]:
+) -> List[phonetics.Entry]:
     """
     Searches for words in searchList that match the pronunciation 'matchStr'
 
@@ -80,52 +76,52 @@ def search(
     retList = []
     for entry in searchList:
         newPronList = []
-        for pronunciation in entry.pronunciations:
-            searchPron = pronunciation.pronunciation.replace(",", "").replace(" ", "")
 
-            # Search for pos
-            if pos is not None:
-                if pos not in pronunciation.posLabels:
+        searchPron = pronunciation.pronunciation.replace(",", "").replace(" ", "")
+
+        # Search for pos
+        if pos is not None:
+            if pos not in pronunciation.posLabels:
+                continue
+
+        # Ignore diacritics for now:
+        for diacritic in phonetic_constants.diacriticList:
+            if diacritic not in matchStr:
+                searchPron = searchPron.replace(diacritic, "")
+
+        if numSyllables is not None:
+            if numSyllables != searchPron.count(".") + 1:
+                continue
+
+        # Is this a compound word?
+        if multiword == "only":
+            if searchPron.count("#") == 2:
+                continue
+        elif multiword == "no":
+            if searchPron.count("#") > 2:
+                continue
+
+        matchList = compiledRE.findall(searchPron)
+        if len(matchList) > 0:
+            if stressedSyllable == "only":
+                if all([u"ˈ" not in match for match in matchList]):
+                    continue
+            if stressedSyllable == "no":
+                if all([u"ˈ" in match for match in matchList]):
                     continue
 
-            # Ignore diacritics for now:
-            for diacritic in phonetic_constants.diacriticList:
-                if diacritic not in matchStr:
-                    searchPron = searchPron.replace(diacritic, "")
-
-            if numSyllables is not None:
-                if numSyllables != searchPron.count(".") + 1:
+            # For syllable spanning, we check if there is a syllable
+            # marker inside (not at the border) of the match.
+            if spanSyllable == "only":
+                if all(["." not in txt[1:-1] for txt in matchList]):
                     continue
-
-            # Is this a compound word?
-            if multiword == "only":
-                if searchPron.count("#") == 2:
+            if spanSyllable == "no":
+                if all(["." in txt[1:-1] for txt in matchList]):
                     continue
-            elif multiword == "no":
-                if searchPron.count("#") > 2:
-                    continue
-
-            matchList = compiledRE.findall(searchPron)
-            if len(matchList) > 0:
-                if stressedSyllable == "only":
-                    if all([u"ˈ" not in match for match in matchList]):
-                        continue
-                if stressedSyllable == "no":
-                    if all([u"ˈ" in match for match in matchList]):
-                        continue
-
-                # For syllable spanning, we check if there is a syllable
-                # marker inside (not at the border) of the match.
-                if spanSyllable == "only":
-                    if all(["." not in txt[1:-1] for txt in matchList]):
-                        continue
-                if spanSyllable == "no":
-                    if all(["." in txt[1:-1] for txt in matchList]):
-                        continue
-                newPronList.append(pronunciation)
+            newPronList.append(syllabification)
 
         if len(newPronList) > 0:
-            retList.append(constants.Entry(entry.word, newPronList))
+            retList.append(phonetics.Entry(entry.word, newPronList, entry.posList))
 
     retList.sort()
     return retList

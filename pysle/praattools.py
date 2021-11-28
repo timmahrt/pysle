@@ -10,22 +10,16 @@ see
 from typing import List, Optional
 from typing_extensions import Literal
 
-from pysle import pronunciationtools
+from praatio import textgrid
+from praatio import praatio_scripts
+from praatio.utilities import constants as praatioConstants
+
 from pysle import isle
+from pysle import phonetics
 from pysle.utilities import errors
 from pysle.utilities import constants
 from pysle.utilities import utils
-
-try:
-    from praatio import textgrid
-    from praatio import praatio_scripts
-    from praatio.utilities import constants as praatioConstants
-except ImportError:
-    raise errors.OptionalFeatureError()
-
-STRESS_BEARING_CONSONANTS = ["r", "m", "n", "l"]
-TONIC = "T"
-VOWEL = "V"
+from pysle.utilities import phonetic_constants
 
 
 def spellCheckTextgrid(
@@ -66,7 +60,7 @@ def naiveWordAlignment(
     isleDict: isle.Isle,
     phoneHelperTierName: Optional[str] = None,
     removeOverlappingSegments: bool = False,
-):
+) -> textgrid.Textgrid:
     """
     Performs naive alignment for utterances in a textgrid
 
@@ -172,7 +166,7 @@ def naivePhoneAlignment(
     phoneTierName: str,
     isleDict: isle.Isle,
     removeOverlappingSegments: bool = False,
-):
+) -> textgrid.Textgrid:
     """
     Performs naive alignment for words in a textgrid
 
@@ -254,7 +248,7 @@ def syllabifyTextgrid(
     stopT: Optional[float] = None,
     stressDetectionErrorMode: Literal["ignore", "warn", "error"] = "error",
     syllabificationErrorMode: Literal["ignore", "warn", "error"] = "error",
-):
+) -> textgrid.Textgrid:
     """
     Given a textgrid, syllabifies the phones in the textgrid
 
@@ -362,7 +356,9 @@ def syllabifyTextgrid(
 
             # Create the tonic syllable tier entry
             if k == stressI:
-                tonicSEntryList.append((syllableStart, syllableEnd, TONIC))
+                tonicSEntryList.append(
+                    (syllableStart, syllableEnd, phonetic_constants.TONIC)
+                )
 
             # Create the tonic phone tier entry
             if k == stressI:
@@ -381,9 +377,9 @@ def syllabifyTextgrid(
 
                 tmpStressJ = None
                 try:
-                    tmpStressJ = cvList.index(VOWEL)
+                    tmpStressJ = cvList.index(phonetic_constants.VOWEL)
                 except ValueError:
-                    for char in STRESS_BEARING_CONSONANTS:
+                    for char in phonetic_constants.STRESS_BEARING_CONSONANTS:
                         if char in cvList:
                             tmpStressJ = cvList.index(char)
                             break
@@ -407,7 +403,7 @@ def syllabifyTextgrid(
                     )
 
                 phoneStart, phoneEnd = syllablePhoneList[tmpStressJ][:2]
-                tonicPEntryList.append((phoneStart, phoneEnd, TONIC))
+                tonicPEntryList.append((phoneStart, phoneEnd, phonetic_constants.TONIC))
 
     # Create a textgrid with the two syllable-level tiers
     syllableTier = textgrid.IntervalTier("syllable", syllableEntryList, minT, maxT)
