@@ -37,14 +37,7 @@ def spellCheckTextgrid(
     """
 
     def checkFunc(word: str):
-        try:
-            isleDict.lookup(word)
-        except errors.WordNotInISLE:
-            returnVal = False
-        else:
-            returnVal = True
-
-        return returnVal
+        return isleDict.contains(word)
 
     tg = praatio_scripts.spellCheckEntries(
         tg, targetTierName, newTierName, checkFunc, printEntries
@@ -99,19 +92,18 @@ def naiveWordAlignment(
         wordList = label.split()
 
         # Get the list of phones in each word
-        superPhoneList = []
+        superPhoneList: List[List[str]] = []
         numPhones = 0
         i = 0
         while i < len(wordList):
             word = wordList[i]
             try:
-                firstSyllableList = isleDict.lookup(word)[0][0][0]
+                entry = isleDict.lookup(word)[0]
             except errors.WordNotInISLE:
                 wordList.pop(i)
                 continue
-            phoneList = [phone for syllable in firstSyllableList for phone in syllable]
-            superPhoneList.append(phoneList)
-            numPhones += len(phoneList)
+            superPhoneList.append(entry.phonemeList.phonemes)
+            numPhones += len(entry.phonemeList.phonemes)
             i += 1
 
         # Get the naive alignment for words, if alignment doesn't
@@ -198,13 +190,11 @@ def naivePhoneAlignment(
 
         # Get the list of phones in this word
         try:
-            firstSyllableList = isleDict.lookup(word)[0][0][0]
+            entry = isleDict.lookup(word)[0]
         except errors.WordNotInISLE:
             continue
 
-        phoneList = [phone for syllable in firstSyllableList for phone in syllable]
-        for char in ["ˈ", "ˌ"]:
-            phoneList = [phone.replace(char, "") for phone in phoneList]
+        phones = entry.phonemeList.stripDiacritics().phonemes
 
         # Get the naive alignment for phones, if alignment doesn't
         # already exist for phones
@@ -215,10 +205,10 @@ def naivePhoneAlignment(
             ).entryList
 
         if len(subPhoneEntryList) == 0:
-            phoneDur = (wordEndT - wordStartT) / len(phoneList)
+            phoneDur = (wordEndT - wordStartT) / len(phones)
 
             phoneStartT = wordStartT
-            for phone in phoneList:
+            for phone in phones:
                 phoneEndT = phoneStartT + phoneDur
                 subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
                 phoneStartT = phoneEndT
@@ -307,9 +297,7 @@ def syllabifyTextgrid(
         phoneList = [entry[2] for entry in subPhoneTier.entryList if entry[2] != ""]
 
         try:
-            sylTmp = pronunciationtools.findBestSyllabification(
-                isleDict, word, phoneList
-            )
+            sylTmp = isleDict.findBestSyllabification(word, phoneList)
         except errors.WordNotInISLE:
             print(
                 f"Not is isle -- skipping syllabification; Word '{word}' at {start:.2f}"
@@ -372,8 +360,10 @@ def syllabifyTextgrid(
                 syllablePhoneList = [
                     entry for entry in syllablePhoneTier.entryList if entry[2] != ""
                 ]
-                justPhones = [phone for _, _, phone in syllablePhoneList]
-                cvList = pronunciationtools.simplifyPronunciation(justPhones)
+                syllable = phonetics.Syllable(
+                    [phone for _, _, phone in syllablePhoneList]
+                )
+                cvList = syllable.simplify().phonemes
 
                 tmpStressJ = None
                 try:

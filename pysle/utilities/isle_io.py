@@ -4,7 +4,7 @@ import io
 from typing import List, Tuple, Dict
 
 from pysle.utilities import constants
-from pysle.utilities import phonetics
+from pysle import phonetics
 
 
 def _parsePronunciation(
@@ -23,7 +23,7 @@ def _parsePronunciation(
         if syllablesTxt == "":
             continue
         syllables = [
-            phonetics.PhonemeList(syllableTxt)
+            [phone for phone in syllableTxt.split(" ")]
             for syllableTxt in syllablesTxt.split(" . ")
         ]
 
@@ -31,7 +31,7 @@ def _parsePronunciation(
         stressedSyllables: List[int] = []
         stressedPhones: List[int] = []
         for syllableI, syllable in enumerate(syllables):
-            for phoneI, phone in enumerate(syllable.phonemes):
+            for phoneI, phone in enumerate(syllable):
                 if u"ˈ" in phone:
                     stressedSyllables.insert(0, syllableI)
                     stressedPhones.insert(0, phoneI)

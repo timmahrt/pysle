@@ -4,6 +4,8 @@ STRESS_BEARING_CONSONANTS = ["r", "m", "n", "l"]
 TONIC = "T"
 VOWEL = "V"
 
+FILLER = "''"
+
 unvoiced = [
     u"f",
     u"k",

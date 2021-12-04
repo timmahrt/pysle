@@ -17,7 +17,7 @@ import io
 import re
 import os
 from pkg_resources import resource_filename
-from typing import List, Optional, Dict, Tuple, Iterable
+from typing import List, Optional, Dict, Tuple, Iterable, Union
 from typing_extensions import Literal
 
 from pysle.utilities import constants
@@ -99,7 +99,7 @@ class Isle:
         utils.validateOption("multiword", multiword, constants.AcceptabilityMode)
 
         return search.search(
-            self.data.getEntries(),
+            self.getEntries(),
             matchStr,
             numSyllables=numSyllables,
             wordInitial=wordInitial,
@@ -130,7 +130,7 @@ class Isle:
             phoneList = []
             for syllabification in entry.syllabificationList:
                 syllableList.extend(syllabification.syllables)
-                phoneList.extend(syllabification.desyllabify())
+                phoneList.extend(syllabification.desyllabify().phonemes)
 
             syllableCountList.append(len(syllableList))
             phoneCountList.append(len(phoneList))
@@ -154,7 +154,9 @@ class Isle:
         else:
             return True
 
-    def findBestSyllabification(self, word: str, phoneList: List[str]):
+    def findBestSyllabification(
+        self, word: str, phoneList: Union[phonetics.PhonemeList, List[str]]
+    ) -> phonetics.Syllabification:
         """
         Find the best syllabification for a word
 
@@ -162,8 +164,10 @@ class Isle:
         the syllabification for that pronunciation and map it onto the
         input pronunciation.
         """
+        phoneList = phonetics._toPhonemeList(phoneList)
+
         try:
-            isleWordList = self.lookup(word)[0]
+            entries = self.lookup(word)
         except errors.WordNotInISLE:
             # Many words are in the dictionary but not inflected forms
             # like the possesive (eg bob's)
@@ -177,41 +181,39 @@ class Isle:
             if tail != "'s":
                 raise
 
-            isleWordList = self.lookup(head)
+            entries = self.lookup(head)
 
             # Add the 's' sound to each word
             # TODO: don't mutate to avoid deepcopy() call
             modifiedIsleWordList = []
-            for entry in isleWordList:
+            for entry in entries:
                 entry = copy.deepcopy(entry)
                 tailSyllabification = entry.syllabificationList[-1]
                 finalSyllable = tailSyllabification.syllables[-1]
-                lastSound = finalSyllable[-1]
+                lastSound = finalSyllable.phonemes[-1]
 
                 if lastSound in phonetic_constants.alveolars:
-                    finalSyllable.append("ɪ")
+                    finalSyllable.phonemes.append("ɪ")
                 if lastSound in phonetic_constants.unvoiced:
-                    finalSyllable.append("s")
+                    finalSyllable.phonemes.append("s")
                 else:
-                    finalSyllable.append("z")
+                    finalSyllable.phonemes.append("z")
 
                 modifiedIsleWordList.append(entry)
-            isleWordList = modifiedIsleWordList
+            entries = modifiedIsleWordList
 
-        return pronunciationtools._findBestSyllabification(isleWordList, phoneList)
+        return phoneList.findBestSyllabification(entries)
 
     def findClosestPronunciation(
-        self, word: str, phoneList: List[str]
-    ) -> phonetics.Syllabification:
+        self, word: str, phoneList: Union[phonetics.PhonemeList, List[str]]
+    ) -> phonetics.Entry:
         """
         Find the closest dictionary pronunciation to a provided pronunciation
         """
+        phoneList = phonetics._toPhonemeList(phoneList)
         candidateEntries = self.lookup(word)
 
-        targetEntry = phonetics.Entry("", phoneList, [])
-        return pronunciationtools._findBestPronunciation(candidateEntries, targetEntry)[
-            0
-        ]
+        return phoneList.findClosestEntry(candidateEntries)
 
     def transcribe(
         self,
@@ -233,7 +235,7 @@ class Isle:
         if preference:
             utils.validateOption("preference", preference, constants.LengthOptions)
 
-        transcribedWordsList = []
+        transcribedWordsList: List[phonetics.PhonemeList] = []
         wordList = sentenceTxt.split(" ")
         for word in wordList:
             entryList = self.lookup(word)
@@ -258,20 +260,12 @@ class Isle:
                 pron = pron.replace(val, u"")
             return pron
 
-        phoneList = [" ".join(phoneList) for phoneList in transcribedWordsList]
-        phoneList = [cleanPron(phones) for phones in phoneList]
+        words: List[str] = [
+            " ".join(phoneList.phonemes) for phoneList in transcribedWordsList
+        ]
+        words = [cleanPron(phones) for phones in words]
 
-        return " ".join(phoneList)
-
-
-def _sanitizeEntry(entry: phonetics.Entry) -> phonetics.Entry:
-    return phonetics.Entry(
-        entry[0],
-        [
-            phonetics.Pronunciation(pronunciation, posList)
-            for pronunciation, posList in entry[1]
-        ],
-    )
+        return " ".join(words)
 
 
 def autopair(isleDict: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:

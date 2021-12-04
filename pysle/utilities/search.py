@@ -75,13 +75,17 @@ def search(
     compiledRE = re.compile(matchStr)
     retList = []
     for entry in searchList:
-        newPronList = []
+        matchFound = False
 
-        searchPron = pronunciation.pronunciation.replace(",", "").replace(" ", "")
+        # TODO: When are we using commas?
+        # I'm not sure this makes sense
+        searchPron = (
+            "".join(entry.phonemeList.phonemes).replace(",", "").replace(" ", "")
+        )
 
         # Search for pos
         if pos is not None:
-            if pos not in pronunciation.posLabels:
+            if pos not in entry.posList:
                 continue
 
         # Ignore diacritics for now:
@@ -118,12 +122,11 @@ def search(
             if spanSyllable == "no":
                 if all(["." in txt[1:-1] for txt in matchList]):
                     continue
-            newPronList.append(syllabification)
+            matchFound = True
 
-        if len(newPronList) > 0:
-            retList.append(phonetics.Entry(entry.word, newPronList, entry.posList))
+        if matchFound:
+            retList.append(entry)
 
-    retList.sort()
     return retList
 
 
