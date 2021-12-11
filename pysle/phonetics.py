@@ -1,16 +1,11 @@
 # encoding: utf-8
 
-import io
 import re
-import os
-from pkg_resources import resource_filename
-from typing import List, Optional, Dict, Tuple, Union, TypeVar
-from typing_extensions import Literal
-from abc import ABC, abstractmethod
+from typing import List, Optional, Tuple, Union, TypeVar
+from abc import ABC
 
 from pysle.utilities import errors
 from pysle.utilities import phonetic_constants
-from pysle.utilities import isle_io
 from pysle.utilities import utils
 
 
@@ -29,6 +24,9 @@ class AbstractPhonemeList(ABC):
 
     def __len__(self):
         return len(self.phonemes)
+
+    def __eq__(self, other):
+        return self.phonemes == other.phonemes
 
     # def __iter__(self):
     #     return self
@@ -81,48 +79,6 @@ class PhonemeList(AbstractPhonemeList):
 
     def findClosestEntry(self, entries: List["Entry"]) -> "Entry":
         return self._findClosestEntry(entries)[0]
-
-    def _findClosestEntry(self, entries: List["Entry"]) -> Tuple["Entry", "Entry"]:
-        numDiffList: List[int] = []
-        withStress: List[bool] = []
-
-        modifiedSyllabificationLists: List[Syllabification] = []
-        for entry in entries:
-            # TODO: Add support for multi-word entries
-            if len(entry.syllabificationList) > 1:
-                raise errors.PysleException(
-                    "findClosestEntry does not support multi-word lookup (yet).  Please file an issue to bump priority."
-                )
-
-            targetSyllabification = entry.syllabificationList[0]
-            adjustedPhoneList, adjustedTargetPhoneList = self.align(
-                targetSyllabification.desyllabify(), simplifiedMatching=True
-            )
-
-            numDiff = adjustedPhoneList.phonemes.count(phonetic_constants.FILLER)
-            numDiff += adjustedTargetPhoneList.phonemes.count(phonetic_constants.FILLER)
-            numDiffList.append(numDiff)
-
-            withStress.append(entry.hasStress)
-
-            modifiedSyllabificationLists.append(
-                targetSyllabification._adjustSyllabification(adjustedTargetPhoneList)
-            )
-
-        bestIndex = _chooseMostSimilarWithStress(numDiffList, withStress)
-
-        if bestIndex is None:
-            raise errors.PysleException(
-                "Unexpected error: Could not choose a closest pronunciation."
-            )
-        closestEntry = entries[bestIndex]
-
-        modifiedTargetSyllabification = modifiedSyllabificationLists[bestIndex]
-        constructedEntry = Entry(
-            closestEntry.word, [modifiedTargetSyllabification], closestEntry.posList
-        )
-
-        return (closestEntry, constructedEntry)
 
     def syllabify(self, syllabification: "Syllabification") -> "Syllabification":
         """
@@ -192,6 +148,48 @@ class PhonemeList(AbstractPhonemeList):
 
         return alignedSelf, alignedTarget
 
+    def _findClosestEntry(self, entries: List["Entry"]) -> Tuple["Entry", "Entry"]:
+        numDiffList: List[int] = []
+        withStress: List[bool] = []
+
+        modifiedSyllabificationLists: List[Syllabification] = []
+        for entry in entries:
+            # TODO: Add support for multi-word entries
+            if len(entry.syllabificationList) > 1:
+                raise errors.PysleException(
+                    "findClosestEntry does not support multi-word lookup (yet).  Please file an issue to bump priority."
+                )
+
+            targetSyllabification = entry.syllabificationList[0]
+            adjustedPhoneList, adjustedTargetPhoneList = self.align(
+                targetSyllabification.desyllabify(), simplifiedMatching=True
+            )
+
+            numDiff = adjustedPhoneList.phonemes.count(phonetic_constants.FILLER)
+            numDiff += adjustedTargetPhoneList.phonemes.count(phonetic_constants.FILLER)
+            numDiffList.append(numDiff)
+
+            withStress.append(entry.hasStress)
+
+            modifiedSyllabificationLists.append(
+                targetSyllabification._adjustSyllabification(adjustedTargetPhoneList)
+            )
+
+        bestIndex = _chooseMostSimilarWithStress(numDiffList, withStress)
+
+        if bestIndex is None:
+            raise errors.PysleException(
+                "Unexpected error: Could not choose a closest pronunciation."
+            )
+        closestEntry = entries[bestIndex]
+
+        modifiedTargetSyllabification = modifiedSyllabificationLists[bestIndex]
+        constructedEntry = Entry(
+            closestEntry.word, [modifiedTargetSyllabification], closestEntry.posList
+        )
+
+        return (closestEntry, constructedEntry)
+
     def _align(
         self, targetPhoneList: "PhonemeList"
     ) -> Tuple["PhonemeList", "PhonemeList"]:
@@ -244,6 +242,15 @@ class PhonemeList(AbstractPhonemeList):
 
 
 class Syllable(AbstractPhonemeList):
+    def __init__(self, phonemes: List[str]):
+        self.cvList = ["V" if isVowel(phone) else "C" for phone in phonemes]
+
+        vowelCount = self.cvList.count("V")
+        if vowelCount > 1:
+            raise errors.TooManyVowelsInSyllable(phonemes, self.cvList)
+
+        super(Syllable, self).__init__(phonemes)
+
     @property
     def hasStress(self) -> bool:
         for phone in self.phonemes:
@@ -261,44 +268,48 @@ class Syllable(AbstractPhonemeList):
         return False
 
     @property
-    def nucleus(self) -> Optional[int]:
+    def nucleus(self) -> Optional[str]:
         """
         Given the phones in a syllable, retrieves the vowel index
         """
-        cvList = ["V" if isVowel(phone) else "C" for phone in self.phonemes]
-
-        vowelCount = cvList.count("V")
-        if vowelCount > 1:
-            raise errors.TooManyVowelsInSyllable(self.phonemes, cvList)
+        vowelCount = self.cvList.count("V")
 
         stressI: Optional[int]
         if vowelCount == 1:
-            stressI = cvList.index("V")
+            stressI = self.cvList.index("V")
+            return self.phonemes[stressI]
         else:
-            stressI = None
-
-        return stressI
-
-
-class Pronunciation(object):
-    def __init__(self, pronunciation, posList: List[str]):
-        self.pronunciation = pronunciation
-        self.posList = posList
+            return None
 
 
 class Syllabification(object):
     def __init__(
         self,
         syllables: Union[List[Syllable], List[List[str]]],
-        stressedSyllableIndicies: List[int],
-        stressedVowelIndicies: List[int],
+        stressedSyllableIndicies: List[int] = None,
+        stressedVowelIndicies: List[int] = None,
     ):
         self.syllables = [_toSyllables(syllable) for syllable in syllables]
         self.stressedSyllableIndicies = stressedSyllableIndicies
         self.stressedVowelIndicies = stressedVowelIndicies
 
+    @classmethod
+    def new(cls, syllables: Union[List[Syllable], List[List[str]]]):
+        stressedSyllableIndicies, stressedVowelIndicies = _findStress(syllables)
+        return Syllabification(
+            syllables, stressedSyllableIndicies, stressedVowelIndicies
+        )
+
     def __len__(self):
         return len(self.syllables)
+
+    def __eq__(self, other):
+        isEqual = True
+        isEqual &= self.syllables == other.syllables
+        isEqual &= self.stressedSyllableIndicies == other.stressedSyllableIndicies
+        isEqual &= self.stressedVowelIndicies == other.stressedVowelIndicies
+
+        return isEqual
 
     @property
     def hasStress(self) -> bool:
@@ -388,12 +399,23 @@ class Entry(object):
     def __init__(
         self,
         word: str,
-        syllabificationList: List[Syllabification],
+        syllabificationList: Union[List[Syllabification], List[List[List[str]]]],
         posList: List[str],
     ):
         self.word = word
-        self.syllabificationList = syllabificationList
+        self.syllabificationList = [
+            _toSyllabification(syllabification)
+            for syllabification in syllabificationList
+        ]
         self.posList = posList
+
+    def __eq__(self, other):
+        isEqual = True
+        isEqual &= self.word == other.word
+        isEqual &= self.syllabificationList == other.syllabificationList
+        isEqual &= self.posList == other.posList
+
+        return isEqual
 
     @property
     def hasStress(self) -> bool:
@@ -484,18 +506,29 @@ class Entry(object):
 
 
 def _toPhonemeList(phoneList: Union[PhonemeList, List[str]]) -> PhonemeList:
-    if type(phoneList) == list:
+    if isinstance(phoneList, list):
         return PhonemeList(phoneList)
-    elif type(phoneList) == PhonemeList:
+    elif isinstance(phoneList, PhonemeList):
         return phoneList
 
     raise AttributeError
 
 
+def _toSyllabification(
+    syllabification: Union[Syllabification, List[List[str]]]
+) -> Syllabification:
+    if isinstance(syllabification, list):
+        return Syllabification.new(syllabification)
+    elif isinstance(syllabification, Syllabification):
+        return syllabification
+
+    raise AttributeError
+
+
 def _toSyllables(syllable: Union[Syllable, List[str]]) -> Syllable:
-    if type(syllable) == list:
+    if isinstance(syllable, list):
         return Syllable(syllable)
-    elif type(syllable) == Syllable:
+    elif isinstance(syllable, Syllable):
         return syllable
 
     raise AttributeError
@@ -522,3 +555,31 @@ def _chooseMostSimilarWithStress(
                 bestIsStressed = True
 
     return bestIndex
+
+
+def _findStress(
+    syllables: Union[List[Syllable], List[List[str]]]
+) -> Tuple[List[int], List[int]]:
+
+    stressedSyllables: List[int] = []
+    stressedPhones: List[int] = []
+    for syllableI, syllable in enumerate(syllables):
+
+        if isinstance(syllable, Syllable):
+            phonemes = syllable.phonemes
+        elif isinstance(syllable, List):
+            phonemes = syllable
+        else:
+            raise AttributeError
+
+        for phoneI, phone in enumerate(phonemes):
+            if u"ˈ" in phone:
+                stressedSyllables.insert(0, syllableI)
+                stressedPhones.insert(0, phoneI)
+                break
+
+            if u"ˌ" in phone:
+                stressedSyllables.append(syllableI)
+                stressedPhones.append(phoneI)
+
+    return stressedSyllables, stressedPhones

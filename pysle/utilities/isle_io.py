@@ -23,27 +23,11 @@ def _parsePronunciation(
         if syllablesTxt == "":
             continue
         syllables = [
-            [phone for phone in syllableTxt.split(" ")]
+            [phone for phone in syllableTxt.strip().split(" ")]
             for syllableTxt in syllablesTxt.split(" . ")
         ]
 
-        # Find stress
-        stressedSyllables: List[int] = []
-        stressedPhones: List[int] = []
-        for syllableI, syllable in enumerate(syllables):
-            for phoneI, phone in enumerate(syllable):
-                if u"ˈ" in phone:
-                    stressedSyllables.insert(0, syllableI)
-                    stressedPhones.insert(0, phoneI)
-                    break
-
-                if u"ˌ" in phone:
-                    stressedSyllables.append(syllableI)
-                    stressedPhones.append(phoneI)
-
-        syllabificationList.append(
-            phonetics.Syllabification(syllables, stressedSyllables, stressedPhones)
-        )
+        syllabificationList.append(phonetics.Syllabification.new(syllables))
 
     return syllabificationList
 
