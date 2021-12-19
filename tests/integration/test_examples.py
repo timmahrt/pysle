@@ -1,6 +1,6 @@
 # encoding: utf-8
 """
-Runs integration tests
+Runs user-facing example code
 
 The examples were all written as scripts.  They weren't meant to be
 imported or run from other code.  So here, the integration test is just
@@ -16,12 +16,16 @@ import os
 import sys
 from pathlib import Path
 
+from tests.testing_utils import CoverageIgnoredTest
+
 _root = os.path.join(Path(__file__).parents[2], "examples")
 sys.path.append(_root)
 
-
-class TestIntegration(unittest.TestCase):
-    """Integration tests"""
+# Ignoring test coverage because there is no validation in
+# these tests other than "no unhandled exception occured"
+# which is still important for the user-facing example code
+class TestExamples(CoverageIgnoredTest):
+    """Ensure example tests run without unhandled exceptions"""
 
     def test_alignment(self):
         """Running 'alignment_example.py'"""
