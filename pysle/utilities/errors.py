@@ -7,6 +7,22 @@ class PysleException(Exception):
     pass
 
 
+class UnexpectedError(PysleException):
+    pass
+
+
+class SyllabificationError(PysleException):
+    pass
+
+
+class FeatureNotYetAvailable(PysleException):
+    pass
+
+
+class FindClosestFailure(PysleException):
+    pass
+
+
 class WordNotInISLE(PysleException):
     def __init__(self, word: str):
         super(WordNotInISLE, self).__init__()
@@ -54,14 +70,12 @@ class TooManyVowelsInSyllable(PysleException):
         self.syllableCVMapped = syllableCVMapped
 
     def __str__(self):
-        errStr = (
-            "Error: syllable '%s' found to have more than "
-            "one vowel.\n This was the CV mapping: '%s'"
-        )
-        syllableStr = "".join(self.syllable)
+        syllableStr = ",".join(self.syllable)
         syllableCVStr = "".join(self.syllableCVMapped)
-
-        return errStr % (syllableStr, syllableCVStr)
+        return (
+            f"Error: syllable '{syllableStr}' found to have more than "
+            f"one vowel.\n This was the CV mapping: '{syllableCVStr}'"
+        )
 
 
 class ImpossibleSyllabificationError(PysleException):

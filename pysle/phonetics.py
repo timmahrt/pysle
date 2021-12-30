@@ -4,14 +4,20 @@ import re
 from typing import List, Optional, Tuple, Union, TypeVar
 from abc import ABC
 
+from typing_extensions import Literal
+
 from pysle.utilities import errors
+from pysle.utilities import constants
 from pysle.utilities import phonetic_constants
 from pysle.utilities import utils
 
 
 def isVowel(char: str) -> bool:
-    """Is this character a vowel?"""
     return any([vowel in char for vowel in phonetic_constants.vowelList])
+
+
+def isRhotic(char: str) -> bool:
+    return any([rhotic in char for rhotic in phonetic_constants.rhotics])
 
 
 T = TypeVar("T", bound="AbstractPhonemeList")
@@ -19,24 +25,16 @@ T = TypeVar("T", bound="AbstractPhonemeList")
 
 class AbstractPhonemeList(ABC):
     def __init__(self, phonemes: List[str]):
+        if any([len(phone) == 0 for phone in phonemes]):
+            raise errors.NullPhoneError()
+
         self.phonemes = phonemes
-        # self.__current = -1
 
     def __len__(self):
         return len(self.phonemes)
 
     def __eq__(self, other):
         return self.phonemes == other.phonemes
-
-    # def __iter__(self):
-    #     return self
-
-    # def __next__(self):
-    #     self.__current += 1
-    #     if self.__current < len(self.phonemes):
-    #         return self.phonemes[self.__current]
-    #     else:
-    #         raise StopIteration
 
     def stripDiacritics(self: T) -> T:
         # TODO: make more comprehensive
@@ -48,6 +46,8 @@ class AbstractPhonemeList(ABC):
         Simplifies pronunciation
 
         Removes diacritics and unifies vowels and rhotics
+
+        Reduces all phonemes to one character
         """
         simplifiedPhones: List[str] = []
         for phone in self.phonemes:
@@ -55,15 +55,12 @@ class AbstractPhonemeList(ABC):
                 phone = phone.replace(diacritic, "")
 
             phone = phone.lower()
-            if "r" in phone:  # Unify rhotics
+            if isRhotic(phone):  # Unify rhotics
                 phone = "r"
             elif isVowel(phone):
                 phone = "V"
             else:
-                try:
-                    phone = phone[0]
-                except IndexError:
-                    raise errors.NullPhoneError()
+                phone = phone[0]
 
             simplifiedPhones.append(phone)
 
@@ -75,12 +72,19 @@ class PhonemeList(AbstractPhonemeList):
         return PhonemeList(self.phonemes + other.phonemes)
 
     def findBestSyllabification(self, entries: List["Entry"]) -> "Syllabification":
-        return self._findClosestEntry(entries)[1].syllabificationList[0]
+        syllabification = self._findClosestEntry(entries)[1].syllabificationList[0]
+        return self.syllabify(
+            syllabification, onSizeError=constants.ErrorReportingMode.SILENCE
+        )
 
     def findClosestEntry(self, entries: List["Entry"]) -> "Entry":
         return self._findClosestEntry(entries)[0]
 
-    def syllabify(self, syllabification: "Syllabification") -> "Syllabification":
+    def syllabify(
+        self,
+        syllabification: "Syllabification",
+        onSizeError: Literal["silence", "warning", "error"] = "warning",
+    ) -> "Syllabification":
         """
         Given a phone list and a syllable list, syllabify the phones
 
@@ -88,6 +92,8 @@ class PhonemeList(AbstractPhonemeList):
         with a dictionary phoneList and then uses the dictionary syllabification
         to syllabify the input phoneList.
         """
+        utils.validateOption("onSizeError", onSizeError, constants.ErrorReportingMode)
+        errorReporter = utils.getErrorReporter(onSizeError)
 
         numPhoneList = [len(syllable) for syllable in syllabification.syllables]
 
@@ -96,11 +102,29 @@ class PhonemeList(AbstractPhonemeList):
         for end in numPhoneList:
 
             syllable = self.phonemes[start : start + end]
-            syllabifiedList.append(syllable)
+            if len(syllable) > 0:
+                syllabifiedList.append(syllable)
 
             start += end
 
-        # TODO: Resolve stress?
+        targetLen = len(syllabification)
+        actualLen = len(syllabifiedList)
+        targetNumPhones = len(syllabification.desyllabify())
+
+        if targetLen > actualLen:
+            errorReporter(
+                errors.SyllabificationError,
+                f"The target syllabification ({syllabification.toList()}) is too long for the input "
+                f"({self.phonemes}); the output has been truncated ({syllabifiedList})",
+            )
+        elif targetNumPhones != len(self.phonemes):
+            errorReporter(
+                errors.SyllabificationError,
+                f"The target syllabification ({syllabification.toList()}) is too short for the input "
+                f"({self.phonemes}); the best fit syllabification output is ({syllabifiedList})",
+            )
+
+        # TODO: Resolve stress properly?
         return Syllabification(syllabifiedList, [], [])
 
     def align(
@@ -146,6 +170,12 @@ class PhonemeList(AbstractPhonemeList):
         else:
             alignedSelf, alignedTarget = self._align(targetPhoneList)
 
+        if len(alignedSelf) != len(alignedTarget):
+            raise errors.UnexpectedError(
+                "Source and target phone lengths are different but should be the same. "
+                f"({alignedSelf.phonemes}), ({alignedTarget.phonemes}).  Please report to the developers."
+            )
+
         return alignedSelf, alignedTarget
 
     def _findClosestEntry(self, entries: List["Entry"]) -> Tuple["Entry", "Entry"]:
@@ -156,7 +186,7 @@ class PhonemeList(AbstractPhonemeList):
         for entry in entries:
             # TODO: Add support for multi-word entries
             if len(entry.syllabificationList) > 1:
-                raise errors.PysleException(
+                raise errors.FeatureNotYetAvailable(
                     "findClosestEntry does not support multi-word lookup (yet).  Please file an issue to bump priority."
                 )
 
@@ -214,6 +244,9 @@ class PhonemeList(AbstractPhonemeList):
 
             sequenceIndexListA.append(startA)
             sequenceIndexListB.append(startB)
+
+            startA += 1
+            startB += 1
 
         # An index on the tail of both will be used to create output strings
         # of the same length
@@ -289,7 +322,9 @@ class Syllabification(object):
         stressedSyllableIndicies: List[int] = None,
         stressedVowelIndicies: List[int] = None,
     ):
-        self.syllables = [_toSyllables(syllable) for syllable in syllables]
+        self.syllables = [
+            _toSyllables(syllable) for syllable in syllables if len(syllable) > 0
+        ]
         self.stressedSyllableIndicies = stressedSyllableIndicies
         self.stressedVowelIndicies = stressedVowelIndicies
 
@@ -344,11 +379,11 @@ class Syllabification(object):
         """
         Morph this syllabification to be like the target (in what way?)
         """
-        currentPhoneList = self.desyllabify()
-        targetPhoneList = targetSyllabification.desyllabify()
 
         # Make the two pronunciations the same length (using a simplified version of each)
-        alignedP, _ = currentPhoneList.align(targetPhoneList, simplifiedMatching=True)
+        alignedP, _ = self.desyllabify().align(
+            targetSyllabification.desyllabify(), simplifiedMatching=True
+        )
 
         return self._adjustSyllabification(alignedP)
 
@@ -365,12 +400,13 @@ class Syllabification(object):
         Adjusting the syllabification for differences between the dictionary
         pronunciation and the actual pronunciation
         """
+        # TODO: This method is spagetti code
         i = 0
         retSyllableList = []
         for syllableNum, syllable in enumerate(self.syllables):
             phones = syllable.phonemes[:]
             j = len(phones)
-            if syllableNum == len(self.syllables) - 1:
+            if syllableNum == len(self) - 1:
                 j = len(adjustedPhoneList.phonemes) - i
             tmpPhoneList = adjustedPhoneList.phonemes[i : i + j]
             numBlanks = -1
@@ -383,7 +419,7 @@ class Syllabification(object):
                     phoneList.extend(tmpPhoneList)
                     j += numBlanks
 
-            for k, phone in enumerate(phones):
+            for k, phone in enumerate(phoneList):
                 if phone == phonetic_constants.FILLER:
                     phones.insert(k, phonetic_constants.FILLER)
 
@@ -492,7 +528,7 @@ class Entry(object):
         bestIndex = _chooseMostSimilarWithStress(numDiffList, withStress)
 
         if bestIndex is None:
-            raise errors.PysleException(
+            raise errors.FindClosestFailure(
                 "Unexpected error: Could not choose a closest pronunciation."
             )
         closestEntry = entries[bestIndex]
@@ -573,12 +609,12 @@ def _findStress(
             raise AttributeError
 
         for phoneI, phone in enumerate(phonemes):
-            if u"ˈ" in phone:
+            if "ˈ" in phone:
                 stressedSyllables.insert(0, syllableI)
                 stressedPhones.insert(0, phoneI)
                 break
 
-            if u"ˌ" in phone:
+            if "ˌ" in phone:
                 stressedSyllables.append(syllableI)
                 stressedPhones.append(phoneI)
 

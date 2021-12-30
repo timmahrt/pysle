@@ -139,3 +139,4 @@ posList = [
 ]
 
 vowelList = monophthongList + diphthongList + syllabicConsonantList
+rhotics = ["r", "ɹ", "ɾ"]

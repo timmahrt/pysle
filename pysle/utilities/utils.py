@@ -1,13 +1,39 @@
 # encoding: utf-8
 
 import itertools
+from typing import NoReturn, Type
+
+from typing_extensions import Literal
 
 from pysle.utilities import errors
+from pysle.utilities import constants
+
+
+def reportNoop(_exception: Type[BaseException], _text: str) -> None:
+    pass
+
+
+def reportException(exception: Type[BaseException], text: str) -> NoReturn:
+    raise exception(text)
+
+
+def reportWarning(_exception: Type[BaseException], text: str) -> None:
+    print(text)
 
 
 def validateOption(variableName: str, value: str, optionClass) -> None:
     if value not in optionClass.validOptions:
         raise errors.WrongOption(variableName, value, optionClass.validOptions)
+
+
+def getErrorReporter(reportingMode: Literal["silence", "warning", "error"]):
+    modeToFunc = {
+        constants.ErrorReportingMode.SILENCE: reportNoop,
+        constants.ErrorReportingMode.WARNING: reportWarning,
+        constants.ErrorReportingMode.ERROR: reportException,
+    }
+
+    return modeToFunc[reportingMode]
 
 
 # The LCS code doesn't look like the rest of the code
