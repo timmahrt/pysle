@@ -23,7 +23,7 @@ def _parsePronunciation(
         if syllablesTxt == "":
             continue
         syllables = [
-            [phone for phone in syllableTxt.strip().split(" ")]
+            [phone for phone in syllableTxt.strip().split()]
             for syllableTxt in syllablesTxt.split(" . ")
         ]
 

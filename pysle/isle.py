@@ -48,8 +48,11 @@ class Isle:
             islePath = constants.DEFAULT_ISLE_DICT_PATH
         elif not os.path.exists(islePath):
             raise errors.IsleDictDoesNotExist()
-        else:
-            self.data = isle_io.readIsleDict(islePath)
+
+        self.data = self.load(islePath)
+
+    def load(self, islePath):
+        return isle_io.readIsleDict(islePath)
 
     def getEntries(self) -> Iterable[phonetics.Entry]:
         for word, entries in self.data.items():
@@ -75,42 +78,6 @@ class Isle:
 
         return entries
 
-    def search(
-        self,
-        matchStr: str,
-        numSyllables: Optional[int] = None,
-        wordInitial: Literal["ok", "only", "no"] = "ok",
-        wordFinal: Literal["ok", "only", "no"] = "ok",
-        spanSyllable: Literal["ok", "only", "no"] = "ok",
-        stressedSyllable: Literal["ok", "only", "no"] = "ok",
-        multiword: Literal["ok", "only", "no"] = "ok",
-        pos: Optional[str] = None,
-        exactMatch: bool = False,
-    ):
-        """
-        for help on isletool.LexicalTool.search(), see see isletool.search()
-        """
-        utils.validateOption("wordInitial", wordInitial, constants.AcceptabilityMode)
-        utils.validateOption("wordFinal", wordFinal, constants.AcceptabilityMode)
-        utils.validateOption("spanSyllable", spanSyllable, constants.AcceptabilityMode)
-        utils.validateOption(
-            "stressedSyllable", stressedSyllable, constants.AcceptabilityMode
-        )
-        utils.validateOption("multiword", multiword, constants.AcceptabilityMode)
-
-        return search.search(
-            self.getEntries(),
-            matchStr,
-            numSyllables=numSyllables,
-            wordInitial=wordInitial,
-            wordFinal=wordFinal,
-            spanSyllable=spanSyllable,
-            stressedSyllable=stressedSyllable,
-            multiword=multiword,
-            pos=pos,
-            exactMatch=exactMatch,
-        )
-
     def getNumPhones(self, word: str, maxFlag: bool) -> Tuple[float, float]:
         """
         Get the number of syllables and phones in this word
@@ -118,6 +85,7 @@ class Isle:
         If maxFlag=True, use the longest pronunciation.  Otherwise, take the
         average length.
         """
+        # TODO: Think of a better name for getNumPhones()?
         phoneCount = 0.0
         syllableCount = 0.0
 
@@ -268,7 +236,7 @@ class Isle:
         return " ".join(words)
 
 
-def autopair(isleDict: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:
+def autopair(isle: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:
     """
     Tests whether adjacent words are OOD or not
 
@@ -283,7 +251,7 @@ def autopair(isleDict: Isle, words: List[str]) -> Tuple[List[List[str]], List[in
     if 'red_ball' and 'ball_chaser' were both in the dictionary
     """
 
-    # Can be '-' or '_'
+    # TODO: Can be '-' or '_'
     newWordList = [
         ("%s_%s" % (words[i], words[i + 1]), i) for i in range(0, len(words) - 1)
     ]
@@ -291,7 +259,7 @@ def autopair(isleDict: Isle, words: List[str]) -> Tuple[List[List[str]], List[in
     sentenceList = []
     indexList = []
     for word, i in newWordList:
-        if word in isleDict.data:
+        if word in isle.data:
             sentenceList.append(
                 words[:i]
                 + [
@@ -306,7 +274,7 @@ def autopair(isleDict: Isle, words: List[str]) -> Tuple[List[List[str]], List[in
 
 def findOODWords(isle: Isle, wordList: List[str]) -> List[str]:
     """
-    Returns all of the out-of-dictionary words found in a list of utterances
+    Returns all of the unique out-of-dictionary words found in a list
     """
     oodList = []
     for word in wordList:

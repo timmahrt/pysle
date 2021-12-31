@@ -104,4 +104,35 @@ class TestEntry(unittest.TestCase):
         )
 
     def test_find_closest_pronunciation(self):
-        pass
+        sut = entry(phoneList=[[["p", "ʌ", "m"], ["k", "n̩"]]])
+
+        entries = []
+        for phoneList in [
+            [["p", "ʌ", "m"], ["k", "ɪ", "n"]],
+            [["p", "u", "m"], ["k", "n"]],
+            [["p", "ʌ", "m", "p"], ["k", "ɪ", "n"]],
+        ]:
+            entries.append(entry(phoneList=[phoneList]))
+
+        self.assertEqual(
+            [["p", "u", "m"], ["k", "n"]],
+            sut.findClosestPronunciation(entries)[0].syllabificationList[0].toList(),
+        )
+
+    def test_find_closest_pronunciation_yields_source_stretched_to_be_like_the_matched_target(
+        self,
+    ):
+        sut = entry(phoneList=[[["p", "ʌ", "m"], ["k", "n̩"]]])
+
+        entries = []
+        for phoneList in [
+            [["p", "o", "m"], ["p", "o", "m"]],
+            [["p", "ʌ", "m"], ["k", "ɪ", "n"]],
+            [["p", "ʌ", "m", "p"], ["k", "ɪ", "n"]],
+        ]:
+            entries.append(entry(phoneList=[phoneList]))
+
+        self.assertEqual(
+            [["p", "ʌ", "m"], ["k", "n̩", "''"]],
+            sut.findClosestPronunciation(entries)[1].syllabificationList[0].toList(),
+        )

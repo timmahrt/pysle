@@ -375,12 +375,17 @@ class Syllabification(object):
             [phone for syllable in self.syllables for phone in syllable.phonemes]
         )
 
-    def morph(self, targetSyllabification: "Syllabification") -> "Syllabification":
+    def stretch(self, targetSyllabification: "Syllabification") -> "Syllabification":
         """
-        Morph this syllabification to be like the target (in what way?)
+        Lengthen the source syllabification based on a target syllabification
+
+        This works by first desllabifying the two syllabifications, adjusting the length,
+        and then resyllabifying.  The target's syllable structure has no influence on the output.
+
+        TODO: The more different the source and target are, the more meaningless the results become.
         """
 
-        # Make the two pronunciations the same length (using a simplified version of each)
+        # Make the two pronunciations the same length
         alignedP, _ = self.desyllabify().align(
             targetSyllabification.desyllabify(), simplifiedMatching=True
         )
@@ -510,7 +515,7 @@ class Entry(object):
                 entry.syllabificationList, self.syllabificationList
             ):
                 modifiedSyllabificationList.append(
-                    targetSyllabification.morph(syllabification)
+                    targetSyllabification.stretch(syllabification)
                 )
                 numDiff += diffCount(syllabification, targetSyllabification)
 

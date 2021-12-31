@@ -58,6 +58,12 @@ def search(
     Compared with LexicalTool().search(), this function can be used to search through a smaller
     set of data than the entire ISLEdict dictionary.
     """
+
+    raise errors.FeatureNotYetAvailable(
+        "If you need search, please try downgrading to pysle 3.x--search was broken in pysle 4.x. "
+        "Please open an issue request to bump the priority in fixing this."
+    )
+
     utils.validateOption("wordInitial", wordInitial, constants.AcceptabilityMode)
     utils.validateOption("wordFinal", wordFinal, constants.AcceptabilityMode)
     utils.validateOption("spanSyllable", spanSyllable, constants.AcceptabilityMode)
