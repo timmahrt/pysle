@@ -13,11 +13,8 @@ see
 """
 
 import copy
-import io
-import re
 import os
-from pkg_resources import resource_filename
-from typing import List, Optional, Dict, Tuple, Iterable, Union
+from typing import List, Optional, Tuple, Iterable, Union
 from typing_extensions import Literal
 
 from pysle.utilities import constants
@@ -25,7 +22,6 @@ from pysle.utilities import errors
 from pysle.utilities import utils
 from pysle.utilities import phonetic_constants
 from pysle.utilities import isle_io
-from pysle.utilities import search
 from pysle import phonetics
 
 

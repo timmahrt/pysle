@@ -16,6 +16,7 @@ from praatio.utilities import constants as praatioConstants
 
 from pysle import isle
 from pysle import phonetics
+from pysle import utilities
 from pysle.utilities import errors
 from pysle.utilities import constants
 from pysle.utilities import utils
@@ -236,8 +237,8 @@ def syllabifyTextgrid(
     skipLabelList: Optional[List[str]] = None,
     startT: Optional[float] = None,
     stopT: Optional[float] = None,
-    stressDetectionErrorMode: Literal["ignore", "warn", "error"] = "error",
-    syllabificationErrorMode: Literal["ignore", "warn", "error"] = "error",
+    stressDetectionErrorMode: Literal["silence", "warning", "error"] = "error",
+    syllabificationErrorMode: Literal["silence", "warning", "error"] = "error",
 ) -> textgrid.Textgrid:
     """
     Given a textgrid, syllabifies the phones in the textgrid
@@ -262,11 +263,19 @@ def syllabifyTextgrid(
         constants.ErrorReportingMode,
     )
 
+    stressErrorReporter = utils.getErrorReporter(stressDetectionErrorMode)
+    syllabificationErrorReporter = utils.getErrorReporter(syllabificationErrorMode)
+
     minT = tg.minTimestamp
     maxT = tg.maxTimestamp
 
     wordTier = tg.tierDict[wordTierName]
     phoneTier = tg.tierDict[phoneTierName]
+
+    if not isinstance(wordTier, textgrid.IntervalTier):
+        raise AttributeError(f"Tier '{wordTierName}' must be an interval tier")
+    if not isinstance(phoneTier, textgrid.IntervalTier):
+        raise AttributeError(f"Tier '{phoneTierName}' must be an interval tier")
 
     if skipLabelList is None:
         skipLabelList = []
@@ -307,22 +316,19 @@ def syllabifyTextgrid(
             print(f"No provided pronunciation; Word '{word}' at {start:.2f}")
             continue
         except errors.ImpossibleSyllabificationError as e:
-            if syllabificationErrorMode == constants.ErrorReportingMode.SILENCE:
-                continue
+            syllabificationErrorReporter(
+                errors.ImpossibleSyllabificationError,
+                f"Syllabification error; Word '{word}' at {start:.2f}; " + str(e),
+            )
+            continue
 
-            if syllabificationErrorMode == constants.ErrorReportingMode.WARNING:
-                print(f"Syllabification error; Word '{word}' at {start:.2f}; " + str(e))
-                continue
+        stressI = sylTmp.stressedVowelIndicies
+        stressJ = sylTmp.stressedSyllableIndicies
+        syllableList = sylTmp.syllables
+        islesAdjustedSyllableList = syllableList
 
-            raise
-
-        stressI = sylTmp[0]
-        stressJ = sylTmp[1]
-        syllableList = sylTmp[2]
-        islesAdjustedSyllableList = sylTmp[3]
-
-        if stressI is not None and stressJ is not None:
-            syllableList[stressI][stressJ] += "ˈ"
+        if len(stressI) > 0 and len(stressJ) > 0:
+            syllableList[stressI[0]].phonemes[stressJ[0]] += "ˈ"
 
         i = 0
         for k, syllable in enumerate(syllableList):
@@ -357,13 +363,13 @@ def syllabifyTextgrid(
                     False,
                 )
 
-                syllablePhoneList = [
+                tonicSyllableEntries: List[textgrid.constants.Interval] = [
                     entry for entry in syllablePhoneTier.entryList if entry[2] != ""
                 ]
-                syllable = phonetics.Syllable(
-                    [phone for _, _, phone in syllablePhoneList]
+                tonicSyllable = phonetics.Syllable(
+                    [phone for _, _, phone in tonicSyllableEntries]
                 )
-                cvList = syllable.simplify().phonemes
+                cvList = tonicSyllable.simplify().phonemes
 
                 tmpStressJ = None
                 try:
@@ -375,24 +381,15 @@ def syllabifyTextgrid(
                             break
 
                 if tmpStressJ is None:
-                    if stressDetectionErrorMode == constants.ErrorReportingMode.SILENCE:
-                        continue
-
-                    if stressDetectionErrorMode == constants.ErrorReportingMode.WARNING:
-                        print(
-                            f"No stressed syllable; word: '{word}' at {syllableStart:.2f}, "
-                            f"actual mapped pronunciation: {syllableList}, "
-                            f"ISLE's mapped pronunciation: {islesAdjustedSyllableList}"
-                        )
-                        continue
-
-                    raise (
-                        errors.StressedSyllableDetectionError(
-                            word, phoneList, syllableList, islesAdjustedSyllableList
-                        )
+                    stressErrorReporter(
+                        errors.StressedSyllableDetectionError,
+                        f"No stressed syllable; word: '{word}' at {syllableStart:.2f}, "
+                        f"actual mapped pronunciation: {syllableList}, "
+                        f"ISLE's mapped pronunciation: {islesAdjustedSyllableList}",
                     )
+                    continue
 
-                phoneStart, phoneEnd = syllablePhoneList[tmpStressJ][:2]
+                phoneStart, phoneEnd = tonicSyllableEntries[tmpStressJ][:2]
                 tonicPEntryList.append((phoneStart, phoneEnd, phonetic_constants.TONIC))
 
     # Create a textgrid with the two syllable-level tiers

@@ -325,8 +325,12 @@ class Syllabification(object):
         self.syllables = [
             _toSyllables(syllable) for syllable in syllables if len(syllable) > 0
         ]
-        self.stressedSyllableIndicies = stressedSyllableIndicies
-        self.stressedVowelIndicies = stressedVowelIndicies
+        self.stressedSyllableIndicies: List[int] = (
+            stressedSyllableIndicies if stressedSyllableIndicies is not None else []
+        )
+        self.stressedVowelIndicies: List[int] = (
+            stressedVowelIndicies if stressedVowelIndicies is not None else []
+        )
 
     @classmethod
     def new(cls, syllables: Union[List[Syllable], List[List[str]]]):
