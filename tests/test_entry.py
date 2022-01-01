@@ -16,6 +16,28 @@ def entry(
 
 
 class TestEntry(unittest.TestCase):
+    def test_equality(self):
+        sut = entry()
+
+        self.assertEqual(
+            sut,
+            entry(),
+        )
+
+        self.assertNotEqual(
+            sut,
+            entry(name="cat"),
+        )
+        self.assertNotEqual(
+            sut,
+            entry(phoneList=[[["k", "a", "t"]]]),
+        )
+        self.assertNotEqual(
+            sut,
+            entry(posList=["jj"]),
+        )
+        self.assertNotEqual(sut, 5)
+
     def test_has_stress_for_single_syllable_words(self):
         self.assertEqual(False, entry(phoneList=[[["f", "a", "r"]]]).hasStress)
         self.assertEqual(True, entry(phoneList=[[["f", "ˈa", "r"]]]).hasStress)

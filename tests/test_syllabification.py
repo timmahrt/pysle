@@ -18,6 +18,20 @@ def syllabification(
 
 
 class TestSyllabification(unittest.TestCase):
+    def test_equality(self):
+        sut = phonetics.Syllabification.new([["l", "ˈæ"], ["b", "ɚ"], ["ˌɪ", "n", "ɵ"]])
+
+        self.assertEqual(
+            sut,
+            phonetics.Syllabification.new([["l", "ˈæ"], ["b", "ɚ"], ["ˌɪ", "n", "ɵ"]]),
+        )
+
+        self.assertNotEqual(
+            sut,
+            phonetics.Syllabification.new([["k", "a", "t"]]),
+        )
+        self.assertNotEqual(sut, 5)
+
     def test_new_will_determine_stress_location(self):
         sut = phonetics.Syllabification.new([["l", "ˈæ"], ["b", "ɚ"], ["ˌɪ", "n", "ɵ"]])
         expectedSyllabification = phonetics.Syllabification(

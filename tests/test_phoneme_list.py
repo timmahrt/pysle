@@ -12,6 +12,20 @@ def entry(phoneList: List[List[List[str]]]):
 
 
 class TestPhonemeList(unittest.TestCase):
+    def test_equality(self):
+        sut = phonetics.PhonemeList(["l", "ˈæ", "b", "ɚ", "ˌɪ", "n", "ɵ"])
+
+        self.assertEqual(
+            sut,
+            phonetics.PhonemeList(["l", "ˈæ", "b", "ɚ", "ˌɪ", "n", "ɵ"]),
+        )
+
+        self.assertNotEqual(
+            sut,
+            phonetics.PhonemeList(["k", "a", "t"]),
+        )
+        self.assertNotEqual(sut, 5)
+
     def test_phoneme_list_length(self):
         self.assertEqual(3, len(phonetics.PhonemeList(["b", "ˈa", "t˺"])))
         self.assertEqual(

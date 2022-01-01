@@ -34,6 +34,9 @@ class AbstractPhonemeList(ABC):
         return len(self.phonemes)
 
     def __eq__(self, other):
+        if type(self) != type(other):
+            return False
+
         return self.phonemes == other.phonemes
 
     def stripDiacritics(self: T) -> T:
@@ -315,7 +318,7 @@ class Syllable(AbstractPhonemeList):
             return None
 
 
-class Syllabification(object):
+class Syllabification:
     def __init__(
         self,
         syllables: Union[List[Syllable], List[List[str]]],
@@ -343,6 +346,9 @@ class Syllabification(object):
         return len(self.syllables)
 
     def __eq__(self, other):
+        if not isinstance(other, Syllabification):
+            return False
+
         isEqual = True
         isEqual &= self.syllables == other.syllables
         isEqual &= self.stressedSyllableIndicies == other.stressedSyllableIndicies
@@ -440,7 +446,7 @@ class Syllabification(object):
         return Syllabification(retSyllableList, [], [])
 
 
-class Entry(object):
+class Entry:
     def __init__(
         self,
         word: str,
@@ -455,6 +461,9 @@ class Entry(object):
         self.posList = posList
 
     def __eq__(self, other):
+        if not isinstance(other, Entry):
+            return False
+
         isEqual = True
         isEqual &= self.word == other.word
         isEqual &= self.syllabificationList == other.syllabificationList

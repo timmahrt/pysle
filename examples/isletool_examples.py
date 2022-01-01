@@ -18,7 +18,7 @@ isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
 
 # In this first example we look up the syllabification of a word and
 # get it's stress information.
-searchWord = "catatonic"
+searchWord = "outfielders"
 lookupResults = isleDict.lookup(searchWord)
 
 firstEntry = lookupResults[0]
@@ -44,8 +44,8 @@ print(oodWordList)
 
 # In the third example, we see how many phones are in a pronunciation
 print("-" * 50)
-syllableCount, phoneCount = isleDict.getNumPhones("catatonic", True)
-print("%s: %d phones, %d syllables" % ("catatonic", phoneCount, syllableCount))
+syllableCount, phoneCount = isleDict.getNumPhones("outfielders", True)
+print("%s: %d phones, %d syllables" % ("outfielders", phoneCount, syllableCount))
 
 
 # In the fourth example, we try to find word pairs in the dictionary
