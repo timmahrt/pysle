@@ -15,7 +15,7 @@ setup(
     author_email="timmahrt@gmail.com",
     url="https://github.com/timmahrt/pysle",
     package_dir={"pysle": "pysle"},
-    packages=["pysle"],
+    packages=["pysle", "pysle.utilities"],
     package_data={
         "pysle": [
             "data/ISLEdict.txt",

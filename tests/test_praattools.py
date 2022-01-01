@@ -1,4 +1,5 @@
 import unittest
+from typing import List
 
 from pysle import phonetics
 from pysle import isle
@@ -33,7 +34,7 @@ class TestPraattools(unittest.TestCase):
     def setUp(self):
         self.isle = VirtualIsle()
 
-    def assertAlmostAllEqual(self, listA: list[float], listB: list[float]) -> None:
+    def assertAlmostAllEqual(self, listA: List[float], listB: List[float]) -> None:
 
         self.assertEqual(len(listA), len(listB))
 

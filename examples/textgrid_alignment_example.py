@@ -21,12 +21,12 @@ from os.path import join
 
 from praatio import textgrid
 
-from pysle import isletool
+from pysle import isle
 from pysle import praattools
 
 
 root = join(".", "files")
-isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
+isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
 
 inputFN = join(root, "pumpkins_with_syllables.TextGrid")
 outputFN = join(root, "pumpkins_with_naive_alignment.TextGrid")
