@@ -1,16 +1,5 @@
 # encoding: utf-8
-"""
-The main interface for working with the ISLE dictionary.
-
-Can be used to run searches based on written form or
-pronunciation ('cat' vs [kat]).
-
-Also has various utility functions.
-
-see
-**examples/isletool_examples.py**
-**examples/dictionary_search.py**
-"""
+"""The main interface for working with the ISLE dictionary."""
 
 import copy
 import os
@@ -31,8 +20,7 @@ def sequenceMatch(matchChar: str, searchStr: str) -> bool:
 
 
 class Isle:
-    """
-    The interface for working with ISLEdict.txt
+    """The interface for working with ISLEdict.txt
 
     Pysle comes with ISLEdict.txt installed but you may specify
     a custom dictionary to search with instead.  Please see README.md
@@ -40,18 +28,32 @@ class Isle:
     """
 
     def __init__(self, islePath: Optional[str] = None):
+        """The constructor for isle
+
+        Creating an instance of Isle() will load Isle into memory
+        which can take time.
+
+        Args:
+            islePath: the path to an islex dictionary.  If None, the
+                original islex will be used.
+        """
         if not islePath:
             islePath = constants.DEFAULT_ISLE_DICT_PATH
         elif not os.path.exists(islePath):
-            raise errors.IsleDictDoesNotExist()
+            raise errors.IsleDictDoesNotExistError()
 
-        self.data = self.load(islePath)
+        self.data = self._load(islePath)
 
-    def load(self, islePath):
+    def _load(self, islePath):
         return isle_io.readIsleDict(islePath)
 
     def getEntries(self) -> Iterable[phonetics.Entry]:
-        for word, entries in self.data.items():
+        """Iterates through the isle dictionary
+
+        Yields:
+            individual entries in alphabetical order
+        """
+        for entries in self.data.values():
             for entry in entries:
                 yield entry
 
@@ -64,24 +66,37 @@ class Isle:
             [Syllabification(syllables=[['ə'], ['n', 'ʌ'], ['ð', 'ɚ']], stressedSyllables=[1], stressedPhones=[1])],
             [Syllabification(syllables=[['ə'], ['n', 'ʌ'], ['ð', 'ə', 'ɹ']], stressedSyllables=[1], stressedPhones=[1])]
         ]
+
+        Args:
+            word: the word to lookup
+
+        Returns:
+            A list of entries; each entry is unique for a word, pronunciation pair
+
+        Raises:
+            WordNotInIsleError: The word was not in the Isle dictionary
         """
         word = word.lower().strip()
 
         entries = self.data.get(word, None)
 
         if entries is None:
-            raise errors.WordNotInISLE(word)
+            raise errors.WordNotInIsleError(word)
 
         return entries
 
-    def getNumPhones(self, word: str, maxFlag: bool) -> Tuple[float, float]:
+    def getLength(self, word: str, maxFlag: bool) -> Tuple[float, float]:
         """
         Get the number of syllables and phones in this word
 
-        If maxFlag=True, use the longest pronunciation.  Otherwise, take the
-        average length.
+        Args:
+            word: the word to lookup
+            maxFlag: if True, use the longest pronunciation of all matching entries.
+                If False, use the average length
+
+        Returns:
+            a tuple containing the number of syllables and number of phones
         """
-        # TODO: Think of a better name for getNumPhones()?
         phoneCount = 0.0
         syllableCount = 0.0
 
@@ -111,9 +126,10 @@ class Isle:
         return syllableCount, phoneCount
 
     def contains(self, word: str) -> bool:
+        """Check if a word exists in the isle dictionary"""
         try:
             self.lookup(word)
-        except errors.WordNotInISLE:
+        except errors.WordNotInIsleError:
             return False
         else:
             return True
@@ -127,12 +143,22 @@ class Isle:
         First find the closest pronunciation to a given pronunciation. Then take
         the syllabification for that pronunciation and map it onto the
         input pronunciation.
+
+        Args:
+            word: the word to lookup
+            phoneList: the phonemes to syllabify
+
+        Returns:
+            a syllabified version of the input phoneList
+
+        Raises:
+            WordNotInIsleError: The word was not in the Isle dictionary
         """
         phoneList = phonetics._toPhonemeList(phoneList)
 
         try:
             entries = self.lookup(word)
-        except errors.WordNotInISLE:
+        except errors.WordNotInIsleError:
             # Many words are in the dictionary but not inflected forms
             # like the possesive (eg bob's)
             # If the word could not be found, try dropping the 's
@@ -187,13 +213,15 @@ class Isle:
         """
         Can be used to generate a hypothetical pronunciation for a sequence of words
 
-        sentenceTxt is a string with words separated by space e.g. 'Hello world'
-        preference is one of None, 'shortest', or 'longest'
+        Args:
+            sentenceTxt: a sequence of words separated by space e.g. 'Hello world'
+            preference: if 'shortest', or 'longest', the appropriate option will be
+                picked (based on phone length); otherwise, the first option will
+                be picked
 
-        For words with multiple entries in the dictionary, the first entry is chosen
-        unless preference is set.  If preference is set to 'longest' or 'shortest' it
-        will choose an appropriate pronunciation.  'shortest' is likely a casual
-        pronunciation and 'longest' a more formal one.
+        Returns:
+            a sequence of IPA characters, separated by space for each word
+            e.g. 'hɛloʊ wɜrld'
         """
 
         if preference:
@@ -234,19 +262,29 @@ class Isle:
 
 def autopair(isle: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:
     """
-    Tests whether adjacent words are OOD or not
+    Joins adjacent words, if their combination is in the
 
     It returns complete wordLists with the matching words replaced.
     Each match yields one sentence.
 
-    e.g.
-    red ball chaser
-    would return
-    [[red_ball chaser], [red ball_chaser]], [0, 1]
+    e.g. (assuming 'red_ball' and 'ball_chaser' are both in isle)
+    ```python
+    x = ['red', 'ball', 'chaser']
+    print(autopair(isle, x))
+    >> [['red_ball', 'chaser'], ['red', 'ball_chaser']], [0, 1]
+    ```
 
-    if 'red_ball' and 'ball_chaser' were both in the dictionary
+    Args:
+        isle: an instance of Isle
+        words: a list of words
+
+    Returns:
+        a list of potential matching sentences and a corresponding list of indicies,
+        where each index is the starting word where the match was found
     """
 
+    # TODO: Is this method unnecessarily complex?  Maybe we can just return a list
+    #       of all adjacent pairs that are in isle?
     # TODO: Can be '-' or '_'
     newWordList = [
         ("%s_%s" % (words[i], words[i + 1]), i) for i in range(0, len(words) - 1)

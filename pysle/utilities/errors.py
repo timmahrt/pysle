@@ -7,6 +7,10 @@ class PysleException(Exception):
     pass
 
 
+class ClosestEntryError(PysleException):
+    pass
+
+
 class UnexpectedError(PysleException):
     pass
 
@@ -15,17 +19,17 @@ class SyllabificationError(PysleException):
     pass
 
 
-class FeatureNotYetAvailable(PysleException):
+class FeatureNotYetAvailableError(PysleException):
     pass
 
 
-class FindClosestFailure(PysleException):
+class FindClosestError(PysleException):
     pass
 
 
-class WordNotInISLE(PysleException):
+class WordNotInIsleError(PysleException):
     def __init__(self, word: str):
-        super(WordNotInISLE, self).__init__()
+        super(WordNotInIsleError, self).__init__()
         self.word = word
 
     def __str__(self):
@@ -35,7 +39,7 @@ class WordNotInISLE(PysleException):
         )
 
 
-class IsleDictDoesNotExist(PysleException):
+class IsleDictDoesNotExistError(PysleException):
     def __str__(self):
         return (
             "You are trying to load a custom ISLE dictionary file that does not exist.\n"
@@ -45,7 +49,7 @@ class IsleDictDoesNotExist(PysleException):
         )
 
 
-class WrongOption(PysleException):
+class WrongOptionError(PysleException):
     def __init__(self, argumentName: str, givenValue: str, availableOptions: List[str]):
         self.argumentName = argumentName
         self.givenValue = givenValue
@@ -63,9 +67,9 @@ class OptionalFeatureError(ImportError):
         return "ERROR: You must have praatio installed to use pysle.praatTools"
 
 
-class TooManyVowelsInSyllable(PysleException):
+class TooManyVowelsInSyllableError(PysleException):
     def __init__(self, syllable: List[str], syllableCVMapped: List[str]):
-        super(TooManyVowelsInSyllable, self).__init__()
+        super(TooManyVowelsInSyllableError, self).__init__()
         self.syllable = syllable
         self.syllableCVMapped = syllableCVMapped
 

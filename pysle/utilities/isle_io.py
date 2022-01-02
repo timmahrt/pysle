@@ -1,9 +1,8 @@
 # encoding: utf-8
 
 import io
-from typing import List, Tuple, Dict
+from typing import List, Dict
 
-from pysle.utilities import constants
 from pysle import phonetics
 
 

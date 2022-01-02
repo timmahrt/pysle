@@ -44,7 +44,7 @@ print(oodWordList)
 
 # In the third example, we see how many phones are in a pronunciation
 print("-" * 50)
-syllableCount, phoneCount = isleDict.getNumPhones("outfielders", True)
+syllableCount, phoneCount = isleDict.getLength("outfielders", True)
 print("%s: %d phones, %d syllables" % ("outfielders", phoneCount, syllableCount))
 
 

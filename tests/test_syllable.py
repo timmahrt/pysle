@@ -24,7 +24,7 @@ class TestSyllable(unittest.TestCase):
         self.assertEqual("ˌɑɪ", phonetics.Syllable(["p", "ˌɑɪ", "n", "z"]).nucleus)
 
     def test_syllables_cannot_have_more_than_one_vowel(self):
-        with self.assertRaises(errors.TooManyVowelsInSyllable) as cm:
+        with self.assertRaises(errors.TooManyVowelsInSyllableError) as cm:
             phonetics.Syllable(["m", "a", "ə"])
 
         self.assertEqual(

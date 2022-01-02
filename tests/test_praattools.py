@@ -11,7 +11,7 @@ Interval = textgrid.constants.Interval
 
 
 class VirtualIsle(isle.Isle):
-    def load(self, _islePath):
+    def _load(self, _islePath):
         return {
             "cat": [
                 phonetics.Entry(
@@ -202,7 +202,7 @@ class TestPraattools(unittest.TestCase):
     def test_syllabify_textgrid_raises_error_with_invalid_preference(self):
         tg = textgrid.Textgrid()
 
-        with self.assertRaises(errors.WrongOption) as _:
+        with self.assertRaises(errors.WrongOptionError) as _:
             praattools.syllabifyTextgrid(
                 self.isle, tg, "words", "phones", "", stressDetectionErrorMode="bird"
             )

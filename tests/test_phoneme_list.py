@@ -326,7 +326,7 @@ class TestPhonemeList(unittest.TestCase):
             )
         ]
 
-        with self.assertRaises(errors.FeatureNotYetAvailable) as cm:
+        with self.assertRaises(errors.FeatureNotYetAvailableError) as cm:
             sut.findClosestEntry(entries)
 
         self.assertEqual(

@@ -7,7 +7,7 @@ from pysle.utilities import constants
 
 
 class VirtualIsle(isle.Isle):
-    def load(self, _islePath):
+    def _load(self, _islePath):
         return {
             "another": [
                 phonetics.Entry(
@@ -84,15 +84,15 @@ class TestIsle(unittest.TestCase):
             sut[1],
         )
 
-    def test_get_num_phones_when_get_max_is_false(self):
+    def test_get_length_when_get_max_is_false(self):
         # When "getMax" is false, the average number of phones and syllables
         # is used instead
-        self.assertEqual((1, 3), self.isle.getNumPhones("cat", False))
-        self.assertEqual((3, 5.5), self.isle.getNumPhones("another", False))
+        self.assertEqual((1, 3), self.isle.getLength("cat", False))
+        self.assertEqual((3, 5.5), self.isle.getLength("another", False))
 
-    def test_get_num_phones_when_get_max_is_true(self):
-        self.assertEqual((1, 3), self.isle.getNumPhones("cat", True))
-        self.assertEqual((3, 6), self.isle.getNumPhones("another", True))
+    def test_get_length_when_get_max_is_true(self):
+        self.assertEqual((1, 3), self.isle.getLength("cat", True))
+        self.assertEqual((3, 6), self.isle.getLength("another", True))
 
     def test_contains(self):
         self.assertEqual(True, self.isle.contains("cat"))
@@ -127,11 +127,11 @@ class TestIsle(unittest.TestCase):
         )
 
     def test_transcribe_raises_error_with_invalid_preference(self):
-        with self.assertRaises(errors.WrongOption) as _:
+        with self.assertRaises(errors.WrongOptionError) as _:
             self.isle.transcribe("Hello world", preference="fake option")
 
     def test_transcribe_raises_error_for_out_of_dictionary_words(self):
-        with self.assertRaises(errors.WordNotInISLE) as _:
+        with self.assertRaises(errors.WordNotInIsleError) as _:
             self.assertEqual(True, self.isle.transcribe("Hello world"))
 
     def test_transcribe_with_no_preference_picks_the_first_option_found(self):

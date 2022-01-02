@@ -1,11 +1,6 @@
 # encoding: utf-8
 
-from collections import namedtuple
 from pkg_resources import resource_filename
-from typing import (
-    List,
-    Tuple,
-)
 from typing_extensions import Final
 
 ISLE_DOWNLOAD_URL = "https://github.com/uiuc-sst/g2ps/tree/master/English/ISLEdict.txt"

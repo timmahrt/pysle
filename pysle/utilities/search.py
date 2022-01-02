@@ -1,10 +1,7 @@
 # encoding: utf-8
 
-import io
 import re
-import os
-from pkg_resources import resource_filename
-from typing import List, Optional, Dict, Tuple, Iterable
+from typing import List, Optional, Iterable
 from typing_extensions import Literal
 
 from pysle import phonetics
@@ -59,7 +56,7 @@ def search(
     set of data than the entire ISLEdict dictionary.
     """
 
-    raise errors.FeatureNotYetAvailable(
+    raise errors.FeatureNotYetAvailableError(
         "If you need search, please try downgrading to pysle 3.x--search was broken in pysle 4.x. "
         "Please open an issue request to bump the priority in fixing this."
     )

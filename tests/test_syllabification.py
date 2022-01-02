@@ -149,6 +149,8 @@ class TestSyllabification(unittest.TestCase):
         )
 
     def test_stretch_first_syllable_final_pos(self):
+        # TODO: The intuition from the user is that the first syllable should be stretched
+        #       but actually its the second syllable.
         sut = phonetics.Syllabification([["p", "m"], ["k", "n"]])
         targetSyllabification = phonetics.Syllabification([["p", "m", "p"], ["k", "n"]])
         self.assertEqual(
