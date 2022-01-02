@@ -5,24 +5,24 @@ Examples of how to use pysle's pronunciationtools code
 
 from os.path import join
 
-from pysle import isle
+from pysle import isletool
 from pysle import phonetics
 from pysle import pronunciationtools
 
 root = join(".", "files")
-isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
 
 # In the first example we determine the syllabification of a word,
 # as it was said.  (Of course, this is just an estimate)
 print("-" * 50)
 searchWord = "another"
 anotherPhoneList = ["n", "@", "th", "r"]
-entries = isleDict.lookup(searchWord)
+entries = isle.lookup(searchWord)
 syllabification = pronunciationtools.findBestSyllabification(
-    isleDict, searchWord, anotherPhoneList
+    isle, searchWord, anotherPhoneList
 )
 closestEntry = pronunciationtools.findClosestEntryForPhones(
-    isleDict, searchWord, anotherPhoneList
+    isle, searchWord, anotherPhoneList
 )
 
 print(syllabification.toList())
@@ -40,7 +40,7 @@ labrinthSyllables = [
 ]
 
 closestEntry, constructedEntry = pronunciationtools.findClosestEntryForSyllabification(
-    isleDict, searchWord, labrinthSyllables
+    isle, searchWord, labrinthSyllables
 )
 print("---------------")
 print(searchWord)
@@ -52,7 +52,7 @@ print("===========================")
 searchWord = "labyrinth"
 labrinthPhones = ["l", "a", "b", "e", "r", "e", "n", "th"]
 labrinthSyllabification = pronunciationtools.findBestSyllabification(
-    isleDict, searchWord, labrinthPhones
+    isle, searchWord, labrinthPhones
 )
 print(labrinthSyllabification.toList())
 

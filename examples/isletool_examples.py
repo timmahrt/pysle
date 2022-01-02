@@ -8,18 +8,18 @@ Examples that use the isletool
 
 from os.path import join
 
-from pysle import isle
+from pysle import isletool
 
 # You can specify a custom dictionary to search through.
 # By default, the LexicalTool will load the original ISLEdict
 root = join(".", "files")
-isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
-# isleDict = isle.Isle()
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
+# isle = isletool.Isle()
 
 # In this first example we look up the syllabification of a word and
 # get it's stress information.
 searchWord = "outfielders"
-lookupResults = isleDict.lookup(searchWord)
+lookupResults = isle.lookup(searchWord)
 
 firstEntry = lookupResults[0]
 syllabification = firstEntry.syllabificationList[0]
@@ -37,14 +37,14 @@ print(firstStressList)  # 3rd syllable carries stress
 print("-" * 50)
 
 wordList = ["another", "banana", "floplot"]
-oodWordList = isle.findOODWords(isleDict, wordList)
+oodWordList = isletool.findOODWords(isle, wordList)
 print("The following words are not in the dictionary")
 print(oodWordList)
 
 
 # In the third example, we see how many phones are in a pronunciation
 print("-" * 50)
-syllableCount, phoneCount = isleDict.getLength("outfielders", True)
+syllableCount, phoneCount = isle.getLength("outfielders", True)
 print("%s: %d phones, %d syllables" % ("outfielders", phoneCount, syllableCount))
 
 
@@ -53,7 +53,7 @@ print("%s: %d phones, %d syllables" % ("outfielders", phoneCount, syllableCount)
 # example.
 print("-" * 50)
 sentenceList = ["another", "australian", "seal", "pumpkins", "parley"]
-retList = isle.autopair(isleDict, sentenceList)[0]
+retList = isletool.autopair(isle, sentenceList)[0]
 for sentence in retList:
     print(sentence)
 
@@ -61,5 +61,5 @@ for sentence in retList:
 # sentence all at once.
 print("-" * 50)
 sentence2 = "do you want another pumpkinseed"
-phoneList = isleDict.transcribe(sentence2, "longest")
+phoneList = isle.transcribe(sentence2, "longest")
 print(phoneList)

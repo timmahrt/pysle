@@ -21,12 +21,12 @@ from os.path import join
 
 from praatio import textgrid
 
-from pysle import isle
+from pysle import isletool
 from pysle import praattools
 
 
 root = join(".", "files")
-isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
 
 inputFN = join(root, "pumpkins_with_syllables.TextGrid")
 outputFN = join(root, "pumpkins_with_naive_alignment.TextGrid")
@@ -43,7 +43,7 @@ for tierName in tg.tierNameList[:]:
         continue
     tg.removeTier(tierName)
 tg = praattools.naiveWordAlignment(
-    tg, utteranceTierName, wordTierName, isleDict, phoneListTierName
+    tg, utteranceTierName, wordTierName, isle, phoneListTierName
 )
-tg = praattools.naivePhoneAlignment(tg, wordTierName, phoneTierName, isleDict)
+tg = praattools.naivePhoneAlignment(tg, wordTierName, phoneTierName, isle)
 tg.save(outputFN, format="short_textgrid", includeBlankSpaces=True)

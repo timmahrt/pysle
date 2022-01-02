@@ -8,7 +8,7 @@ from praatio import textgrid
 from praatio import praatio_scripts
 from praatio.utilities import constants as praatioConstants
 
-from pysle import isle
+from pysle import isletool
 from pysle import phonetics
 from pysle.utilities import errors
 from pysle.utilities import constants
@@ -20,7 +20,7 @@ def spellCheckTextgrid(
     tg: textgrid.Textgrid,
     tierName: str,
     annotationTierName: str,
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     printEntries: bool = False,
 ) -> textgrid.Textgrid:
     """Spell check words by using the praatio spellcheck function
@@ -32,7 +32,7 @@ def spellCheckTextgrid(
         tg: the textgrid to spellcheck
         tierName: the name of the tier to spellcheck
         annotationTierName: the name of the tier to create and write segments to
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         printEntries: if True, words not in the dictionary will be printed
             to the screen
 
@@ -42,7 +42,7 @@ def spellCheckTextgrid(
     """
 
     def checkFunc(word: str):
-        return isleDict.contains(word)
+        return isle.contains(word)
 
     tg = praatio_scripts.spellCheckEntries(
         tg, tierName, annotationTierName, checkFunc, printEntries
@@ -55,7 +55,7 @@ def naiveWordAlignment(
     tg: textgrid.Textgrid,
     utteranceTierName: str,
     wordTierName: str,
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     phoneHelperTierName: Optional[str] = None,
     removeOverlappingSegments: bool = False,
 ) -> textgrid.Textgrid:
@@ -72,7 +72,7 @@ def naiveWordAlignment(
         tg: the textgrid to do alignment over
         utteranceTierName: name of the utterance tier to examine
         wordTierName: name of the word tier to create and write segments to
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         phoneHelperTierName: creates a tier that is parallel to the word tier.
             However, the labels are the phones for the word, rather than the word
         removeOverlappingSegments: remove any labeled words or phones that
@@ -112,7 +112,7 @@ def naiveWordAlignment(
         while i < len(wordList):
             word = wordList[i]
             try:
-                entry = isleDict.lookup(word)[0]
+                entry = isle.lookup(word)[0]
             except errors.WordNotInIsleError:
                 wordList.pop(i)
                 continue
@@ -169,7 +169,7 @@ def naivePhoneAlignment(
     tg: textgrid.Textgrid,
     wordTierName: str,
     phoneTierName: str,
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     removeOverlappingSegments: bool = False,
 ) -> textgrid.Textgrid:
     """Performs naive alignment for words in a textgrid
@@ -182,7 +182,7 @@ def naivePhoneAlignment(
         tg: the textgrid to do alignment over
         wordTierName: name of the utterance tier to examine
         phoneTierName: name of the word tier to create and write segments to
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         removeOverlappingSegments: remove any labeled words or phones that
             fall under labeled utterances
 
@@ -213,7 +213,7 @@ def naivePhoneAlignment(
 
         # Get the list of phones in this word
         try:
-            entry = isleDict.lookup(word)[0]
+            entry = isle.lookup(word)[0]
         except errors.WordNotInIsleError:
             continue
 
@@ -252,7 +252,7 @@ def naivePhoneAlignment(
 
 
 def syllabifyTextgrid(
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     tg: textgrid.Textgrid,
     wordTierName: str,
     phoneTierName: str,
@@ -268,7 +268,7 @@ def syllabifyTextgrid(
     (for syllabifying).
 
     Args:
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         tg: the textgrid to syllabify
         wordTierName: the tier containing intervals with one word per interval
         phoneTierName: tier containing intervals with one phone per interval
@@ -343,7 +343,7 @@ def syllabifyTextgrid(
         phoneList = [entry[2] for entry in subPhoneTier.entryList if entry[2] != ""]
 
         try:
-            sylTmp = isleDict.findBestSyllabification(word, phoneList)
+            sylTmp = isle.findBestSyllabification(word, phoneList)
         except errors.WordNotInIsleError:
             print(
                 f"Not is isle -- skipping syllabification; Word '{word}' at {entryStart:.2f}"

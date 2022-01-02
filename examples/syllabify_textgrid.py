@@ -9,17 +9,17 @@ praatio library.
 from os.path import join
 
 from praatio import textgrid
-from pysle import isle
+from pysle import isletool
 from pysle import praattools
 
 root = join(".", "files")
-isleDict = isle.Isle(join(root, "ISLEdict_sample.txt"))
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
 
 tg = textgrid.openTextgrid(join(root, "pumpkins.TextGrid"), includeEmptyIntervals=False)
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(
-    isleDict,
+    isle,
     tg,
     "word",
     "phone",

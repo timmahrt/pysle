@@ -1,12 +1,12 @@
 import unittest
 
-from pysle import isle
+from pysle import isletool
 from pysle import phonetics
 from pysle.utilities import errors
 from pysle.utilities import constants
 
 
-class VirtualIsle(isle.Isle):
+class VirtualIsle(isletool.Isle):
     def _load(self, _islePath):
         return {
             "another": [
@@ -152,7 +152,7 @@ class TestIsle(unittest.TestCase):
     def test_autopair(self):
         self.assertEqual(
             ([["another", "brown_cat", "brown"]], [1]),
-            isle.autopair(self.isle, ["another", "brown", "cat", "brown"]),
+            isletool.autopair(self.isle, ["another", "brown", "cat", "brown"]),
         )
 
     def test_autopair_with_multiple_matches(self):
@@ -164,7 +164,7 @@ class TestIsle(unittest.TestCase):
                 ],
                 [1, 3],
             ),
-            isle.autopair(self.isle, ["another", "brown", "cat", "brown", "cat"]),
+            isletool.autopair(self.isle, ["another", "brown", "cat", "brown", "cat"]),
         )
 
     def test_autopair_with_ood_words_is_ok(self):
@@ -172,19 +172,19 @@ class TestIsle(unittest.TestCase):
         # words
         self.assertEqual(
             ([["brown_cat", "antlion"]], [0]),
-            isle.autopair(self.isle, ["brown", "cat", "antlion"]),
+            isletool.autopair(self.isle, ["brown", "cat", "antlion"]),
         )
 
     def test_find_ood_words(self):
         self.assertEqual(
             ["antlion", "lazer"],
-            isle.findOODWords(self.isle, ["brown", "lazer", "cat", "antlion"]),
+            isletool.findOODWords(self.isle, ["brown", "lazer", "cat", "antlion"]),
         )
 
     def test_find_ood_words_does_not_return_duplicates(self):
         self.assertEqual(
             ["antlion", "lazer"],
-            isle.findOODWords(
+            isletool.findOODWords(
                 self.isle, ["antlion", "brown", "cat", "antlion", "cat", "lazer"]
             ),
         )

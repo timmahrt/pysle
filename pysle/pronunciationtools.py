@@ -8,19 +8,19 @@ base.
 
 from typing import List, Tuple, Union
 
-from pysle import isle
+from pysle import isletool
 from pysle import phonetics
 
 
 def findBestSyllabification(
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     word: str,
     phoneList: Union[List[str], phonetics.PhonemeList],
 ) -> phonetics.Syllabification:
     """Find the best syllabification for a phone list
 
     Args:
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         word: the word to lookup
         phoneList: the list of phones for the word
 
@@ -28,21 +28,21 @@ def findBestSyllabification(
         the best syllabification for the given phone list, using
         the closest pronunciation found in the isle dictionary
     """
-    entries = isleDict.lookup(word)
+    entries = isle.lookup(word)
 
     phonemes = phonetics._toPhonemeList(phoneList)
     return phonemes.findBestSyllabification(entries)
 
 
 def findClosestEntryForPhones(
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     word: str,
     phoneList: Union[List[str], phonetics.PhonemeList],
 ) -> phonetics.Entry:
     """Find the closest entry for a list of phonemes
 
     Args:
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         word: the word to lookup
         phoneList: the list of phones for the word
 
@@ -50,21 +50,21 @@ def findClosestEntryForPhones(
         the Isle entry with a phone list that is most similar
         to the input one, among the entries for this word
     """
-    entries = isleDict.lookup(word)
+    entries = isle.lookup(word)
 
     phonemes = phonetics._toPhonemeList(phoneList)
     return phonemes.findClosestEntry(entries)
 
 
 def findClosestEntryForSyllabification(
-    isleDict: isle.Isle,
+    isle: isletool.Isle,
     word: str,
     syllabification: Union[List[List[str]], phonetics.Syllabification],
 ) -> Tuple[phonetics.Entry, phonetics.Entry]:
     """Find the closest entry for a syllabified list of phonemes
 
     Args:
-        isleDict: an instance of Isle
+        isle: an instance of Isle
         word: the word to lookup
         syllabification: the syllabification for the word
 
@@ -72,7 +72,7 @@ def findClosestEntryForSyllabification(
         the Isle entry with a syllabification that is most similar
         to the input one, among the entries for this word
     """
-    entries = isleDict.lookup(word)
+    entries = isle.lookup(word)
 
     _syllabification = phonetics._toSyllabification(syllabification)
     entry = phonetics.Entry(word, [_syllabification], [])

@@ -2,7 +2,7 @@ import unittest
 from typing import List
 
 from pysle import phonetics
-from pysle import isle
+from pysle import isletool
 from pysle import praattools
 from pysle.utilities import errors
 from praatio import textgrid
@@ -10,7 +10,7 @@ from praatio import textgrid
 Interval = textgrid.constants.Interval
 
 
-class VirtualIsle(isle.Isle):
+class VirtualIsle(isletool.Isle):
     def _load(self, _islePath):
         return {
             "cat": [
