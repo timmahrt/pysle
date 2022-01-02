@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import io
-from typing import List, Dict
+from typing import List, Dict, Tuple, Any
 
 from pysle import phonetics
 
@@ -39,26 +39,43 @@ def _parsePosInfo(posInfoStr: str):
     ]
 
 
-def parseIsleLine(line: str) -> phonetics.Entry:
-    line = line.rstrip("\n")
-    prefix, pronunciationInfoText = line.split(" ", 1)
-    word, posInfoText = prefix.split("(", 1)
+def parseIslePronunciation(word, line: str) -> Dict[str, Any]:
+    i = line.find("(") + 1
+    j = line.find(")", i)
+    pos = line[i:j]
+    posList = [pos for pos in pos.split(",") if len(pos) <= 3]
 
-    syllabificationList = _parsePronunciation(pronunciationInfoText)
-    posList = _parsePosInfo(posInfoText)
+    pronunciationInfo = []
+    wordStart = line.find("#", j) + 1
+    wordEnd = line.find("#", wordStart + 1)
+    while wordEnd != -1:
+        phonesAsStr = line[wordStart:wordEnd]
+        syllables = phonesAsStr.split(".")
+        pronunciationInfo.append([syllable.split() for syllable in syllables])
+        wordStart = wordEnd + 1
+        wordEnd = line.find("#", wordStart + 1)
 
-    return phonetics.Entry(word, syllabificationList, posList)
+    return {"word": word, "syllabificationList": pronunciationInfo, "posList": posList}
 
 
-def readIsleDict(islePath: str) -> Dict[str, List[phonetics.Entry]]:
+def getWordFromLine(line: str) -> str:
+    i = line.find("(", 0)
+    word = line[:i]
+
+    return word
+
+
+# def readIsleDict(islePath: str) -> Dict[str, List[phonetics.Entry]]:
+def readIsleDict(islePath: str) -> Dict[str, List[str]]:
     """
     Reads into memory and builds the isle textfile into a dictionary for fast searching
     """
-    lexDict: Dict[str, List[phonetics.Entry]] = {}
+    # lexDict: Dict[str, List[phonetics.Entry]] = {}
+    lexDict: Dict[str, List[str]] = {}
     with io.open(islePath, "r", encoding="utf-8") as fd:
         for line in fd:
-            entry = parseIsleLine(line)
-            lexDict.setdefault(entry.word, [])
-            lexDict[entry.word].append(entry)
+            word = getWordFromLine(line)
+            lexDict.setdefault(word, [])
+            lexDict[word].append(line)
 
     return lexDict

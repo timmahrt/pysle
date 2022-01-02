@@ -1,5 +1,6 @@
 import unittest
 import os
+from typing import Dict, List
 
 from pysle import phonetics
 from pysle.utilities import isle_io
@@ -8,13 +9,27 @@ root = os.path.dirname(os.path.realpath(__file__))
 dataRoot = os.path.join(root, "files")
 
 
+def lazyLoadValue(word: str, linesByWord: Dict[str, str]) -> List[phonetics.Entry]:
+    entryList = [
+        isle_io.parseIslePronunciation(word, line) for line in linesByWord[word]
+    ]
+
+    return [
+        phonetics.Entry(
+            entry["word"],
+            entry["syllabificationList"],
+            entry["posList"],
+        )
+        for entry in entryList
+    ]
+
+
 class TestIO(unittest.TestCase):
     def test_opening_isle_files(self):
         sut = isle_io.readIsleDict(os.path.join(dataRoot, "isle_sample.txt"))
 
         self.assertEqual(23, len(sut.keys()))
-
-        entry = sut.get("another")[0]
+        entry = lazyLoadValue("another", sut)[0]
 
         expectedSyllabification = [["ə"], ["n", "ˈʌ"], ["ð", "ɚ"]]
         expectedEntry = phonetics.Entry(
@@ -25,7 +40,7 @@ class TestIO(unittest.TestCase):
 
     def test_groups_entries_with_the_same_word(self):
         sut = isle_io.readIsleDict(os.path.join(dataRoot, "isle_sample.txt"))
-        entries = sut.get("with")
+        entries = lazyLoadValue("with", sut)
 
         self.assertEqual(2, len(entries))
 
@@ -45,7 +60,7 @@ class TestIO(unittest.TestCase):
     def test_can_read_multiword_entries(self):
         sut = isle_io.readIsleDict(os.path.join(dataRoot, "isle_sample.txt"))
 
-        entries = sut.get("pumpkins_parley")
+        entries = lazyLoadValue("pumpkins_parley", sut)
         self.assertEqual(1, len(entries))
 
         entry = entries[0]

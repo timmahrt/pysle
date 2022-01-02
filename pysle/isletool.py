@@ -3,7 +3,7 @@
 
 import copy
 import os
-from typing import List, Optional, Tuple, Iterable, Union
+from typing import List, Optional, Tuple, Iterable, Union, Dict, Any, Mapping
 from typing_extensions import Literal
 
 from pysle.utilities import constants
@@ -42,10 +42,31 @@ class Isle:
         elif not os.path.exists(islePath):
             raise errors.IsleDictDoesNotExistError()
 
-        self.data = self._load(islePath)
+        self.data: Dict[str, List[Union[str, phonetics.Entry]]] = self._load(islePath)
 
-    def _load(self, islePath):
+    def _load(self, islePath) -> Dict[str, List[str]]:
+        print("Text")
         return isle_io.readIsleDict(islePath)
+
+    def _lazyLoad(self, word: str) -> List[phonetics.Entry]:
+        # TODO: Better way to make type hinting happy here?
+        #       entries is either all strings or all Entries but
+        #       mypy considers it a list of mixed type
+        entries: List[Any] = self.data[word]
+        if not isinstance(entries[0], phonetics.Entry):
+            lazyLoadedEntryHashes = [
+                isle_io.parseIslePronunciation(word, entry) for entry in entries
+            ]
+            lazyLoadedEntries = [
+                phonetics.Entry(
+                    entry["word"], entry["syllabificationList"], entry["posList"]
+                )
+                for entry in lazyLoadedEntryHashes
+            ]
+            self.data[word] = lazyLoadedEntries
+            return lazyLoadedEntries
+        else:
+            return entries
 
     def getEntries(self) -> Iterable[phonetics.Entry]:
         """Iterates through the isle dictionary
@@ -53,8 +74,8 @@ class Isle:
         Yields:
             individual entries in alphabetical order
         """
-        for entries in self.data.values():
-            for entry in entries:
+        for word in self.data.keys():
+            for entry in self._lazyLoad(word):
                 yield entry
 
     def lookup(self, word: str) -> List[phonetics.Entry]:
@@ -83,7 +104,7 @@ class Isle:
         if entries is None:
             raise errors.WordNotInIsleError(word)
 
-        return entries
+        return self._lazyLoad(word)
 
     def getLength(self, word: str, maxFlag: bool) -> Tuple[float, float]:
         """

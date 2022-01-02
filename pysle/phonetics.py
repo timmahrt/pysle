@@ -611,6 +611,13 @@ class Entry:
             syllabification.toList() for syllabification in self.syllabificationList
         ]
 
+    def toDict(self):
+        return {
+            "word": self.word,
+            "syllabificationList": self.toList(),
+            "posList": self.posList,
+        }
+
     def findClosestPronunciation(
         self, entries: List["Entry"]
     ) -> Tuple["Entry", "Entry"]:
