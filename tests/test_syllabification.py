@@ -2,7 +2,6 @@ import unittest
 from typing import List
 
 from pysle import phonetics
-from pysle.utilities import errors
 
 
 def syllabification(

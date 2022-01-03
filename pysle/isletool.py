@@ -3,7 +3,7 @@
 
 import copy
 import os
-from typing import List, Optional, Tuple, Iterable, Union, Dict, Any, Mapping
+from typing import List, Optional, Tuple, Iterable, Union, Dict, Generator
 from typing_extensions import Literal
 
 from pysle.utilities import constants
@@ -11,6 +11,7 @@ from pysle.utilities import errors
 from pysle.utilities import utils
 from pysle.utilities import phonetic_constants
 from pysle.utilities import isle_io
+from pysle.utilities import search
 from pysle import phonetics
 
 
@@ -80,7 +81,7 @@ class Isle:
         Yields:
             individual entries in alphabetical order
         """
-        for word in self.data.keys():
+        for word in self.rawData.keys():
             for entry in self._lazyLoad(word):
                 yield entry
 
@@ -280,6 +281,95 @@ class Isle:
         words = [cleanPron(phones) for phones in words]
 
         return " ".join(words)
+
+    def search(
+        self,
+        searchString: str,
+        numSyllables: Optional[int] = None,
+        wordInitial: Literal["ok", "only", "no"] = "ok",
+        wordFinal: Literal["ok", "only", "no"] = "ok",
+        spanSyllable: Literal["ok", "only", "no"] = "ok",
+        stressedSyllable: Literal["ok", "only", "no"] = "ok",
+        multiword: Literal["ok", "only", "no"] = "ok",
+        pos: Optional[str] = None,
+        exactMatch: bool = False,
+        randomize: bool = False,
+    ) -> Generator[Dict[str, str], None, None]:
+        """Search for isledict entries based on pronunciation
+
+        wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
+        can take three different values: 'ok', 'only', or 'no'. For example,
+        if spanSyllable is 1) 'ok' then searches will include matches that
+        span or do not span syllables.  if 2) 'only', then matches that do
+        span syllables are included but matches within syllables are not
+        included. if 3) 'no' then matches that span syllables are not
+        included but matches within are.
+
+        Special search characters:
+        'D' - any dental; 'F' - any fricative; 'S' - any stop
+        'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
+        '#' - word boundary
+        'B' - syllable boundary
+        '.' - anything
+
+        For example, 'DV.' would search for the three character:
+        'dental, vowel, anything'
+
+        For advanced queries:
+        Regular expression syntax applies, so if you wanted to search for any
+        word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.
+
+        Args:
+            searchString: the text to search for
+            numSyllables: return results with the given number of syllables
+            wordInitial: return matches that occur in word-initial position
+            wordFinal: return matches that occur in word-final position
+            spanSyllable: return matches that span across syllables
+            stressedSyllable: return matches that are in stressed position
+            multiword: return matches that are composed of multiple words
+            pos: a tag in the Penn Part of Speech tagset
+                see isletool.phonetics.posList for the full list of possible tags
+            exactMatch: match only the exact pronunciation (ignoring stress,
+                 syllable markers, etc)
+            randomize: randomize the search order (useful if you are only looking for
+                a few results)
+
+        Returns:
+            a generator for iterating through results
+
+        """
+
+        # Prep the data for searching
+        wordInfoList = []
+        for word, lines in self.rawData.items():
+            for line in lines:
+                posStart = line.find("(")
+                posEnd = line.find(")", posStart)
+                wordStart = line.find("#", posEnd)
+
+                posList = line[posStart + 1 : posEnd]
+                wordInfoList.append(
+                    {
+                        "word": word,
+                        "posList": posList,
+                        "pronunciation": line[wordStart:],
+                    }
+                )
+
+        for matchedWordInfo in search.search(
+            wordInfoList,
+            searchString,
+            numSyllables,
+            wordInitial,
+            wordFinal,
+            spanSyllable,
+            stressedSyllable,
+            multiword,
+            pos,
+            exactMatch,
+            randomize,
+        ):
+            yield matchedWordInfo
 
 
 def autopair(isle: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:

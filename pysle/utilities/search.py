@@ -1,18 +1,17 @@
 # encoding: utf-8
 
 import re
-from typing import List, Optional, Iterable
+import random
+from typing import Generator, List, Optional, Dict
 from typing_extensions import Literal
 
-from pysle import phonetics
 from pysle.utilities import constants
-from pysle.utilities import errors
 from pysle.utilities import utils
 from pysle.utilities import phonetic_constants
 
 
 def search(
-    searchList: Iterable[phonetics.Entry],
+    searchList: List[Dict[str, str]],
     matchStr: str,
     numSyllables: Optional[int] = None,
     wordInitial: Literal["ok", "only", "no"] = "ok",
@@ -22,45 +21,14 @@ def search(
     multiword: Literal["ok", "only", "no"] = "ok",
     pos: Optional[str] = None,
     exactMatch: bool = False,
-) -> List[phonetics.Entry]:
+    randomize: bool = False,
+) -> Generator[Dict[str, str], None, None]:
+    """Search the isle dictionary based on pronunciation
+
+    It's not intended to run this method directly, although you can.
+
+    Please see isletool.py Isle.search() for more information.
     """
-    Searches for words in searchList that match the pronunciation 'matchStr'
-
-    Internally, uses regular expressions
-
-    wordInitial, wordFinal, spanSyllable, stressedSyllable, and multiword
-    can take three different values: 'ok', 'only', or 'no'. For example,
-    if spanSyllable is 1) 'ok' then searches will include matches that
-    span or do not span syllables.  if 2) 'only', then matches that do
-    span syllables are included but matches within syllables are not
-    included. if 3) 'no' then matches that span syllables are not
-    included but matches within are.
-
-    pos: a tag in the Penn Part of Speech tagset
-        see isletool.posList for the full list of possible tags
-
-    exactMatch: match only the exact pronunciation (ignoring stress, syllable markers, etc)
-
-    Special search characters:
-    'D' - any dental; 'F' - any fricative; 'S' - any stop
-    'V' - any vowel; 'N' - any nasal; 'R' - any rhotic
-    '#' - word boundary
-    'B' - syllable boundary
-    '.' - anything
-
-    For advanced queries:
-    Regular expression syntax applies, so if you wanted to search for any
-    word ending with a vowel or rhotic, matchStr = '(?:VR)#', '[VR]#', etc.
-
-    Compared with LexicalTool().search(), this function can be used to search through a smaller
-    set of data than the entire ISLEdict dictionary.
-    """
-
-    raise errors.FeatureNotYetAvailableError(
-        "If you need search, please try downgrading to pysle 3.x--search was broken in pysle 4.x. "
-        "Please open an issue request to bump the priority in fixing this."
-    )
-
     utils.validateOption("wordInitial", wordInitial, constants.AcceptabilityMode)
     utils.validateOption("wordFinal", wordFinal, constants.AcceptabilityMode)
     utils.validateOption("spanSyllable", spanSyllable, constants.AcceptabilityMode)
@@ -75,26 +43,32 @@ def search(
         matchStr, wordInitial, wordFinal, spanSyllable, stressedSyllable, exactMatch
     )
 
-    compiledRE = re.compile(matchStr)
-    retList = []
-    for entry in searchList:
-        matchFound = False
+    indexList = list(range(len(searchList)))
+    if randomize:
+        random.shuffle(indexList)
 
-        # TODO: When are we using commas?
-        # I'm not sure this makes sense
-        searchPron = (
-            "".join(entry.phonemeList.phonemes).replace(",", "").replace(" ", "")
-        )
+    compiledRE = re.compile(matchStr)
+    for i in indexList:
+        wordInfo = searchList[i]
 
         # Search for pos
         if pos is not None:
-            if pos not in entry.posList:
+            if pos not in wordInfo["posList"]:
                 continue
 
-        # Ignore diacritics for now:
+        searchPron = wordInfo["pronunciation"].replace(" ", "")
+
+        # TODO: Diacritics are fairly complicated.
+        #       For now, don't consider them in searches except
+        #       for when users specifically want to search for
+        #       those diacritics.
         for diacritic in phonetic_constants.diacriticList:
-            if diacritic not in matchStr:
-                searchPron = searchPron.replace(diacritic, "")
+            if diacritic == "ˈ":
+                if stressedSyllable == "only" or stressedSyllable == "no":
+                    continue
+            if diacritic in matchStr:
+                continue
+            searchPron = searchPron.replace(diacritic, "")
 
         if numSyllables is not None:
             if numSyllables != searchPron.count(".") + 1:
@@ -109,28 +83,29 @@ def search(
                 continue
 
         matchList = compiledRE.findall(searchPron)
-        if len(matchList) > 0:
-            if stressedSyllable == "only":
-                if all([u"ˈ" not in match for match in matchList]):
-                    continue
-            if stressedSyllable == "no":
-                if all([u"ˈ" in match for match in matchList]):
-                    continue
+        if len(matchList) == 0:
+            continue
 
-            # For syllable spanning, we check if there is a syllable
-            # marker inside (not at the border) of the match.
-            if spanSyllable == "only":
-                if all(["." not in txt[1:-1] for txt in matchList]):
-                    continue
-            if spanSyllable == "no":
-                if all(["." in txt[1:-1] for txt in matchList]):
-                    continue
-            matchFound = True
+        if stressedSyllable == "only":
+            if not any([u"ˈ" in match for match in matchList]):
+                continue
+        if stressedSyllable == "no":
+            if any([u"ˈ" in match for match in matchList]):
+                continue
 
-        if matchFound:
-            retList.append(entry)
+        # For syllable spanning, we check if there is a syllable
+        # marker inside (not at the border) of the match.
+        if spanSyllable == "only":
+            if all(["." not in txt[1:-1] for txt in matchList]):
+                continue
+        if spanSyllable == "no":
+            if all(["." in txt[1:-1] for txt in matchList]):
+                continue
 
-    return retList
+        yield wordInfo
+
+
+# def _overlapInStress(word, match):
 
 
 def _prepRESearchStr(
@@ -274,7 +249,7 @@ def _prepRESearchStr(
 
     # Replace special characters
     replDict = {
-        "D": u"(?:t(?!ʃ)|d(?!ʒ)|[sz])",  # dentals
+        "D": u"(?:t(?!ʃ)|d(?!ʒ)|[szɵð])",  # dentals
         "F": u"[ʃʒfvszɵðh]",  # fricatives
         "S": u"(?:t(?!ʃ)|d(?!ʒ)|[pbkg])",  # stops
         "N": u"[nmŋ]",  # nasals

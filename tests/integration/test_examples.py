@@ -42,10 +42,10 @@ class TestExamples(CoverageIgnoredTest):
         print("\npronunciationtools_examples.py" + "\n" + "-" * 10)
         import pronunciationtools_examples
 
-    # def test_dictionary_search(self):
-    #     """Running 'dictionary_search.py'"""
-    #     print("\ndictionary_search.py" + "\n" + "-" * 10)
-    #     import dictionary_search
+    def test_dictionary_search(self):
+        """Running 'dictionary_search.py'"""
+        print("\ndictionary_search.py" + "\n" + "-" * 10)
+        import dictionary_search
 
     def test_syllabify_textgrid(self):
         """Running 'syllabify_textgrid.py'"""

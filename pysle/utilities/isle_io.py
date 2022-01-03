@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import io
-from typing import List, Dict, Tuple, Any
+from typing import List, Dict, Any
 
 from pysle import phonetics
 

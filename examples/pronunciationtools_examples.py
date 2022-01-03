@@ -6,7 +6,6 @@ Examples of how to use pysle's pronunciationtools code
 from os.path import join
 
 from pysle import isletool
-from pysle import phonetics
 from pysle import pronunciationtools
 
 root = join(".", "files")

@@ -1,7 +1,6 @@
 import unittest
 from typing import List
 
-from pysle import phonetics
 from pysle import isletool
 from pysle import praattools
 from pysle.utilities import errors
