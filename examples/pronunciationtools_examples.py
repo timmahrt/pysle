@@ -9,54 +9,51 @@ from pysle import isletool
 from pysle import pronunciationtools
 
 root = join(".", "files")
-isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
 
 # In the first example we determine the syllabification of a word,
 # as it was said.  (Of course, this is just an estimate)
 print("-" * 50)
 searchWord = "another"
 anotherPhoneList = ["n", "@", "th", "r"]
-isleWordList = isleDict.lookup(searchWord)
-returnList = pronunciationtools.findBestSyllabification(
-    isleDict, searchWord, anotherPhoneList
+entries = isle.lookup(searchWord)
+syllabification = pronunciationtools.findBestSyllabification(
+    isle, searchWord, anotherPhoneList
+)
+closestEntry = pronunciationtools.findClosestEntryForPhones(
+    isle, searchWord, anotherPhoneList
 )
 
-(
-    stressedSyllable,
-    stressedPhone,
-    syllableList,
-    syllabification,
-    stressedSyllableIndexList,
-    stressedPhoneIndexList,
-    flattenedStressIndexList,
-) = returnList
-print(searchWord)
-print(anotherPhoneList)
-print(stressedSyllableIndexList)  # We can see the first syllable was elided
-print(stressedPhoneIndexList)
-print(flattenedStressIndexList)
-print(syllableList)
-print(syllabification)
-
+print(syllabification.toList())
+print(closestEntry.toList())
 
 # In the second example, we have a pronunciation and find the closest dictionary
 # pronunciation to it
 print("-" * 50)
 
 searchWord = "labyrinth"
-phoneList = ["l", "a", "b", "e", "r", "e", "n", "th"]
-isleWordList = isleDict.lookup(searchWord)
-retList = pronunciationtools.findClosestPronunciation(isleDict, searchWord, phoneList)
+labrinthSyllables = [
+    ["l", "a"],
+    ["b", "e", "r"],
+    ["e", "n", "th"],
+]
+
+closestEntry, constructedEntry = pronunciationtools.findClosestEntryForSyllabification(
+    isle, searchWord, labrinthSyllables
+)
+print("---------------")
 print(searchWord)
-print(phoneList)
-print(isleWordList)
-print(retList)
+print(labrinthSyllables)
+print(closestEntry.toList())
+print(constructedEntry.toList())
 
 print("===========================")
 searchWord = "labyrinth"
-phoneList = ["l", "a", "b", "e", "r", "e", "n", "th"]
-x = pronunciationtools.findBestSyllabification(isleDict, searchWord, anotherPhoneList)
-print(x)
+labrinthPhones = ["l", "a", "b", "e", "r", "e", "n", "th"]
+labrinthSyllabification = pronunciationtools.findBestSyllabification(
+    isle, searchWord, labrinthPhones
+)
+print(labrinthSyllabification.toList())
 
 
 # In the third example, two pronunciations are aligned.
@@ -66,8 +63,9 @@ print(x)
 print("-" * 50)
 phoneListA = ["a", "b", "c", "d", "e", "f"]
 phoneListB = ["l", "a", "z", "d", "u"]
+
 alignedPhoneListA, alignedPhoneListB = pronunciationtools.alignPronunciations(
-    phoneListA, phoneListB
+    phoneListA, phoneListB, True
 )
-print(alignedPhoneListA)
-print(alignedPhoneListB)
+print(alignedPhoneListA.phonemes)
+print(alignedPhoneListB.phonemes)

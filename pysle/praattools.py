@@ -1,64 +1,65 @@
 # encoding: utf-8
-"""
-Various utilities for using the ISLE dictionary with praat textgrids
+"""Various utilities for using the ISLE dictionary with praat textgrids"""
 
-see
-**examples/alignment_example.py**
-**examples/syllabify_textgrid.py**
-"""
+from typing import List, Optional
+from typing_extensions import Literal
 
+from praatio import textgrid
+from praatio import praatio_scripts
+from praatio.utilities import constants as praatioConstants
 
-from pysle import pronunciationtools
 from pysle import isletool
+from pysle import phonetics
+from pysle.utilities import errors
+from pysle.utilities import constants
+from pysle.utilities import utils
+from pysle.utilities import phonetic_constants
 
 
-class OptionalFeatureError(ImportError):
-    def __str__(self):
-        return "ERROR: You must have praatio installed to use pysle.praatTools"
-
-
-try:
-    from praatio import textgrid
-    from praatio import praatio_scripts
-except ImportError:
-    raise OptionalFeatureError()
-
-
-def spellCheckTextgrid(tg, targetTierName, newTierName, isleDict, printEntries=False):
-    """
-    Spell check words by using the praatio spellcheck function
+def spellCheckTextgrid(
+    tg: textgrid.Textgrid,
+    tierName: str,
+    annotationTierName: str,
+    isle: isletool.Isle,
+    printEntries: bool = False,
+) -> textgrid.Textgrid:
+    """Spell check words by using the praatio spellcheck function
 
     Incorrect items are noted in a new tier and optionally
         printed to the screen
+
+    Args:
+        tg: the textgrid to spellcheck
+        tierName: the name of the tier to spellcheck
+        annotationTierName: the name of the tier to create and write segments to
+        isle: an instance of Isle
+        printEntries: if True, words not in the dictionary will be printed
+            to the screen
+
+    Returns:
+        a modified version of the input textgrid with a new tier marking all
+        words that were not in the dictionary (presumably mispelled)
     """
 
-    def checkFunc(word):
-        try:
-            isleDict.lookup(word)
-        except isletool.WordNotInISLE:
-            returnVal = False
-        else:
-            returnVal = True
-
-        return returnVal
+    def checkFunc(word: str):
+        return isle.contains(word)
 
     tg = praatio_scripts.spellCheckEntries(
-        tg, targetTierName, newTierName, checkFunc, printEntries
+        tg, tierName, annotationTierName, checkFunc, printEntries
     )
 
     return tg
 
 
 def naiveWordAlignment(
-    tg,
-    utteranceTierName,
-    wordTierName,
-    isleDict,
-    phoneHelperTierName=None,
-    removeOverlappingSegments=False,
-):
-    """
-    Performs naive alignment for utterances in a textgrid
+    tg: textgrid.Textgrid,
+    utteranceTierName: str,
+    wordTierName: str,
+    isle: isletool.Isle,
+    phoneHelperTierName: Optional[str] = None,
+    removeOverlappingSegments: bool = False,
+) -> textgrid.Textgrid:
+    """Performs naive alignment for utterances in a textgrid
 
     Naive alignment gives each segment equal duration.  Word duration is
     determined by the duration of an utterance and the number of phones in
@@ -67,11 +68,21 @@ def naiveWordAlignment(
     By 'utterance' I mean a string of words separated by a space bounded
     in time eg (0.5, 1.5, "he said he likes ketchup").
 
-    phoneHelperTierName - creates a tier that is parallel to the word tier.
-                          However, the labels are the phones for the word,
-                          rather than the word
-    removeOverlappingSegments - remove any labeled words or phones that
-                                fall under labeled utterances
+    Args:
+        tg: the textgrid to do alignment over
+        utteranceTierName: name of the utterance tier to examine
+        wordTierName: name of the word tier to create and write segments to
+        isle: an instance of Isle
+        phoneHelperTierName: creates a tier that is parallel to the word tier.
+            However, the labels are the phones for the word, rather than the word
+        removeOverlappingSegments: remove any labeled words or phones that
+            fall under labeled utterances
+
+    Returns:
+        a modified version of the input textgrid with the word segmented
+
+    Raises:
+        WordNotInIsleError: The word was not in the Isle dictionary
     """
     utteranceTier = tg.tierDict[utteranceTierName]
 
@@ -84,28 +95,29 @@ def naiveWordAlignment(
     phoneEntryList = []
     if wordTier is not None:
         if removeOverlappingSegments:
-            for startT, stopT, _ in utteranceTier.entryList:
-                wordTier = wordTier.eraseRegion(startT, stopT, "truncate", False)
+            for start, stop, _ in utteranceTier.entryList:
+                wordTier = wordTier.eraseRegion(
+                    start, stop, praatioConstants.EraseCollision.TRUNCATE, False
+                )
         wordEntryList = wordTier.entryList
 
     # Do the naive alignment
-    for startT, stopT, label in utteranceTier.entryList:
+    for start, stop, label in utteranceTier.entryList:
         wordList = label.split()
 
         # Get the list of phones in each word
-        superPhoneList = []
+        superPhoneList: List[List[str]] = []
         numPhones = 0
         i = 0
         while i < len(wordList):
             word = wordList[i]
             try:
-                firstSyllableList = isleDict.lookup(word)[0][0][0]
-            except isletool.WordNotInISLE:
+                entry = isle.lookup(word)[0]
+            except errors.WordNotInIsleError:
                 wordList.pop(i)
                 continue
-            phoneList = [phone for syllable in firstSyllableList for phone in syllable]
-            superPhoneList.append(phoneList)
-            numPhones += len(phoneList)
+            superPhoneList.append(entry.phonemeList.phonemes)
+            numPhones += len(entry.phonemeList.phonemes)
             i += 1
 
         # Get the naive alignment for words, if alignment doesn't
@@ -114,18 +126,18 @@ def naiveWordAlignment(
         subPhoneEntryList = []
         if wordTier is not None:
             subWordEntryList = wordTier.crop(
-                startT, stopT, "truncated", False
+                start, stop, praatioConstants.CropCollision.TRUNCATED, False
             ).entryList
 
         if len(subWordEntryList) == 0:
-            wordStartT = startT
-            phoneDur = (stopT - startT) / float(numPhones)
+            wordStart = start
+            phoneDur = (stop - start) / float(numPhones)
             for i, word in enumerate(wordList):
                 phoneListTxt = " ".join(superPhoneList[i])
-                wordEndT = wordStartT + (phoneDur * len(superPhoneList[i]))
-                subWordEntryList.append((wordStartT, wordEndT, word))
-                subPhoneEntryList.append((wordStartT, wordEndT, phoneListTxt))
-                wordStartT = wordEndT
+                wordEnd = wordStart + (phoneDur * len(superPhoneList[i]))
+                subWordEntryList.append((wordStart, wordEnd, word))
+                subPhoneEntryList.append((wordStart, wordEnd, phoneListTxt))
+                wordStart = wordEnd
 
         wordEntryList.extend(subWordEntryList)
         phoneEntryList.extend(subPhoneEntryList)
@@ -137,7 +149,6 @@ def naiveWordAlignment(
     if wordTier is not None:
         tg.replaceTier(wordTierName, newWordTier)
     else:
-
         tg.addTier(newWordTier)
 
     # Add the phone tier
@@ -155,17 +166,31 @@ def naiveWordAlignment(
 
 
 def naivePhoneAlignment(
-    tg, wordTierName, phoneTierName, isleDict, removeOverlappingSegments=False
-):
-    """
-    Performs naive alignment for words in a textgrid
+    tg: textgrid.Textgrid,
+    wordTierName: str,
+    phoneTierName: str,
+    isle: isletool.Isle,
+    removeOverlappingSegments: bool = False,
+) -> textgrid.Textgrid:
+    """Performs naive alignment for words in a textgrid
 
     Naive alignment gives each segment equal duration.
     Phone duration is determined by the duration of the word
     and the number of phones.
 
-    removeOverlappingSegments - remove any labeled words or phones that
-                                fall under labeled utterances
+    Args:
+        tg: the textgrid to do alignment over
+        wordTierName: name of the utterance tier to examine
+        phoneTierName: name of the word tier to create and write segments to
+        isle: an instance of Isle
+        removeOverlappingSegments: remove any labeled words or phones that
+            fall under labeled utterances
+
+    Returns:
+        a modified version of the input textgrid with the word segmented
+
+    Raises:
+        WordNotInIsleError: The word was not in the Isle dictionary
     """
     wordTier = tg.tierDict[wordTierName]
 
@@ -178,7 +203,9 @@ def naivePhoneAlignment(
     if phoneTier is not None:
         if removeOverlappingSegments:
             for startT, stopT, _ in wordTier.entryList:
-                phoneTier = phoneTier.eraseRegion(startT, stopT, "truncate", False)
+                phoneTier = phoneTier.eraseRegion(
+                    startT, stopT, praatioConstants.EraseCollision.TRUNCATE, False
+                )
         phoneEntryList = phoneTier.entryList
 
     # Do the naive alignment
@@ -186,27 +213,25 @@ def naivePhoneAlignment(
 
         # Get the list of phones in this word
         try:
-            firstSyllableList = isleDict.lookup(word)[0][0][0]
-        except isletool.WordNotInISLE:
+            entry = isle.lookup(word)[0]
+        except errors.WordNotInIsleError:
             continue
 
-        phoneList = [phone for syllable in firstSyllableList for phone in syllable]
-        for char in ["ˈ", "ˌ"]:
-            phoneList = [phone.replace(char, "") for phone in phoneList]
+        phones = entry.phonemeList.stripDiacritics().phonemes
 
         # Get the naive alignment for phones, if alignment doesn't
         # already exist for phones
         subPhoneEntryList = []
         if phoneTier is not None:
             subPhoneEntryList = phoneTier.crop(
-                wordStartT, wordEndT, "truncated", False
+                wordStartT, wordEndT, praatioConstants.CropCollision.TRUNCATED, False
             ).entryList
 
         if len(subPhoneEntryList) == 0:
-            phoneDur = (wordEndT - wordStartT) / len(phoneList)
+            phoneDur = (wordEndT - wordStartT) / len(phones)
 
             phoneStartT = wordStartT
-            for phone in phoneList:
+            for phone in phones:
                 phoneEndT = phoneStartT + phoneDur
                 subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
                 phoneStartT = phoneEndT
@@ -227,46 +252,67 @@ def naivePhoneAlignment(
 
 
 def syllabifyTextgrid(
-    isleDict,
-    tg,
-    wordTierName,
-    phoneTierName,
-    skipLabelList=None,
-    startT=None,
-    stopT=None,
-    stressedSyllableDetectionErrors="error",
-    syllabificationError="error",
-):
+    isle: isletool.Isle,
+    tg: textgrid.Textgrid,
+    wordTierName: str,
+    phoneTierName: str,
+    skipLabelList: Optional[List[str]] = None,
+    start: Optional[float] = None,
+    stop: Optional[float] = None,
+    stressDetectionErrorMode: Literal["silence", "warning", "error"] = "error",
+    syllabificationErrorMode: Literal["silence", "warning", "error"] = "error",
+) -> textgrid.Textgrid:
+    """Given a textgrid, syllabifies the phones in the textgrid
+
+    The textgrid must have a word tier (used to lookup words) and a phone tier
+    (for syllabifying).
+
+    Args:
+        isle: an instance of Isle
+        tg: the textgrid to syllabify
+        wordTierName: the tier containing intervals with one word per interval
+        phoneTierName: tier containing intervals with one phone per interval
+        skipLabelList: intervals in the word tier containing a label in this list
+            will be skipped
+        start: if not None, only consider intervals that appear after the start time
+        stop: if not None, only consider intervals that appear before the stop time
+        stressDetectionErrorMode: determines behavior if stress is not detected for
+            a word
+        syllabificationErrorMode: determines behavior if a word cannot be syllabified
+
+    Returns:
+        a textgrid with only two tiers containing syllable information
+        (syllabification of the phone tier and a tier marking word-stress).
+
+    Raises:
+        WordNotInIsleError: the word was not in the dictionary
+        StressedSyllableDetectionError: no stress found for a word
     """
-    Given a textgrid, syllabifies the phones in the textgrid
+    utils.validateOption(
+        "stressDetectionErrorMode",
+        stressDetectionErrorMode,
+        constants.ErrorReportingMode,
+    )
 
-    skipLabelList allows you to skip labels without generating warnings
-    (e.g. '', 'sp', etc.)
+    utils.validateOption(
+        "syllabificationErrorMode",
+        syllabificationErrorMode,
+        constants.ErrorReportingMode,
+    )
 
-    The textgrid must have a word tier and a phone tier.
-
-    Returns a textgrid with only two tiers containing syllable information
-    (syllabification of the phone tier and a tier marking word-stress).
-    """
-
-    if stressedSyllableDetectionErrors not in ["ignore", "warn", "error"]:
-        raise WrongOption(
-            "stressedSyllableDetectionErrors",
-            stressedSyllableDetectionErrors,
-            ["ignore", "warn", "error"],
-        )
-    if syllabificationError not in ["ignore", "warn", "error"]:
-        raise WrongOption(
-            "syllabificationError",
-            syllabificationError,
-            ["ignore", "warn", "error"],
-        )
+    stressErrorReporter = utils.getErrorReporter(stressDetectionErrorMode)
+    syllabificationErrorReporter = utils.getErrorReporter(syllabificationErrorMode)
 
     minT = tg.minTimestamp
     maxT = tg.maxTimestamp
 
     wordTier = tg.tierDict[wordTierName]
     phoneTier = tg.tierDict[phoneTierName]
+
+    if not isinstance(wordTier, textgrid.IntervalTier):
+        raise AttributeError(f"Tier '{wordTierName}' must be an interval tier")
+    if not isinstance(phoneTier, textgrid.IntervalTier):
+        raise AttributeError(f"Tier '{phoneTierName}' must be an interval tier")
 
     if skipLabelList is None:
         skipLabelList = []
@@ -275,54 +321,51 @@ def syllabifyTextgrid(
     tonicSEntryList = []
     tonicPEntryList = []
 
-    if startT is not None or stopT is not None:
-        if startT is None:
-            startT = minT
-        if stopT is None:
-            stopT = maxT
+    if start is not None or stop is not None:
+        if start is None:
+            start = minT
+        if stop is None:
+            stop = maxT
 
-        wordTier = wordTier.crop(startT, stopT, "truncated", False)
+        wordTier = wordTier.crop(
+            start, stop, praatioConstants.CropCollision.TRUNCATED, False
+        )
 
-    for start, stop, word in wordTier.entryList:
+    for entryStart, entryStop, word in wordTier.entryList:
 
         if word in skipLabelList:
             continue
 
-        subPhoneTier = phoneTier.crop(start, stop, "strict", False)
+        subPhoneTier = phoneTier.crop(
+            entryStart, entryStop, praatioConstants.CropCollision.STRICT, False
+        )
 
-        # entry = (start, stop, phone)
         phoneList = [entry[2] for entry in subPhoneTier.entryList if entry[2] != ""]
 
         try:
-            sylTmp = pronunciationtools.findBestSyllabification(
-                isleDict, word, phoneList
-            )
-
-        except isletool.WordNotInISLE:
+            sylTmp = isle.findBestSyllabification(word, phoneList)
+        except errors.WordNotInIsleError:
             print(
-                f"Not is isle -- skipping syllabification; Word '{word}' at {start:.2f}"
+                f"Not is isle -- skipping syllabification; Word '{word}' at {entryStart:.2f}"
             )
             continue
-        except pronunciationtools.NullPronunciationError:
-            print(f"No provided pronunciation; Word '{word}' at {start:.2f}")
+        except errors.NullPronunciationError:
+            print(f"No provided pronunciation; Word '{word}' at {entryStart:.2f}")
             continue
-        except pronunciationtools.ImpossibleSyllabificationError as e:
-            if syllabificationError == "ignore":
-                continue
+        except errors.ImpossibleSyllabificationError as e:
+            syllabificationErrorReporter(
+                errors.ImpossibleSyllabificationError,
+                f"Syllabification error; Word '{word}' at {entryStart:.2f}; " + str(e),
+            )
+            continue
 
-            if syllabificationError == "warn":
-                print(f"Syllabification error; Word '{word}' at {start:.2f}; " + str(e))
-                continue
+        stressI = sylTmp.stressedVowelIndicies
+        stressJ = sylTmp.stressedSyllableIndicies
+        syllableList = sylTmp.syllables
+        islesAdjustedSyllableList = syllableList
 
-            raise
-
-        stressI = sylTmp[0]
-        stressJ = sylTmp[1]
-        syllableList = sylTmp[2]
-        islesAdjustedSyllableList = sylTmp[3]
-
-        if stressI is not None and stressJ is not None:
-            syllableList[stressI][stressJ] += "ˈ"
+        if len(stressI) > 0 and len(stressJ) > 0:
+            syllableList[stressI[0]].phonemes[stressJ[0]] += "ˈ"
 
         i = 0
         for k, syllable in enumerate(syllableList):
@@ -344,47 +387,47 @@ def syllabifyTextgrid(
 
             # Create the tonic syllable tier entry
             if k == stressI:
-                tonicSEntryList.append((syllableStart, syllableEnd, "T"))
+                tonicSEntryList.append(
+                    (syllableStart, syllableEnd, phonetic_constants.TONIC)
+                )
 
             # Create the tonic phone tier entry
             if k == stressI:
                 syllablePhoneTier = phoneTier.crop(
-                    syllableStart, syllableEnd, "strict", False
+                    syllableStart,
+                    syllableEnd,
+                    praatioConstants.CropCollision.STRICT,
+                    False,
                 )
 
-                syllablePhoneList = [
+                tonicSyllableEntries: List[textgrid.constants.Interval] = [
                     entry for entry in syllablePhoneTier.entryList if entry[2] != ""
                 ]
-                justPhones = [phone for _, _, phone in syllablePhoneList]
-                cvList = pronunciationtools.simplifyPronunciation(justPhones)
+                tonicSyllable = phonetics.Syllable(
+                    [phone for _, _, phone in tonicSyllableEntries]
+                )
+                cvList = tonicSyllable.simplify().phonemes
 
                 tmpStressJ = None
                 try:
-                    tmpStressJ = cvList.index("V")
+                    tmpStressJ = cvList.index(phonetic_constants.VOWEL)
                 except ValueError:
-                    for char in ["r", "m", "n", "l"]:
+                    for char in phonetic_constants.STRESS_BEARING_CONSONANTS:
                         if char in cvList:
                             tmpStressJ = cvList.index(char)
                             break
 
                 if tmpStressJ is None:
-                    if stressedSyllableDetectionErrors == "ignore":
-                        continue
-
-                    if stressedSyllableDetectionErrors == "warn":
-                        print(
-                            f"No stressed syllable; word: '{word}' at {syllableStart:.2f}, actual mapped pronunciation: {syllableList}, ISLE's mapped pronunciation: {islesAdjustedSyllableList}"
-                        )
-                        continue
-
-                    raise (
-                        StressedSyllableDetectionError(
-                            word, phoneList, syllableList, islesAdjustedSyllableList
-                        )
+                    stressErrorReporter(
+                        errors.StressedSyllableDetectionError,
+                        f"No stressed syllable; word: '{word}' at {syllableStart:.2f}, "
+                        f"actual mapped pronunciation: {syllableList}, "
+                        f"ISLE's mapped pronunciation: {islesAdjustedSyllableList}",
                     )
+                    continue
 
-                phoneStart, phoneEnd = syllablePhoneList[tmpStressJ][:2]
-                tonicPEntryList.append((phoneStart, phoneEnd, "T"))
+                phoneStart, phoneEnd = tonicSyllableEntries[tmpStressJ][:2]
+                tonicPEntryList.append((phoneStart, phoneEnd, phonetic_constants.TONIC))
 
     # Create a textgrid with the two syllable-level tiers
     syllableTier = textgrid.IntervalTier("syllable", syllableEntryList, minT, maxT)
@@ -397,37 +440,3 @@ def syllabifyTextgrid(
     syllableTG.addTier(tonicPTier)
 
     return syllableTG
-
-
-class StressedSyllableDetectionError(Exception):
-    def __init__(self, word, phoneList, syllableList, islesAdjustedSyllableList):
-        super(StressedSyllableDetectionError, self).__init__()
-        self.word = word
-        self.phoneList = phoneList
-        self.syllableList = syllableList
-        self.islesAdjustedSyllableList = islesAdjustedSyllableList
-
-    def __str__(self):
-        return (
-            f"\nFor the word '{self.word}' the actual pronunciation was {self.phoneList}\n\n"
-            f"this tool attempted to map your phone list with ISLE's syllable list\n"
-            f"your mapped syllable list {self.syllableList}\n"
-            f"isle's adjusted syllable list {self.islesAdjustedSyllableList}\n\n"
-            "This commonly happens due to speech errors--when the speaker adds or removes an entire syllable."
-            "You can get around this by \n"
-            "    1) adding an entry to the ISLEdict (in alphabetical order) with the same structure as the actual pronunciation.\n"
-            "    2) silencing errors by setting 'stressedSyllableDetectionErrors' to 'ignore' or 'warn'"
-        )
-
-
-class WrongOption(Exception):
-    def __init__(self, argumentName, givenValue, availableOptions):
-        self.argumentName = argumentName
-        self.givenValue = givenValue
-        self.availableOptions = availableOptions
-
-    def __str__(self):
-        return (
-            f"For argument '{self.argumentName}' was given the value '{self.givenValue}'. "
-            f"However, expected one of [{', '.join(self.availableOptions)}]"
-        )

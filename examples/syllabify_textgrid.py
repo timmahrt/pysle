@@ -13,21 +13,21 @@ from pysle import isletool
 from pysle import praattools
 
 root = join(".", "files")
-isleDict = isletool.LexicalTool(join(root, "ISLEdict_sample.txt"))
+isle = isletool.Isle(join(root, "ISLEdict_sample.txt"))
 
 tg = textgrid.openTextgrid(join(root, "pumpkins.TextGrid"), includeEmptyIntervals=False)
 
 # Get the syllabification tiers and add it to the textgrid
 syllableTG = praattools.syllabifyTextgrid(
-    isleDict,
+    isle,
     tg,
     "word",
     "phone",
     skipLabelList=[
         "",
     ],
-    stressedSyllableDetectionErrors="warn",
-    syllabificationError="warn",
+    stressDetectionErrorMode="warning",
+    syllabificationErrorMode="warning",
 )
 tg.addTier(syllableTG.tierDict["syllable"])
 tg.addTier(syllableTG.tierDict["tonicSyllable"])

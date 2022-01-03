@@ -1,462 +1,105 @@
 # encoding: utf-8
-"""
-Code for comparing and aligning pronunciation data with pronunciations found in the ISLE dictionary.
+"""High-level functions for working with isle dictionaries
 
-see **examples/pronunciationtools_examples.py**
+These functions expose an easy-to-use interface that is
+otherwise available in different areas of the pysle code
+base.
 """
 
-import itertools
-import copy
+from typing import List, Tuple, Union
 
 from pysle import isletool
+from pysle import phonetics
 
 
-class TooManyVowelsInSyllable(Exception):
-    def __init__(self, syllable, syllableCVMapped):
-        super(TooManyVowelsInSyllable, self).__init__()
-        self.syllable = syllable
-        self.syllableCVMapped = syllableCVMapped
+def findBestSyllabification(
+    isle: isletool.Isle,
+    word: str,
+    phoneList: Union[List[str], phonetics.PhonemeList],
+) -> phonetics.Syllabification:
+    """Find the best syllabification for a phone list
 
-    def __str__(self):
-        errStr = (
-            "Error: syllable '%s' found to have more than "
-            "one vowel.\n This was the CV mapping: '%s'"
-        )
-        syllableStr = "".join(self.syllable)
-        syllableCVStr = "".join(self.syllableCVMapped)
+    Args:
+        isle: an instance of Isle
+        word: the word to lookup
+        phoneList: the list of phones for the word
 
-        return errStr % (syllableStr, syllableCVStr)
-
-
-class ImpossibleSyllabificationError(Exception):
-    def __init__(self, estimatedActualSyllabificationList, isleSyllabificationList):
-        self.estimatedList = estimatedActualSyllabificationList
-        self.isleSyllabificationList = isleSyllabificationList
-
-    def __str__(self):
-        return (
-            f"Impossible syllabification; "
-            f"Estimated: {self.estimatedList}; "
-            f"ISLE's: {self.isleSyllabificationList}"
-        )
-
-
-class NumWordsMismatchError(Exception):
-    def __init__(self, word, numMatches):
-        super(NumWordsMismatchError, self).__init__()
-        self.word = word
-        self.numMatches = numMatches
-
-    def __str__(self):
-        errStr = (
-            "Error: %d matches found in isleDict for '%s'.\n"
-            "Only 1 match allowed--likely you need to break"
-            "up your query text into separate words."
-        )
-        return errStr % (self.numMatches, self.word)
-
-
-class WrongTypeError(Exception):
-    def __init__(self, errMsg):
-        super(WrongTypeError, self).__init__()
-        self.str = errMsg
-
-    def __str__(self):
-        return self.str
-
-
-class NullPronunciationError(Exception):
-    def __init__(self, word):
-        super(NullPronunciationError, self).__init__()
-        self.word = word
-
-    def __str__(self):
-        return "No pronunciation given for word '%s'" % self.word
-
-
-class NullPhoneError(Exception):
-    def __str__(self):
-        return "Received an empty phone in the pronunciation list"
-
-
-def _lcs_lens(xs, ys):
-    curr = list(itertools.repeat(0, 1 + len(ys)))
-    for x in xs:
-        prev = list(curr)
-        for i, y in enumerate(ys):
-            if x == y:
-                curr[i + 1] = prev[i] + 1
-            else:
-                curr[i + 1] = max(curr[i], prev[i + 1])
-    return curr
-
-
-def _lcs(xs, ys):
-    nx, ny = len(xs), len(ys)
-    if nx == 0:
-        return []
-
-    if nx == 1:
-        return [xs[0]] if xs[0] in ys else []
-
-    i = nx // 2
-    xb, xe = xs[:i], xs[i:]
-    ll_b = _lcs_lens(xb, ys)
-    ll_e = _lcs_lens(xe[::-1], ys[::-1])
-    _, k = max((ll_b[j] + ll_e[ny - j], j) for j in range(ny + 1))
-    yb, ye = ys[:k], ys[k:]
-    return _lcs(xb, yb) + _lcs(xe, ye)
-
-
-def simplifyPronunciation(phoneList):
+    Returns:
+        the best syllabification for the given phone list, using
+        the closest pronunciation found in the isle dictionary
     """
-    Simplifies pronunciation
+    entries = isle.lookup(word)
 
-    Removes diacritics and unifies vowels and rhotics
+    phonemes = phonetics._toPhonemeList(phoneList)
+    return phonemes.findBestSyllabification(entries)
+
+
+def findClosestEntryForPhones(
+    isle: isletool.Isle,
+    word: str,
+    phoneList: Union[List[str], phonetics.PhonemeList],
+) -> phonetics.Entry:
+    """Find the closest entry for a list of phonemes
+
+    Args:
+        isle: an instance of Isle
+        word: the word to lookup
+        phoneList: the list of phones for the word
+
+    Returns:
+        the Isle entry with a phone list that is most similar
+        to the input one, among the entries for this word
     """
-    retList = []
-    for phone in phoneList:
+    entries = isle.lookup(word)
 
-        # Remove diacritics
-        for diacritic in isletool.diacriticList:
-            phone = phone.replace(diacritic, "")
-
-        # Unify rhotics
-        if "r" in phone:
-            phone = "r"
-
-        phone = phone.lower()
-
-        # Unify vowels
-        if isletool.isVowel(phone):
-            phone = "V"
-
-        # Only represent the string by its first letter
-        try:
-            phone = phone[0]
-        except IndexError:
-            raise NullPhoneError()
-
-        # Unify vowels (reducing the vowel to one char)
-        if isletool.isVowel(phone):
-            phone = "V"
-
-        retList.append(phone)
-
-    return retList
+    phonemes = phonetics._toPhonemeList(phoneList)
+    return phonemes.findClosestEntry(entries)
 
 
-def _adjustSyllabification(adjustedPhoneList, syllableList):
+def findClosestEntryForSyllabification(
+    isle: isletool.Isle,
+    word: str,
+    syllabification: Union[List[List[str]], phonetics.Syllabification],
+) -> Tuple[phonetics.Entry, phonetics.Entry]:
+    """Find the closest entry for a syllabified list of phonemes
+
+    Args:
+        isle: an instance of Isle
+        word: the word to lookup
+        syllabification: the syllabification for the word
+
+    Returns:
+        the Isle entry with a syllabification that is most similar
+        to the input one, among the entries for this word
     """
-    Inserts spaces into a syllable if needed
+    entries = isle.lookup(word)
 
-    Originally the phone list and syllable list contained the same number
-    of phones.  But the adjustedPhoneList may have some insertions which are
-    not accounted for in the syllableList.
+    _syllabification = phonetics._toSyllabification(syllabification)
+    entry = phonetics.Entry(word, [_syllabification], [])
+
+    return entry.findClosestPronunciation(entries)
+
+
+def alignPronunciations(
+    phoneListA: Union[List[str], phonetics.PhonemeList],
+    phoneListB: Union[List[str], phonetics.PhonemeList],
+    simplifiedMatching: bool,
+) -> Tuple[phonetics.PhonemeList, phonetics.PhonemeList]:
+    """Make two lists of phonemes the same length by inserting spaces
+
+    Empty spaces "''" will be inserted around common elements into the two lists.
+
+    Args:
+        phoneListA: a list of phones
+        phoneListB: a list of phones
+        simplifiedMatching: if True, merge all vowels into the symbol "V" and
+            all rhotics into the symbol "R", for the purpose of comparing the
+            two pronunciations
+
+    Returns:
+        the two input phone lists, with spaces inserted
     """
-    i = 0
-    retSyllableList = []
-    for syllableNum, syllable in enumerate(syllableList):
-        j = len(syllable)
-        if syllableNum == len(syllableList) - 1:
-            j = len(adjustedPhoneList) - i
-        tmpPhoneList = adjustedPhoneList[i : i + j]
-        numBlanks = -1
-        phoneList = tmpPhoneList[:]
-        while numBlanks != 0:
+    phonemesA = phonetics._toPhonemeList(phoneListA)
+    phonemesB = phonetics._toPhonemeList(phoneListB)
 
-            numBlanks = tmpPhoneList.count("''")
-            if numBlanks > 0:
-                tmpPhoneList = adjustedPhoneList[i + j : i + j + numBlanks]
-                phoneList.extend(tmpPhoneList)
-                j += numBlanks
-
-        for k, phone in enumerate(phoneList):
-            if phone == "''":
-                syllable.insert(k, "''")
-
-        i += j
-
-        retSyllableList.append(syllable)
-
-    return retSyllableList
-
-
-def _findBestPronunciation(isleWordList, aPron):
-    """
-    Words may have multiple candidates in ISLE; returns the 'optimal' one.
-    """
-
-    aP = simplifyPronunciation(aPron)  # Mapping to simplified phone inventory
-
-    numDiffList = []
-    withStress = []
-    i = 0
-    alignedSyllabificationList = []
-    alignedActualPronunciationList = []
-    for wordTuple in isleWordList:
-        aPronMap = copy.deepcopy(aPron)
-        syllableList = wordTuple[0]  # syllableList, stressList
-
-        iP = [phone for phoneList in syllableList for phone in phoneList]
-        iP = simplifyPronunciation(iP)
-
-        alignedIP, alignedAP = alignPronunciations(iP, aP)
-
-        # Remapping to actual phones
-        #         alignedAP = [origPronDict.get(phon, u"''") for phon in alignedAP]
-        alignedAP = [aPronMap.pop(0) if phon != "''" else "''" for phon in alignedAP]
-        alignedActualPronunciationList.append(alignedAP)
-
-        # Adjusting the syllabification for differences between the dictionary
-        # pronunciation and the actual pronunciation
-        alignedSyllabification = _adjustSyllabification(alignedIP, syllableList)
-        alignedSyllabificationList.append(alignedSyllabification)
-
-        # Count the number of misalignments between the two
-        numDiff = alignedIP.count("''") + alignedAP.count("''")
-        numDiffList.append(numDiff)
-
-        # Is there stress in this word
-        hasStress = False
-        for syllable in syllableList:
-            for phone in syllable:
-                hasStress = "ˈ" in phone or hasStress
-
-        if hasStress:
-            withStress.append(i)
-        i += 1
-
-    # Return the pronunciation that had the fewest differences
-    #     to the actual pronunciation
-    minDiff = min(numDiffList)
-
-    # When there are multiple candidates that have the minimum number
-    #     of differences, prefer one that has stress in it
-    bestIndex = None
-    bestIsStressed = None
-    for i, numDiff in enumerate(numDiffList):
-        if numDiff != minDiff:
-            continue
-        if bestIndex is None:
-            bestIndex = i
-            bestIsStressed = i in withStress
-        else:
-            if not bestIsStressed and i in withStress:
-                bestIndex = i
-                bestIsStressed = True
-
-    return (
-        isleWordList,
-        alignedActualPronunciationList,
-        alignedSyllabificationList,
-        bestIndex,
-    )
-
-
-def _syllabifyPhones(phoneList, syllableList):
-    """
-    Given a phone list and a syllable list, syllabify the phones
-
-    Typically used by findBestSyllabification which first aligns the phoneList
-    with a dictionary phoneList and then uses the dictionary syllabification
-    to syllabify the input phoneList.
-    """
-
-    numPhoneList = [len(syllable) for syllable in syllableList]
-
-    start = 0
-    syllabifiedList = []
-    for end in numPhoneList:
-
-        syllable = phoneList[start : start + end]
-        syllabifiedList.append(syllable)
-
-        start += end
-
-    return syllabifiedList
-
-
-def alignPronunciations(phoneListA, phoneListB):
-    """
-    Align the phones in two pronunciations
-
-    This will find the longest (non-continuous) common sequence and fill in the gaps
-    before, between, and after the characters such that the common elements
-    occur at the same points and the character strings are the same length
-
-    In the following example, the phone lists share the sequence ['a', 'd']
-
-    ```python
-    phoneListA = ['a', 'b', 'c', 'd', 'e', 'f']
-    phoneListB = ['l', 'a', 'z', 'd', 'u']
-    a, b = alignPronunciations(phoneListA, phoneListB)
-    print(a) > ["''", 'a', 'b', 'c', 'd', 'e', 'f']
-    print(b) > ['l', 'a', 'z', "''", 'd', 'u', "''"]
-    ```
-    """
-
-    # Remove any elements not in the other list (but maintain order)
-    pronATmp = copy.deepcopy(phoneListA)
-    pronBTmp = copy.deepcopy(phoneListB)
-
-    # Find the longest sequence
-    sequence = _lcs(pronBTmp, pronATmp)
-
-    # Find the index of the sequence
-    # TODO: investigate ambiguous cases
-    startA = 0
-    startB = 0
-    sequenceIndexListA = []
-    sequenceIndexListB = []
-    for phone in sequence:
-        startA = pronATmp.index(phone, startA)
-        startB = pronBTmp.index(phone, startB)
-
-        sequenceIndexListA.append(startA)
-        sequenceIndexListB.append(startB)
-
-    # An index on the tail of both will be used to create output strings
-    # of the same length
-    sequenceIndexListA.append(len(pronATmp))
-    sequenceIndexListB.append(len(pronBTmp))
-
-    # Fill in any blanks such that the sequential items have the same
-    # index and the two strings are the same length
-    for i, _ in enumerate(sequenceIndexListA):
-        indexA = sequenceIndexListA[i]
-        indexB = sequenceIndexListB[i]
-        if indexA < indexB:
-            for _ in range(indexB - indexA):
-                pronATmp.insert(indexA, "''")
-            sequenceIndexListA = [val + indexB - indexA for val in sequenceIndexListA]
-        elif indexA > indexB:
-            for _ in range(indexA - indexB):
-                pronBTmp.insert(indexB, "''")
-            sequenceIndexListB = [val + indexA - indexB for val in sequenceIndexListB]
-
-    return pronATmp, pronBTmp
-
-
-def findBestSyllabification(isleDict, wordText, phoneList):
-    """
-    Find the best syllabification for a word
-
-    First find the closest pronunciation to a given pronunciation. Then take
-    the syllabification for that pronunciation and map it onto the
-    input pronunciation.
-    """
-    try:
-        phoneList = [unicode(char, "utf-8") for phone in phoneList]
-    except (NameError, TypeError):
-        pass
-
-    try:
-        isleWordList = isleDict.lookup(wordText)[0]
-    except isletool.WordNotInISLE:
-        # Many words are in the dictionary but not inflected forms
-        # like the possesive (eg bob's)
-        # If the word could not be found, try dropping the 's
-        # and try searching again.
-        if wordText[-2:] != "'s":
-            raise
-
-        isleWordList = isleDict.lookup(wordText[:-2])[0]
-
-        for wordTuple in isleWordList:
-            syllableList = wordTuple[0]  # syllableList, stressList
-            finalSyllable = syllableList[-1]
-            lastSound = finalSyllable[-1]
-
-            if lastSound in isletool.alveolars:
-                finalSyllable.append("ɪ")
-            if lastSound in isletool.unvoiced:
-                finalSyllable.append("s")
-            else:
-                finalSyllable.append("z")
-
-    return _findBestSyllabification(isleWordList, phoneList)
-
-
-def _findBestSyllabification(inputIsleWordList, actualPronunciationList):
-    """
-    Find the best syllabification for a word
-
-    First find the closest pronunciation to a given pronunciation. Then take
-    the syllabification for that pronunciation and map it onto the
-    input pronunciation.
-    """
-    retList = _findBestPronunciation(inputIsleWordList, actualPronunciationList)
-    isleWordList, alignedAPronList, alignedSyllableList, bestIndex = retList
-
-    alignedPhoneList = alignedAPronList[bestIndex]
-    alignedSyllables = alignedSyllableList[bestIndex]
-    syllabification = isleWordList[bestIndex][0]
-    stressedSyllableIndexList = isleWordList[bestIndex][1]
-    stressedPhoneIndexList = isleWordList[bestIndex][2]
-
-    syllableList = _syllabifyPhones(alignedPhoneList, alignedSyllables)
-
-    # Get the location of stress in the generated file
-    try:
-        stressedSyllableI = stressedSyllableIndexList[0]
-    except IndexError:
-        stressedSyllableI = None
-        stressedVowelI = None
-    else:
-        try:
-            stressedVowelI = _getSyllableNucleus(syllableList[stressedSyllableI])
-        except TooManyVowelsInSyllable as err:
-            raise ImpossibleSyllabificationError(
-                syllableList, alignedSyllables
-            ) from err
-
-    # Count the index of the stressed phones, if the stress list has
-    # become flattened (no syllable information)
-    flattenedStressIndexList = []
-    for i, j in zip(stressedSyllableIndexList, stressedPhoneIndexList):
-        k = j
-        for l in range(i):
-            k += len(syllableList[l])
-        flattenedStressIndexList.append(k)
-
-    return (
-        stressedSyllableI,
-        stressedVowelI,
-        syllableList,
-        syllabification,
-        stressedSyllableIndexList,
-        stressedPhoneIndexList,
-        flattenedStressIndexList,
-    )
-
-
-def _getSyllableNucleus(phoneList):
-    """
-    Given the phones in a syllable, retrieves the vowel index
-    """
-    cvList = ["V" if isletool.isVowel(phone) else "C" for phone in phoneList]
-
-    vowelCount = cvList.count("V")
-    if vowelCount > 1:
-        raise TooManyVowelsInSyllable(phoneList, cvList)
-
-    if vowelCount == 1:
-        stressI = cvList.index("V")
-    else:
-        stressI = None
-
-    return stressI
-
-
-def findClosestPronunciation(isleDict, word, phoneList):
-    """
-    Find the closest dictionary pronunciation to a provided pronunciation
-    """
-    isleWordList = isleDict.lookup(word)
-
-    retList = _findBestPronunciation(isleWordList[0], phoneList)
-    isleWordList = retList[0]
-    bestIndex = retList[3]
-
-    return isleWordList[bestIndex]
+    return phonemesA.align(phonemesB, simplifiedMatching)
