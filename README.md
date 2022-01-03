@@ -1,7 +1,7 @@
 
 # pysle
 
-[![](https://travis-ci.org/timmahrt/pysle.svg?branch=master)](https://travis-ci.org/timmahrt/pysle) [![](https://coveralls.io/repos/github/timmahrt/pysle/badge.svg?)](https://coveralls.io/github/timmahrt/pysle?branch=master) [![](https://img.shields.io/badge/license-MIT-blue.svg?)](http://opensource.org/licenses/MIT) [![](https://img.shields.io/pypi/v/pysle.svg)](https://pypi.org/project/pysle/)
+[![](https://app.travis-ci.com/timmahrt/pysle.svg?branch=main)](https://app.travis-ci.com/github/timmahrt/pysle) [![](https://coveralls.io/repos/github/timmahrt/pysle/badge.svg?)](https://coveralls.io/github/timmahrt/pysle?branch=main) [![](https://img.shields.io/badge/license-MIT-blue.svg?)](http://opensource.org/licenses/MIT) [![](https://img.shields.io/pypi/v/pysle.svg)](https://pypi.org/project/pysle/)
 
 *Questions?  Comments?  Feedback? [![](https://badges.gitter.im/pysle/Lobby.svg)](https://gitter.im/pysle/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)*
 
@@ -18,14 +18,17 @@ canonical dictionary pronunciation).
 
 # Table of contents
 1. [Documentation](#documentation)
-2. [Common Use Cases](#common-use-cases)
+2. [Tutorials](#tutorials)
 3. [Version History](#version-history)
 4. [Requirements](#requirements)
-5. [Optional resources](#optional-resources)
+5. [ISLE Dictionary](#isle-dictionary)
 6. [Installation](#installation)
-7. [Example usage](#example-usage)
-8. [Citing psyle](#citing-pysle)
-9. [Acknowledgements](#acknowledgements)
+7. [Version 3 to 4 Migration](#version-3-to-4-migration)
+8. [Usage](#usage)
+9. [Common Use Cases](#common-use-cases)
+10. [Tests](#tests)
+11. [Citing psyle](#citing-pysle)
+12. [Acknowledgements](#acknowledgements)
 
 
 ## Documentation
@@ -37,39 +40,15 @@ http://timmahrt.github.io/pysle/
 The documentation is generated with the following command:
 `pdoc ./pysle -d google -o docs`
 
-## Common Use Cases
+## Tutorials
 
+There are tutorials available for learning how to use Pysle.  These
+are in the form of IPython Notebooks which can be found in the /tutorials/
+folder distributed with Pysle.
 
-What can you do with this library?
+You can view them online using the external website Jupyter:
 
-- look up the list of phones and syllables for canonical pronunciations
-  of a word
-    ```python
-    isletool.LexicalTool('ISLEdict.txt').lookup('cat')
-    ```
-
-- map an actual pronunciation to a dictionary pronunciation (can be used
-  to automatically find speech errors)
-    ```python
-    pronunciationtools.findClosestPronunciation(isleDict, 'cat', ['k', 'æ',])
-    ```
-
-- automatically syllabify a praat textgrid containing words and phones
-  (e.g. force-aligned text) -- requires the
-  [praatIO](<https://github.com/timmahrt/praatIO>) library
-    ```python
-    pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
-    ```
-
-- search for words based on pronunciation
-    ```python
-    isletool.LexicalTool('ISLEdict.txt').search('dVV') # Any word containing a 'd' followed by two vowels
-    ```
-
-    e.g. Words that start with a sound, or have a sound word medially, or
-    in stressed vowel position, etc.
-
-    see /tests/dictionary_search.py
+[Tutorial 1: Introduction to Pysle](<https://nbviewer.jupyter.org/github/timmahrt/pysle/blob/main/tutorials/tutorial1_intro_to_pysle.ipynb>)
 
 ## Version History
 
@@ -80,17 +59,18 @@ Please view [CHANGELOG.md](https://github.com/timmahrt/pysle/blob/main/CHANGELOG
 
 ## Requirements
 
-- ``Python 3.7.*`` or above (or below, probably)
+The following python modules are required.  They should be installed automatically but you can 
+install them manually if you have any problems.
+- [typing-extensions](`https://pypi.org/project/typing-extensions/`)
+- [praatIO](<https://github.com/timmahrt/praatIO>) 
 
-[Click here to visit travis-ci and see the specific versions of python that pysle is currently tested under](<https://travis-ci.org/timmahrt/pysle>)
+``Python 3.7.*`` or above
 
-- The [praatIO](<https://github.com/timmahrt/praatIO>) library is required IF 
-  you want to use the textgrid functionality.  It is not required 
-  for normal use.
+[Click here to visit travis-ci and see the specific versions of python that pysle is currently tested under](<https://app.travis-ci.com/github/timmahrt/pysle>)
 
+If you are using ``Python 2.x`` or ``Python < 3.7``, you can use `Pysle 3.x`.
 
 ## ISLE Dictionary
-
 
 pysle requires the ISLEdict pronunciation dictionary
 (copyright Mark Hasegawa-Johnson, licensed under the MIT open source license).
@@ -103,7 +83,7 @@ In that case, please get the original file.
 
   [Direct link to the ISLEX file used in this project](<https://raw.githubusercontent.com/uiuc-sst/g2ps/master/English/ISLEdict.txt>) (ISLEdict.txt)
 
-See examples/isletool_examples.py for an example of how to load a custom ISLEdict file.
+See `examples/isletool_examples.py` for an example of how to load a custom ISLEdict file.
 
 
 ## Installation
@@ -120,17 +100,26 @@ If python is not in your path, you'll need to enter the full path e.g.
 
     C:\Python36\python.exe setup.py install
 
-	
-## Example usage
+## Version 3 to 4 Migration
 
+The iterface to isle dictionaries, praattools, and pronunciationtools haven't changed so
+much except for a bit of renaming.
+
+The expected return types have completely changed however--shifting to datatypes now defined
+in `phonetics.py`. If you are struggling with migrating to version 4, please let me know.
+
+Looking over changes to the example files may help show the changes that need to be made
+to get the same results.
+
+## Usage
 
 Here is a typical usage
 
 ```python
 from pysle import isletool
-isleDict = isletool.LexicalTool('C:\islev2.dict')
-print(isleDict.lookup('catatonic')[0]) # Get the first pronunciation
-# >> (([['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']], [2, 0], [1, 1]),)
+isle = isletool.Isle()
+print(isle.lookup('catatonic')[0].toList()) # Get the first entry's pronunciation
+# >> [[['k', 'ˌæ'], ['ɾ', 'ə'], ['t', 'ˈɑ'], ['n', 'ɪ', 'k']]]
 ```
 
 and another
@@ -139,25 +128,48 @@ and another
 from pysle import isletool
 from pysle import pronunciationtools
 
-isleDict = isletool.LexicalTool('C:\islev2.dict')
+isle = isletool.Isle()
 
 searchWord = 'another'
-phoneList = ['n', '@', 'th', 'r'] # Actually produced (ASCII or IPA ok here)
+phoneList = ['n', 'ʌ', 'ð', 'ɚ']
 
-returnList = pronunciationtools.findBestSyllabification(isleDict, searchWord, phoneList)
+returnList = pronunciationtools.findBestSyllabification(isle, searchWord, phoneList)
 syllableList = returnList[2]
 print(syllableList)
-# >> [["''"], ['n', '@'], ['th', 'r']]
+# >> [["''"], ['n', 'ʌ'], ['ð', 'ɚ']]
 ```
 
 Please see \\examples for example usage
 
 
+## Common Use Cases
+
+
+What can you do with this library?
+
+- look up the list of phones and syllables for canonical pronunciations
+  of a word
+    ```python
+    isletool.LexicalTool('ISLEdict.txt').lookup('cat')
+    ```
+
+- map an actual pronunciation to a dictionary pronunciation (can be used
+  to automatically find speech errors)
+    ```python
+    pronunciationtools.findClosestEntryForPhones(isleDict, 'cat', ['k', 'æ',])
+    ```
+
+- automatically syllabify a praat textgrid (see [praatIO](<https://github.com/timmahrt/praatIO>))
+   containing words and phones (e.g. force-aligned text)
+    ```python
+    pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
+    ```
+
 ## Tests
 
 I run tests with the following command (this requires pytest and pytest-cov to be installed):
 
-`pytest --cov=praatio tests/`
+`pytest --cov=pysle tests/`
 
 
 ## Citing pysle

@@ -3,6 +3,14 @@
 
 *Pysle uses semantic versioning (Major.Minor.Patch)*
 
+Ver 4.0 (Jan 3, 2022)
+- lazy load the isleDict; boot up time changed from ~20s to ~0.5s
+- refactor code to be object-oriented
+- type hinting
+- doc strings
+- unit tests
+- first tutorial
+
 Ver 3.1 (Nov 8, 2021)
 - added a fallback method to findBestSyllabification for out-of-dictionary words ending in "'s"
 
