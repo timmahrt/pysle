@@ -10,44 +10,38 @@ class VirtualIsle(isletool.Isle):
     def _load(self, _islePath):
         return {
             "another": [
-                phonetics.Entry(
-                    "another",
-                    [[["ə"], ["n", "ˈʌ"], ["ð", "ɚ"]]],
-                    ["dt", "nn", "prp"],
-                ),
-                phonetics.Entry(
-                    "another",
-                    [[["ə"], ["n", "ˈʌ", "ð"], ["ə", "ɹ"]]],
-                    ["dt", "nn", "prp"],
-                ),
+                "another(dt,nn,prp) # ə . n ˈʌ . ð ɚ #",
+                "another(dt,nn,prp) # ə . n ˈʌ ð . ə ɹ #",
             ],
-            "cat": [
-                phonetics.Entry(
-                    "cat",
-                    [[["k", "ˌæ", "t˺"]]],
-                    ["dt", "nn", "prp"],
-                ),
-            ],
-            "brown": [
-                phonetics.Entry(
-                    "brown",
-                    [[["b", "ɹ", "ˈaʊ", "n"]]],
-                    ["jj"],
-                ),
-            ],
-            "brown_cat": [
-                phonetics.Entry(
-                    "brown_cat",
-                    [[["b", "ɹ", "ˈaʊ", "n"]], [["k", "ˌæ", "t˺"]]],
-                    [],
-                ),
-            ],
+            "brown": ["brown(jj) # b ɹ ˈaʊ n #"],
+            "brown_cat": ["brown_cat() # b ɹ ˈaʊ n # k ˌæ t˺ #"],
+            "cat": ["cat(dt,nn,prp) # k ˌæ t˺ #"],
         }
 
 
 class TestIsle(unittest.TestCase):
     def setUp(self):
         self.isle = VirtualIsle()
+
+    def test_loading_full_built_in_isle_dictionary(self):
+        # This takes time (~0.5s) so we'll only do it for this one test
+        # In other tests for Isle, we'll open the much smaller VirtualIsle,
+        # which should be almost instant
+        sut = isletool.Isle()
+
+        # This test requires knowledge of the built in dictionary.
+        # Please reference that file (pysle/data/ISLEdict.txt)
+        # I don't like it, but I don't know of another way
+        # Notice that the entry for cat is slightly different
+        # than with the one defined in the VirtualIsle.
+        cat = sut.lookup("cat")
+        self.assertEqual(1, len(cat))
+        self.assertEqual(
+            phonetics.Entry("cat", [[["k", "ˈæ", "t"]]], ["nn", "nnp"]), cat[0]
+        )
+
+        # The number of unique words in the built-in dictionary
+        self.assertEqual(254_430, len(sut.rawData.keys()))
 
     def test_lookup(self):
         sut = self.isle.lookup("cat")

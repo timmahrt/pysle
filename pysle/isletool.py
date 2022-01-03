@@ -42,27 +42,33 @@ class Isle:
         elif not os.path.exists(islePath):
             raise errors.IsleDictDoesNotExistError()
 
-        self.data: Dict[str, List[Union[str, phonetics.Entry]]] = self._load(islePath)
+        self.rawData = self._load(islePath)
+        self.data: Dict[str, List[phonetics.Entry]] = {}
 
     def _load(self, islePath) -> Dict[str, List[str]]:
         print("Text")
         return isle_io.readIsleDict(islePath)
 
     def _lazyLoad(self, word: str) -> List[phonetics.Entry]:
-        # TODO: Better way to make type hinting happy here?
-        #       entries is either all strings or all Entries but
-        #       mypy considers it a list of mixed type
-        entries: List[Any] = self.data[word]
-        if not isinstance(entries[0], phonetics.Entry):
-            lazyLoadedEntryHashes = [
-                isle_io.parseIslePronunciation(word, entry) for entry in entries
-            ]
-            lazyLoadedEntries = [
-                phonetics.Entry(
-                    entry["word"], entry["syllabificationList"], entry["posList"]
+        """Fetches entries for a word; if not parsed yet, parses the original text"""
+
+        entries = self.data.get(word)
+        if not entries:
+            lazyLoadedEntries: List[phonetics.Entry] = []
+
+            lines = self.rawData.get(word)
+            if lines is None:
+                raise errors.WordNotInIsleError(word)
+
+            for rawIsleLine in lines:
+                entryAsHash = isle_io.parseIslePronunciation(word, rawIsleLine)
+                entry = phonetics.Entry(
+                    entryAsHash["word"],
+                    entryAsHash["syllabificationList"],
+                    entryAsHash["posList"],
                 )
-                for entry in lazyLoadedEntryHashes
-            ]
+                lazyLoadedEntries.append(entry)
+
             self.data[word] = lazyLoadedEntries
             return lazyLoadedEntries
         else:
@@ -98,11 +104,6 @@ class Isle:
             WordNotInIsleError: The word was not in the Isle dictionary
         """
         word = word.lower().strip()
-
-        entries = self.data.get(word, None)
-
-        if entries is None:
-            raise errors.WordNotInIsleError(word)
 
         return self._lazyLoad(word)
 
@@ -314,7 +315,7 @@ def autopair(isle: Isle, words: List[str]) -> Tuple[List[List[str]], List[int]]:
     sentenceList = []
     indexList = []
     for word, i in newWordList:
-        if word in isle.data:
+        if word in isle.rawData:
             sentenceList.append(
                 words[:i]
                 + [

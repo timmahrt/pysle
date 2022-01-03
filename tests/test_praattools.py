@@ -13,20 +13,8 @@ Interval = textgrid.constants.Interval
 class VirtualIsle(isletool.Isle):
     def _load(self, _islePath):
         return {
-            "cat": [
-                phonetics.Entry(
-                    "cat",
-                    [[["k", "ˌæ", "t˺"]]],
-                    ["dt", "nn", "prp"],
-                ),
-            ],
-            "purple": [
-                phonetics.Entry(
-                    "purple",
-                    [[["p", "ˈɝ", "ɹ"], ["p", "l̩"]]],
-                    ["jj"],
-                ),
-            ],
+            "cat": ["cat(dt,nn,prp) # k ˌæ t˺ #"],
+            "purple": ["purple(jj) # p ˈɝ ɹ . p l̩ #"],
         }
 
 

@@ -65,12 +65,10 @@ def getWordFromLine(line: str) -> str:
     return word
 
 
-# def readIsleDict(islePath: str) -> Dict[str, List[phonetics.Entry]]:
 def readIsleDict(islePath: str) -> Dict[str, List[str]]:
     """
     Reads into memory and builds the isle textfile into a dictionary for fast searching
     """
-    # lexDict: Dict[str, List[phonetics.Entry]] = {}
     lexDict: Dict[str, List[str]] = {}
     with io.open(islePath, "r", encoding="utf-8") as fd:
         for line in fd:
