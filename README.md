@@ -50,6 +50,8 @@ You can view them online using the external website Jupyter:
 
 [Tutorial 1: Introduction to Pysle](<https://nbviewer.jupyter.org/github/timmahrt/pysle/blob/main/tutorials/tutorial1_intro_to_pysle.ipynb>)
 
+[Tutorial 2: Pronunciationtools](<https://nbviewer.jupyter.org/github/timmahrt/pysle/blob/main/tutorials/tutorial2_pronunciationtools.ipynb>)
+
 ## Version History
 
 *Pysle uses semantic versioning (Major.Minor.Patch)*
