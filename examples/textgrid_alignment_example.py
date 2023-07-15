@@ -38,7 +38,7 @@ phoneTierName = "phone"
 
 tg = textgrid.openTextgrid(inputFN, includeEmptyIntervals=False)
 
-for tierName in tg.tierNameList[:]:
+for tierName in tg.tierNames[:]:
     if tierName == utteranceTierName:
         continue
     tg.removeTier(tierName)

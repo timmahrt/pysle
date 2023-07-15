@@ -126,8 +126,8 @@ class Isle:
         syllableCountList = []
         phoneCountList = []
 
-        entryList = self.lookup(word)
-        for entry in entryList:
+        entries = self.lookup(word)
+        for entry in entries:
             syllableList = []
             phoneList = []
             for syllabification in entry.syllabificationList:
@@ -253,11 +253,11 @@ class Isle:
         transcribedWordsList: List[phonetics.PhonemeList] = []
         wordList = sentenceTxt.split(" ")
         for word in wordList:
-            entryList = self.lookup(word)
+            entries = self.lookup(word)
 
             phoneListsOrderedByEntry = [
                 syllabification.desyllabify()
-                for entry in entryList
+                for entry in entries
                 for syllabification in entry.syllabificationList
             ]
             numPhones = [len(phoneList) for phoneList in phoneListsOrderedByEntry]
@@ -271,8 +271,8 @@ class Isle:
             transcribedWordsList.append(phoneListsOrderedByEntry[i])
 
         def cleanPron(pron):
-            for val in [u"ˈ", u"ˌ", u" "]:
-                pron = pron.replace(val, u"")
+            for val in ["ˈ", "ˌ", " "]:
+                pron = pron.replace(val, "")
             return pron
 
         words: List[str] = [

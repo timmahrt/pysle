@@ -22,7 +22,6 @@ class TestPraattools(unittest.TestCase):
         self.isle = VirtualIsle()
 
     def assertAlmostAllEqual(self, listA: List[float], listB: List[float]) -> None:
-
         self.assertEqual(len(listA), len(listB))
 
         for a, b in zip(listA, listB):
@@ -54,16 +53,16 @@ class TestPraattools(unittest.TestCase):
             tg, "words", "words_corrected", self.isle, False
         )
 
-        correctedTier = sut.tierDict["words_corrected"]
+        correctedTier = sut.getTier("words_corrected")
 
         # All out-of-dictionary words (which could include mispelled words)
         # will be in the output
         self.assertEqual(
-            [
+            (
                 Interval(3.2, 3.7, "blue"),
                 Interval(4.8, 5.4, "kat"),
-            ],
-            correctedTier.entryList,
+            ),
+            correctedTier.entries,
         )
 
     def test_naive_word_alignment(self):
@@ -83,17 +82,17 @@ class TestPraattools(unittest.TestCase):
         tg = textgrid._dictionaryToTg(tgAsDict, "error")
 
         sut = praattools.naiveWordAlignment(tg, "utterances", "words", self.isle)
-        wordTier = sut.tierDict["words"]
+        wordTier = sut.getTier("words")
 
         # There are two words with 7 phones total.  They will divide the 1 second interval
         # into two parts, proportionally.
         boundaryTime = 1 + 5.0 / 8.0
         self.assertEqual(
-            [
+            (
                 Interval(1.0, boundaryTime, "purple"),
                 Interval(boundaryTime, 2.0, "cat"),
-            ],
-            wordTier.entryList,
+            ),
+            wordTier.entries,
         )
 
     def test_naive_phone_alignment(self):
@@ -116,10 +115,10 @@ class TestPraattools(unittest.TestCase):
         tg = textgrid._dictionaryToTg(tgAsDict, "error")
 
         sut = praattools.naivePhoneAlignment(tg, "words", "phones", self.isle)
-        phoneTier = sut.tierDict["phones"]
+        phoneTier = sut.getTier("phones")
 
         self.assertEqual(
-            [
+            (
                 # Purple
                 Interval(0.5, 0.7, "p"),
                 Interval(0.7, 0.9, "ɝ"),
@@ -130,8 +129,8 @@ class TestPraattools(unittest.TestCase):
                 Interval(1.5, 1.7, "k"),
                 Interval(1.7, 1.9, "æ"),
                 Interval(1.9, 2.1, "t"),
-            ],
-            phoneTier.entryList,
+            ),
+            phoneTier.entries,
         )
 
     def test_syllabify_textgrid(self):
@@ -172,18 +171,18 @@ class TestPraattools(unittest.TestCase):
         tg = textgrid._dictionaryToTg(tgAsDict, "error")
 
         sut = praattools.syllabifyTextgrid(self.isle, tg, "words", "phones")
-        syllableTier = sut.tierDict["syllable"]
+        syllableTier = sut.getTier("syllable")
 
         # Time is divided proportionally
         self.assertEqual(
-            [
+            (
                 # Purple
                 Interval(0.5, 1.25, "p-ɝ-ɹ"),
                 Interval(1.25, 1.5, "p-l"),
                 # Cat
                 Interval(1.5, 2.1, "k-æ-t"),
-            ],
-            syllableTier.entryList,
+            ),
+            syllableTier.entries,
         )
 
     def test_syllabify_textgrid_raises_error_with_invalid_preference(self):

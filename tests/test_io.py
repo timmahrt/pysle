@@ -10,9 +10,7 @@ dataRoot = os.path.join(root, "files")
 
 
 def lazyLoadValue(word: str, linesByWord: Dict[str, str]) -> List[phonetics.Entry]:
-    entryList = [
-        isle_io.parseIslePronunciation(word, line) for line in linesByWord[word]
-    ]
+    entries = [isle_io.parseIslePronunciation(word, line) for line in linesByWord[word]]
 
     return [
         phonetics.Entry(
@@ -20,7 +18,7 @@ def lazyLoadValue(word: str, linesByWord: Dict[str, str]) -> List[phonetics.Entr
             entry["syllabificationList"],
             entry["posList"],
         )
-        for entry in entryList
+        for entry in entries
     ]
 
 

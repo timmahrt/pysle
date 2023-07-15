@@ -3,6 +3,9 @@
 
 *Pysle uses semantic versioning (Major.Minor.Patch)*
 
+Ver 4.0.1 (July 15, 2023)
+- pin praatio version to 6.0
+
 Ver 4.0 (Jan 3, 2022)
 - lazy load the isleDict; boot up time changed from ~20s to ~0.5s
 - refactor code to be object-oriented

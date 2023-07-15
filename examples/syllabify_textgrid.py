@@ -29,9 +29,9 @@ syllableTG = praattools.syllabifyTextgrid(
     stressDetectionErrorMode="warning",
     syllabificationErrorMode="warning",
 )
-tg.addTier(syllableTG.tierDict["syllable"])
-tg.addTier(syllableTG.tierDict["tonicSyllable"])
-tg.addTier(syllableTG.tierDict["tonicVowel"])
+tg.addTier(syllableTG.getTier("syllable"))
+tg.addTier(syllableTG.getTier("tonicSyllable"))
+tg.addTier(syllableTG.getTier("tonicVowel"))
 
 tg.save(
     join(root, "pumpkins_with_syllables.TextGrid"),

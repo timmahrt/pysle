@@ -23,7 +23,7 @@ canonical dictionary pronunciation).
 4. [Requirements](#requirements)
 5. [ISLE Dictionary](#isle-dictionary)
 6. [Installation](#installation)
-7. [Version 3 to 4 Migration](#version-3-to-4-migration)
+7. [Upgrading](#upgrading)
 8. [Usage](#usage)
 9. [Common Use Cases](#common-use-cases)
 10. [Tests](#tests)
@@ -36,9 +36,6 @@ canonical dictionary pronunciation).
 Automatically generated pdocs can be found here:
 
 http://timmahrt.github.io/pysle/
-
-The documentation is generated with the following command:
-`pdoc ./pysle -d google -o docs`
 
 ## Tutorials
 
@@ -102,16 +99,9 @@ If python is not in your path, you'll need to enter the full path e.g.
 
     C:\Python36\python.exe setup.py install
 
-## Version 3 to 4 Migration
+## Upgrading
 
-The iterface to isle dictionaries, praattools, and pronunciationtools haven't changed so
-much except for a bit of renaming.
-
-The expected return types have completely changed however--shifting to datatypes now defined
-in `phonetics.py`. If you are struggling with migrating to version 4, please let me know.
-
-Looking over changes to the example files may help show the changes that need to be made
-to get the same results.
+Please view [UPGRADING.md](https://github.com/timmahrt/pysle/blob/main/UPGRADING.md) for detailed information about how to upgrade from earlier versions.
 
 ## Usage
 
@@ -166,13 +156,6 @@ What can you do with this library?
     ```python
     pysle.syllabifyTextgrid(isleDict, praatioTextgrid, "words", "phones")
     ```
-
-## Tests
-
-I run tests with the following command (this requires pytest and pytest-cov to be installed):
-
-`pytest --cov=pysle tests/`
-
 
 ## Citing pysle
 
