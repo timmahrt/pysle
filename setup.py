@@ -11,7 +11,7 @@ from setuptools import setup
 setup(
     name="pysle",
     python_requires=">3.6.0",
-    version="4.0.0",
+    version="4.0.1",
     author="Tim Mahrt",
     author_email="timmahrt@gmail.com",
     url="https://github.com/timmahrt/pysle",
@@ -23,7 +23,7 @@ setup(
         ]
     },
     install_requires=[
-        "praatio >= 5.0",
+        "praatio ~= 6.0",
         "typing_extensions",
     ],
     license="LICENSE",

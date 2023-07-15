@@ -84,25 +84,25 @@ def naiveWordAlignment(
     Raises:
         WordNotInIsleError: The word was not in the Isle dictionary
     """
-    utteranceTier = tg.tierDict[utteranceTierName]
+    utteranceTier = tg.getTier(utteranceTierName)
 
     wordTier = None
-    if wordTierName in tg.tierNameList:
-        wordTier = tg.tierDict[wordTierName]
+    if wordTierName in tg.tierNames:
+        wordTier = tg.getTier(wordTierName)
 
     # Load in the word tier, if it exists:
-    wordEntryList = []
-    phoneEntryList = []
+    wordEntries = []
+    phoneEntries = []
     if wordTier is not None:
         if removeOverlappingSegments:
-            for start, stop, _ in utteranceTier.entryList:
+            for start, stop, _ in utteranceTier.entries:
                 wordTier = wordTier.eraseRegion(
                     start, stop, praatioConstants.EraseCollision.TRUNCATE, False
                 )
-        wordEntryList = wordTier.entryList
+        wordEntries = wordTier.entries
 
     # Do the naive alignment
-    for start, stop, label in utteranceTier.entryList:
+    for start, stop, label in utteranceTier.entries:
         wordList = label.split()
 
         # Get the list of phones in each word
@@ -122,29 +122,29 @@ def naiveWordAlignment(
 
         # Get the naive alignment for words, if alignment doesn't
         # already exist for words
-        subWordEntryList = []
-        subPhoneEntryList = []
+        subWordEntries = []
+        subPhoneEntries = []
         if wordTier is not None:
-            subWordEntryList = wordTier.crop(
+            subWordEntries = wordTier.crop(
                 start, stop, praatioConstants.CropCollision.TRUNCATED, False
-            ).entryList
+            ).entries
 
-        if len(subWordEntryList) == 0:
+        if len(subWordEntries) == 0:
             wordStart = start
             phoneDur = (stop - start) / float(numPhones)
             for i, word in enumerate(wordList):
                 phoneListTxt = " ".join(superPhoneList[i])
                 wordEnd = wordStart + (phoneDur * len(superPhoneList[i]))
-                subWordEntryList.append((wordStart, wordEnd, word))
-                subPhoneEntryList.append((wordStart, wordEnd, phoneListTxt))
+                subWordEntries.append((wordStart, wordEnd, word))
+                subPhoneEntries.append((wordStart, wordEnd, phoneListTxt))
                 wordStart = wordEnd
 
-        wordEntryList.extend(subWordEntryList)
-        phoneEntryList.extend(subPhoneEntryList)
+        wordEntries.extend(subWordEntries)
+        phoneEntries.extend(subPhoneEntries)
 
     # Replace or add the word tier
     newWordTier = textgrid.IntervalTier(
-        wordTierName, wordEntryList, tg.minTimestamp, tg.maxTimestamp
+        wordTierName, wordEntries, tg.minTimestamp, tg.maxTimestamp
     )
     if wordTier is not None:
         tg.replaceTier(wordTierName, newWordTier)
@@ -153,11 +153,11 @@ def naiveWordAlignment(
 
     # Add the phone tier
     # This is mainly used as an annotation tier
-    if phoneHelperTierName is not None and len(phoneEntryList) > 0:
+    if phoneHelperTierName is not None and len(phoneEntries) > 0:
         newPhoneTier = textgrid.IntervalTier(
-            phoneHelperTierName, phoneEntryList, tg.minTimestamp, tg.maxTimestamp
+            phoneHelperTierName, phoneEntries, tg.minTimestamp, tg.maxTimestamp
         )
-        if phoneHelperTierName in tg.tierNameList:
+        if phoneHelperTierName in tg.tierNames:
             tg.replaceTier(phoneHelperTierName, newPhoneTier)
         else:
             tg.addTier(newPhoneTier)
@@ -192,25 +192,24 @@ def naivePhoneAlignment(
     Raises:
         WordNotInIsleError: The word was not in the Isle dictionary
     """
-    wordTier = tg.tierDict[wordTierName]
+    wordTier = tg.getTier(wordTierName)
 
     phoneTier = None
-    if phoneTierName in tg.tierNameList:
-        phoneTier = tg.tierDict[phoneTierName]
+    if phoneTierName in tg.tierNames:
+        phoneTier = tg.getTier(phoneTierName)
 
     # Load in the phone tier, if it exists:
-    phoneEntryList = []
+    phoneEntries = []
     if phoneTier is not None:
         if removeOverlappingSegments:
-            for startT, stopT, _ in wordTier.entryList:
+            for startT, stopT, _ in wordTier.entries:
                 phoneTier = phoneTier.eraseRegion(
                     startT, stopT, praatioConstants.EraseCollision.TRUNCATE, False
                 )
-        phoneEntryList = phoneTier.entryList
+        phoneEntries = phoneTier.entries
 
     # Do the naive alignment
-    for wordStartT, wordEndT, word in wordTier.entryList:
-
+    for wordStartT, wordEndT, word in wordTier.entries:
         # Get the list of phones in this word
         try:
             entry = isle.lookup(word)[0]
@@ -221,31 +220,30 @@ def naivePhoneAlignment(
 
         # Get the naive alignment for phones, if alignment doesn't
         # already exist for phones
-        subPhoneEntryList = []
+        subPhoneEntries = []
         if phoneTier is not None:
-            subPhoneEntryList = phoneTier.crop(
+            subPhoneEntries = phoneTier.crop(
                 wordStartT, wordEndT, praatioConstants.CropCollision.TRUNCATED, False
-            ).entryList
+            ).entries
 
-        if len(subPhoneEntryList) == 0:
+        if len(subPhoneEntries) == 0:
             phoneDur = (wordEndT - wordStartT) / len(phones)
 
             phoneStartT = wordStartT
             for phone in phones:
                 phoneEndT = phoneStartT + phoneDur
-                subPhoneEntryList.append((phoneStartT, phoneEndT, phone))
+                subPhoneEntries.append((phoneStartT, phoneEndT, phone))
                 phoneStartT = phoneEndT
 
-        phoneEntryList.extend(subPhoneEntryList)
+        phoneEntries.extend(subPhoneEntries)
 
     # Replace or add the phone tier
     newPhoneTier = textgrid.IntervalTier(
-        phoneTierName, phoneEntryList, tg.minTimestamp, tg.maxTimestamp
+        phoneTierName, phoneEntries, tg.minTimestamp, tg.maxTimestamp
     )
     if phoneTier is not None:
         tg.replaceTier(phoneTierName, newPhoneTier)
     else:
-
         tg.addTier(newPhoneTier)
 
     return tg
@@ -306,8 +304,8 @@ def syllabifyTextgrid(
     minT = tg.minTimestamp
     maxT = tg.maxTimestamp
 
-    wordTier = tg.tierDict[wordTierName]
-    phoneTier = tg.tierDict[phoneTierName]
+    wordTier = tg.getTier(wordTierName)
+    phoneTier = tg.getTier(phoneTierName)
 
     if not isinstance(wordTier, textgrid.IntervalTier):
         raise AttributeError(f"Tier '{wordTierName}' must be an interval tier")
@@ -317,9 +315,9 @@ def syllabifyTextgrid(
     if skipLabelList is None:
         skipLabelList = []
 
-    syllableEntryList = []
-    tonicSEntryList = []
-    tonicPEntryList = []
+    syllableEntries = []
+    tonicSEntries = []
+    tonicPEntries = []
 
     if start is not None or stop is not None:
         if start is None:
@@ -331,8 +329,7 @@ def syllabifyTextgrid(
             start, stop, praatioConstants.CropCollision.TRUNCATED, False
         )
 
-    for entryStart, entryStop, word in wordTier.entryList:
-
+    for entryStart, entryStop, word in wordTier.entries:
         if word in skipLabelList:
             continue
 
@@ -340,7 +337,7 @@ def syllabifyTextgrid(
             entryStart, entryStop, praatioConstants.CropCollision.STRICT, False
         )
 
-        phoneList = [entry[2] for entry in subPhoneTier.entryList if entry[2] != ""]
+        phoneList = [entry[2] for entry in subPhoneTier.entries if entry[2] != ""]
 
         try:
             sylTmp = isle.findBestSyllabification(word, phoneList)
@@ -369,25 +366,24 @@ def syllabifyTextgrid(
 
         i = 0
         for k, syllable in enumerate(syllableList):
-
             # Create the syllable tier entry
             j = len(syllable)
-            stubEntryList = subPhoneTier.entryList[i : i + j]
+            stubEntries = subPhoneTier.entries[i : i + j]
             i += j
 
             # The whole syllable was deleted
-            if len(stubEntryList) == 0:
+            if len(stubEntries) == 0:
                 continue
 
-            syllableStart = stubEntryList[0][0]
-            syllableEnd = stubEntryList[-1][1]
-            label = "-".join([entry[2] for entry in stubEntryList])
+            syllableStart = stubEntries[0][0]
+            syllableEnd = stubEntries[-1][1]
+            label = "-".join([entry[2] for entry in stubEntries])
 
-            syllableEntryList.append((syllableStart, syllableEnd, label))
+            syllableEntries.append((syllableStart, syllableEnd, label))
 
             # Create the tonic syllable tier entry
             if k == stressI:
-                tonicSEntryList.append(
+                tonicSEntries.append(
                     (syllableStart, syllableEnd, phonetic_constants.TONIC)
                 )
 
@@ -401,7 +397,7 @@ def syllabifyTextgrid(
                 )
 
                 tonicSyllableEntries: List[textgrid.constants.Interval] = [
-                    entry for entry in syllablePhoneTier.entryList if entry[2] != ""
+                    entry for entry in syllablePhoneTier.entries if entry[2] != ""
                 ]
                 tonicSyllable = phonetics.Syllable(
                     [phone for _, _, phone in tonicSyllableEntries]
@@ -427,12 +423,12 @@ def syllabifyTextgrid(
                     continue
 
                 phoneStart, phoneEnd = tonicSyllableEntries[tmpStressJ][:2]
-                tonicPEntryList.append((phoneStart, phoneEnd, phonetic_constants.TONIC))
+                tonicPEntries.append((phoneStart, phoneEnd, phonetic_constants.TONIC))
 
     # Create a textgrid with the two syllable-level tiers
-    syllableTier = textgrid.IntervalTier("syllable", syllableEntryList, minT, maxT)
-    tonicSTier = textgrid.IntervalTier("tonicSyllable", tonicSEntryList, minT, maxT)
-    tonicPTier = textgrid.IntervalTier("tonicVowel", tonicPEntryList, minT, maxT)
+    syllableTier = textgrid.IntervalTier("syllable", syllableEntries, minT, maxT)
+    tonicSTier = textgrid.IntervalTier("tonicSyllable", tonicSEntries, minT, maxT)
+    tonicPTier = textgrid.IntervalTier("tonicVowel", tonicPEntries, minT, maxT)
 
     syllableTG = textgrid.Textgrid()
     syllableTG.addTier(syllableTier)
