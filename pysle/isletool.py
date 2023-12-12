@@ -47,7 +47,6 @@ class Isle:
         self.data: Dict[str, List[phonetics.Entry]] = {}
 
     def _load(self, islePath) -> Dict[str, List[str]]:
-        print("Text")
         return isle_io.readIsleDict(islePath)
 
     def _lazyLoad(self, word: str) -> List[phonetics.Entry]:
