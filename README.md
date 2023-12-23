@@ -26,9 +26,8 @@ canonical dictionary pronunciation).
 7. [Upgrading](#upgrading)
 8. [Usage](#usage)
 9. [Common Use Cases](#common-use-cases)
-10. [Tests](#tests)
-11. [Citing psyle](#citing-pysle)
-12. [Acknowledgements](#acknowledgements)
+10. [Citing psyle](#citing-pysle)
+11. [Acknowledgements](#acknowledgements)
 
 
 ## Documentation
